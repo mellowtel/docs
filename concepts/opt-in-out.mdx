@@ -1,0 +1,22 @@
+---
+title: 'Opt In / Opt Out'
+description: 'Your users can decide if they want to take part in the Mellowtel Network or not.'
+icon: 'signature'
+---
+
+Mellowtel doesn't activate any user on the network without their explicit consent. This is why the library provides a way to opt in or out.
+
+On the first installation/update with Mellowtel imported, you must ask the user if they want to take part in the Network. You can do so by showing a disclaimer/consent dialog that is not dismissible.
+
+<Frame caption="Disclaimer example">
+    <img src="/images/mllwtl_diclaimer.png" />
+</Frame>
+
+> If you choose to 'Accept all', we will also use the Mellowtel API to:
+Enable trusted partners to access internet resources by also routing part of their traffic through your node in the network
+If you choose "Decline optional use", we will not use the additional purposes indicated.
+The service is used by trusted partners without affecting the speed or quality of your browsing. You can choose not to participate at any time from this page. By accepting full use, you help us keep the service free and available.
+
+If they agree, you can activate them on the Network by calling the `optIn()` method. If they don't agree, you can call the `optOut()` method, and they won't be activated.
+
+
