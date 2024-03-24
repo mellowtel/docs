@@ -6,7 +6,7 @@ icon: rocket
 
 You will learn how to install the npm package and how to use it in your project.
 
-Note: Mellowtel is designed for Manifest V3 Chrome Extension only. For now, it is necessary to organize your code in a compiled way, by using  Webpack, Rollup, or other bundlers.
+Note: Mellowtel is designed for Manifest V3 Chrome Extension only. For now, it is necessary to organize your code in a compiled way, by using Webpack, Rollup, or other bundlers.
 
 # Install npm package
 
@@ -17,24 +17,13 @@ npm install mellowtel
 ```
 
 # Set up your Manifest
-For the time being, Mellowtel requires critical permissions to work properly.
-If you haven't already requested these permissions at installation, an update will
-disable your extension until users agree to the new permissions.
-Therefore, it's not recommended to add Mellowtel to an existing extension which
-doesn't have these permissions. An update is coming shortly to make it possible to add Mellowtel to an existing extension which doesn't have these permissions.
+Mellowtel requires some permissions to work properly (`storage`, `tabs`, `declarativeNetRequest`).
 
-It's safe to continue if you've requested even one of these permissions at installation:
+Depending on which permissions you have already requested and which you haven't, there are two ways to proceed with the integration.
 
-`permissions = ["tabs", "declarativeNetRequest"]`
+### Option 1
 
-or if you have set "host_permissions" to
-
-`host_permissions = ["<all_urls>"]`.
-
-To check, simply open your existing `manifest.json` file and look for the `permissions` and `host_permissions` key. If you can find even one the  permissions listed above, you're good to go.
-Another way to check is by installing your extension and checking if the alert window pops up asking for permission to `Read and change all your data on all websites`.
-
-Once you have checked that, you need to add/update the following permissions to your `manifest.json` file:
+If, when installing your extension, an alert window pops up asking for permission to `Read and change all your data on all websites`, you can simply update your `manifest.json` file:
 
 ```json
 {
@@ -42,11 +31,40 @@ Once you have checked that, you need to add/update the following permissions to 
     "storage",
     "tabs",
     "declarativeNetRequest"
-  ],
-  "host_permissions": [
-    "<all_urls>"
   ]
 }
+```
+
+### Option 2
+
+If the alert window doesn't pop up, or asks for permissions only on specific websites, you need to add `tabs` and `declarativeNetRequest` to your `optional_permissions`.
+Mellowtel will automatically request these permissions if the user decides to opt in.
+If it's not already there, you also need to add the `storage` permission. This can be done in the `permissions` section as it doesn't display an alert window.
+
+```json
+{
+  "optional_permissions": [
+    "tabs",
+    "declarativeNetRequest"
+  ],
+  "permissions": [
+    "storage"
+  ]
+}
+```
+
+### Web Store Justification
+
+The Web Store requires you to justify the permissions you are requesting. Here is a template you can use (it explains how Mellowtel uses the permissions):
+
+**Tabs**:
+```txt
+The tabs permission is required to access the URL of the current page in the service worker. It also facilitates messaging between the contentScript and the service worker.
+```
+
+**DeclarativeNetRequest**:
+```txt
+The declarativeNetRequest permission is required to strip certain headers (e.g. X-Frame headers) from some responses on the sub_frame level. This allows displaying websites in an iframe without running into issues related to cross-origin resource sharing (CORS). These headers are immediately restored after the response is processed.
 ```
 
 # Set up your background script
