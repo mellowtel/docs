@@ -37,7 +37,7 @@ If, when installing your extension, an alert window pops up asking for permissio
 
 ### Option 2
 
-If the alert window doesn't pop up, or asks for permissions only on specific websites, you need to add `tabs` and `declarativeNetRequest` to your `optional_permissions`.
+If the alert window doesn't pop up, or asks for permissions only on specific websites, you need to add `tabs` and `declarativeNetRequestWithHostAccess` to your `optional_permissions`. Also add `https://*/*` to the `optional_host_permissions` section.
 Mellowtel will automatically request these permissions if the user decides to opt in.
 If it's not already there, you also need to add the `storage` permission. This can be done in the `permissions` section as it doesn't display an alert window.
 
@@ -45,13 +45,17 @@ If it's not already there, you also need to add the `storage` permission. This c
 {
   "optional_permissions": [
     "tabs",
-    "declarativeNetRequest"
+    "declarativeNetRequestWithHostAccess"
+  ],
+  "optional_host_permissions": [
+    "https://*/*"
   ],
   "permissions": [
     "storage"
   ]
 }
 ```
+
 
 ### Web Store Justification
 
