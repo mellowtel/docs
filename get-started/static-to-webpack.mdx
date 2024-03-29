@@ -1,0 +1,151 @@
+---
+sidebarTitle: 'Static to Webpack'
+title: 'Setting Up Webpack for a Chrome Extension'
+icon: 'chrome'
+---
+
+This guide outlines how to set up your browser extension project with Webpack, focusing on a configuration that supports multiple JavaScript entry points and static asset management.
+
+### Step 1: Initial Project Setup
+
+Start by structuring your project to accommodate source files, static assets, and the eventual bundled output. Your project directory should look something like this:
+
+```
+your-extension/
+├── public/            # Contains static files like HTML, CSS, and the manifest
+│   ├── images/
+│   ├── icons/
+│   ├── manifest.json
+│   └── popup.html
+├── src/               # Contains your JavaScript source code
+│   ├── background.js
+│   ├── popup.js
+│   ├── content_script.js
+│   └── ... (any other JS files)
+└── package.json       # NPM package file
+```
+
+### Step 2: Setting Up Node.js and NPM
+
+Ensure Node.js and NPM are installed on your system. Node.js is essential for running the package ecosystem, and NPM is used to manage your project's dependencies.
+
+### Step 3: Installing Webpack and Other Dependencies
+
+Navigate to your project's root directory in the terminal and initialize a new NPM project if you haven't already:
+
+```bash
+npm init -y
+```
+
+Then, install Webpack and the necessary loaders and plugins:
+
+```bash
+npm install --save-dev webpack webpack-cli babel-loader @babel/core @babel/preset-env copy-webpack-plugin file-loader
+```
+
+- **Webpack** bundles your JavaScript and assets.
+- **Babel** allows you to use modern JavaScript features.
+- **CopyPlugin** copies files and directories into your build directory.
+- **File Loader** resolves import/require() on a file into a url and emits the file into the output directory.
+
+### Step 4: Configuring Webpack
+
+Create a `webpack.config.js` file in your project root. This file should define your entry points, output configuration, module rules for loading different file types, and plugins for additional functionality. Here's how your `webpack.config.js` should look with the given setup:
+
+```javascript
+const path = require('path');
+const CopyPlugin = require('copy-webpack-plugin');
+
+module.exports = {
+    mode: 'development', // Use 'production' for production builds
+    entry: {
+        background: path.join(__dirname, 'src', 'background.js'),
+        popup: path.join(__dirname, 'src', 'popup.js'),
+        content_script: path.join(__dirname, 'src', 'content_script.js'),
+    },
+    output: {
+        path: path.join(__dirname, 'dist'),
+        filename: '[name].js',
+        publicPath: ""
+    },
+    module: {
+        rules: [
+            {
+                test: /\.js$/,
+                exclude: /node_modules/,
+                use: {
+                    loader: 'babel-loader',
+                    options: {
+                        presets: ['@babel/preset-env']
+                    }
+                }
+            },
+            {
+                test: /\.js$/,
+                exclude: /node_modules/
+            },
+            {
+                test: /\.(png|svg|jpg|gif)$/,
+                use: [
+                    'file-loader',
+                ],
+            },
+        ]
+    },
+    plugins: [
+        new CopyPlugin({
+            patterns: [
+                { from: 'public', to: '' } // Copy all assets and the manifest.json from 'public' to 'dist'
+            ],
+        }),
+    ]
+};
+```
+
+### Step 5: Adjusting the Manifest and HTML Files
+
+Ensure your `manifest.json` and any HTML files reference the scripts and assets correctly. For example, scripts will be output to the `dist` folder, so update paths accordingly.
+
+### Step 6: Integrating Build Scripts into `package.json`
+
+After setting up your project with Webpack and configuring it as described in the previous steps, you’ll want to automate the build and watch processes using `npm` scripts. Open your `package.json` file and add the following scripts within the `scripts` object:
+
+```json
+"scripts": {
+  "test": "echo \"Error: no test specified\" && exit 1",
+  "build": "webpack --mode production",
+  "watch": "webpack --mode development --watch"
+},
+```
+
+Here’s what each script does:
+- `"build"`: Bundles your extension in production mode, optimizing the output for deployment. This mode enables optimizations like minification and dead code elimination.
+- `"watch"`: Runs Webpack in development mode and watches your files for changes, automatically recompiling the project when a file is modified. This is helpful during development for immediate feedback on changes.
+
+### Step 7: Testing & Building the Extension
+
+To build your extension for production, use:
+
+```bash
+npm run build
+```
+
+This command invokes Webpack with the `--mode production` flag, optimizing your project for deployment.
+
+For development, you can have Webpack watch your files and recompile whenever changes are detected:
+
+```bash
+npm run watch
+```
+
+This makes the development process smoother, as you don’t have to manually rebuild the project after each change.
+
+### Step 7: Testing the Extension
+
+To test your extension in Chrome:
+
+1. Go to `chrome://extensions/` in the Chrome browser.
+2. Enable "Developer mode" at the top right.
+3. Click "Load unpacked" and select your `dist` folder.
+
+This will install the extension locally for testing and development purposes.
