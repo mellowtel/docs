@@ -3,6 +3,7 @@ title: 'Opt In / Opt Out'
 description: 'Your users can decide if they want to take part in the Mellowtel Network or not.'
 icon: 'signature'
 ---
+## Introduction
 
 Mellowtel doesn't activate any user on the network without their explicit consent. This is why the library provides a way to opt in or out.
 
@@ -19,4 +20,73 @@ The service is used by trusted partners without affecting the speed or quality o
 
 If they agree, you can activate them on the Network by calling the `optIn()` method. If they don't agree, you can call the `optOut()` method, and they won't be activated.
 
+## Recommended implementation
 
+We recommend to open a new page/options page when sending the update with Mellowtel imported, so the user can see the disclaimer and decide if they want to opt in or out.
+
+This also ensures that you can maximize the number of users that opt in, as they can see the benefits of the Mellowtel Network.
+
+```javascript
+chrome.runtime.onInstalled.addListener(async () => {
+  const currentVersion = chrome.runtime.getManifest().version;
+  const newVersionKey = 'newVersion';
+  const updateShownKey = 'updateShown';
+
+  // Check if this is a new version of the extension
+  const previousVersion = await getFromStorage(newVersionKey);
+  if (currentVersion !== previousVersion) {
+    // Save the new version to local storage
+    await setInStorage(newVersionKey, currentVersion);
+
+    // Check if we've already shown the update notification for this version
+    const updateShown = await getFromStorage(updateShownKey);
+    if (!updateShown) {
+      // Open a new tab with the update page
+      chrome.tabs.create({ url: "https://example.com/update-page" });
+
+      // Set the flag so we don't show the update notification again
+      await setInStorage(updateShownKey, true);
+    }
+  }
+});
+
+// Helper function to get data from storage
+function getFromStorage(key) {
+  return new Promise((resolve) => {
+    chrome.storage.local.get([key], function(result) {
+      resolve(result[key]);
+    });
+  });
+}
+
+// Helper function to set data in storage
+function setInStorage(key, value) {
+  return new Promise((resolve) => {
+    chrome.storage.local.set({ [key]: value }, function() {
+      resolve();
+    });
+  });
+}
+```
+
+Here is a text you can use for the update:
+
+```markdown
+Hi 👋,
+
+Happy to announce an update that will help maintain this extension free and available to everybody...but it requires action from you!
+
+This new version includes the open-source [Mellowtel](https://www.mellowtel.it/mellowtel-user-guide/) library. This library lets you share your unused internet with trusted AI labs & startups who use it to train their models.
+
+As the developer of this extension, I get a small share of the revenue.
+
+By opting in now, other than helping maintain this extension free and available, you will be eligible to be in the beta version and start earning for your unused internet too. In case you change your mind, you can opt out at any time from [INSERT OPTION HERE]
+
+Mellowtel shares your bandwidth only. Security and privacy are 100% guaranteed and the library is open source for everyone to see.
+
+It doesn't collect, share, or sell personal information (not even anonymized data). It’s also highly regulated: Mellowtel keeps communicating with Chrome Web Store regulators to guarantee a safe experience. It also provides CWS regulators with tools to monitor and enforce compliance.
+
+Thanks!
+```
+
+You can also link to the [Mellowtel User Guide](https://www.mellowtel.it/mellowtel-user-guide/) to provide more information in non-technical terms.
