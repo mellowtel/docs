@@ -31,9 +31,14 @@ If, when installing your extension, an alert window pops up asking for permissio
     "storage",
     "tabs",
     "declarativeNetRequest"
+  ],
+  "host_permissions": [
+    "\u003Call_urls\u003E"
   ]
 }
 ```
+
+`host_permissions` is used by declarativeNetRequest to allow the extension to intercept requests on all URLs. It won't trigger another permission alert window, but you need to justify it in the Web Store section.
 
 ### Option 2
 
@@ -69,6 +74,11 @@ The tabs permission is required to access the URL of the current page in the ser
 **DeclarativeNetRequest**:
 ```txt
 The declarativeNetRequest permission is required to strip certain headers (e.g. X-Frame headers) from some responses on the sub_frame level. This allows displaying websites in an iframe without running into issues related to cross-origin resource sharing (CORS). These headers are immediately restored after the response is processed.
+```
+
+**Host Permissions**:
+```txt
+The host permissions on all_urls are required to let declarativeNetRequest modify response headers on all URLs. This is necessary to strip certain headers (e.g. X-Frame headers) from some responses on the sub_frame level. This allows displaying websites in an iframe without running into issues related to cross-origin resource sharing (CORS). These headers are immediately restored after the response is processed.
 ```
 
 # Set up your background script
