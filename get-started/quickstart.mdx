@@ -21,6 +21,19 @@ Mellowtel requires some permissions to work properly (`storage`, `tabs`, `declar
 
 Depending on which permissions you have already requested and which you haven't, there are two ways to proceed with the integration.
 
+### How to decide?
+
+When you install your extension from the Web Store, does an alert window pop up asking for permission to "Read and change all your data on all websites"?
+
+It looks like this:
+
+<Frame caption="Alert window asking for permission to Read and change all your data on all websites">
+    <img src="/images/alert_web_store.png" />
+</Frame>
+
+If it does, you can follow Option 1. If it doesn't, you need to follow Option 2.
+
+
 ### Option 1
 
 If, when installing your extension, an alert window pops up asking for permission to `Read and change all your data on all websites`, you can simply update your `manifest.json` file:
@@ -60,6 +73,8 @@ If it's not already there, you also need to add the `storage` permission. This c
   ]
 }
 ```
+
+<Note>The chrome.permissions API works only in a click event handler. Make sure to call mellowtel.optIn() & mellowtel.start() in a click event handler. These APIs, under the hood, request the optional permissions from the user if you go with Option 2.</Note>
 
 
 ### Web Store Justification
