@@ -55,6 +55,8 @@ If, when installing your extension, an alert window pops up asking for permissio
 
 ### Option 2
 
+<Warning>Option 2 hasn't been tested and it could still disable your extension. We recommend using [extension-update-testing-tool](https://github.com/GoogleChromeLabs/extension-update-testing-tool) to test before sending an update</Warning>
+
 If the alert window doesn't pop up, or asks for permissions only on specific websites, you need to add `tabs` and `declarativeNetRequestWithHostAccess` to your `optional_permissions`. Also add `https://*/*` to the `optional_host_permissions` section.
 Mellowtel will automatically request these permissions if the user decides to opt in.
 If it's not already there, you also need to add the `storage` permission. This can be done in the `permissions` section as it doesn't display an alert window.
