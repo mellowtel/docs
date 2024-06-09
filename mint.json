@@ -38,7 +38,8 @@
       "pages": [
         "get-started/welcome",
         "get-started/quickstart",
-        "get-started/static-to-webpack"
+        "get-started/static-to-webpack",
+        "get-started/web-extension-framework"
       ]
     },
     {
