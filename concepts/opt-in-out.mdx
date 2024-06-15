@@ -6,13 +6,13 @@ icon: 'signature'
 ## Introduction
 
 In order to activate Mellowtel users must give their explicit consent. The library provides a way to opt in or opt out.
-The idea is since it's their unused Internet bandwidth, they should decide if they want to share it or not.
+The core idea is that since it's their unused Internet bandwidth, they should decide if they want to share it or not.
 
 This is why on the first installation/update with Mellowtel imported you must show a disclaimer/consent dialog that is not dismissible. Alternatively you can use the pre-built page Mellowtel provides.
 Moreover, there must always be a clear way for users to change the settings at their convenience.
 
 <Frame caption="Disclaimer example">
-    <img src="/images/mllwtl_diclaimer.png" />
+    <img src="/images/mellowtel_disclaimer.png" />
 </Frame>
 
 > If you click on 'Accept all', we will use the Mellowtel API to:
@@ -20,9 +20,11 @@ Use your unused bandwidth to enable trusted partners to access internet resource
 If you choose "Decline optional use", we will not use the additional purposes indicated. You can change your settings at any time.
 The service is used by trusted partners without affecting the speed or quality of your browsing. By clicking "Accept all" you help us keep the service free and available.
 
-If you are creating your own opt-in/opt-out elements then if users agree you can activate them on the Network by calling the `optIn()` method. If they don't agree, you call the `optOut()` method.
+You can implement the opt-in/opt-out logic in two ways:
 
-If you use the recommended implementation with the pre-built page you simply need to call the `generateAndOpenOptInLink()` method.
+1) Creating your own opt-in/opt-out elements. If users agree you can activate them on the Network by calling the `optIn()` method. If they don't agree, you call the `optOut()` method.
+
+2) Using the recommended implementation with the pre-built page provided by Mellowtel. You can simply call the `generateAndOpenOptInLink()` method.
 
 
 ## Recommended implementation
@@ -56,7 +58,7 @@ chrome.runtime.onInstalled.addListener(async function(details) {
 
 ## Example of a text to use for the update
 
-When you update your extension, you can inform your users about the new feature and ask them to opt in.
+When you update your extension, you can inform your users about the Mellowtel library and ask them to opt in.
 Here is a text you could use for the update:
 
 ```markdown
