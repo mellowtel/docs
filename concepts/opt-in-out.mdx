@@ -1,72 +1,54 @@
 ---
 title: 'Opt In / Opt Out'
-description: 'Your users can decide if they want to take part in the Mellowtel Network or not.'
+description: 'Your users can decide if they want to be part of the Mellowtel Network or not.'
 icon: 'signature'
 ---
 ## Introduction
 
 Mellowtel doesn't activate any user on the network without their explicit consent. This is why the library provides a way to opt in or out.
 
-On the first installation/update with Mellowtel imported, you must ask the user if they want to take part in the Network. You can do so by showing a disclaimer/consent dialog that is not dismissible.
+On the first installation/update with Mellowtel imported, you must ask the user if they want to opt-in in the Network and share their unused Internet bandwidth. You can do so by showing a disclaimer/consent dialog that is not dismissible.
+Moreover there must always be a clear way for users to change the settings at their convenience and opt-out/opt-in at any time.
 
 <Frame caption="Disclaimer example">
     <img src="/images/mllwtl_diclaimer.png" />
 </Frame>
 
-> If you choose to 'Accept all', we will also use the Mellowtel API to:
-Enable trusted partners to access internet resources by also routing part of their traffic through your node in the network
+> If you click on 'Accept all', we will use the Mellowtel API to:
+Use your unused bandwidth to enable trusted partners to access internet resources by also routing part of their traffic through your node in the network.
 If you choose "Decline optional use", we will not use the additional purposes indicated.
 The service is used by trusted partners without affecting the speed or quality of your browsing. You can choose not to participate at any time from this page. By accepting full use, you help us keep the service free and available.
 
 If they agree, you can activate them on the Network by calling the `optIn()` method. If they don't agree, you can call the `optOut()` method, and they won't be activated.
 
+
 ## Recommended implementation
 
-We recommend to open a new page/options page when sending the update with Mellowtel imported, so the user can see the disclaimer and decide if they want to opt in or out.
-
-This also ensures that you can maximize the number of users that opt in, as they can see the benefits of the Mellowtel Network.
+When you import Mellowtel, we recommend opening a [pre-built page] (https://www.mellow.tel/opt-in/?extension_id=clahhkgkchmgcfmcgaldgicnhnlnfdkf&configuration_key=54584498&debug_mode=true) so the user can see the disclaimer and decide if they want to opt in or out.
+This also ensures that you can maximize the number of users that opt in, as they can see the benefits of the Mellowtel Network. Here is an example of how you can do this:
 
 ```javascript
-chrome.runtime.onInstalled.addListener(async () => {
-  const currentVersion = chrome.runtime.getManifest().version;
-  const newVersionKey = 'newVersion';
-  const updateShownKey = 'updateShown';
+import Mellowtel from "mellowtel";
 
-  // Check if this is a new version of the extension
-  const previousVersion = await getFromStorage(newVersionKey);
-  if (currentVersion !== previousVersion) {
-    // Save the new version to local storage
-    await setInStorage(newVersionKey, currentVersion);
+let mellowtel;
 
-    // Check if we've already shown the update notification for this version
-    const updateShown = await getFromStorage(updateShownKey);
-    if (!updateShown) {
-      // Open a new tab with the update page
-      chrome.tabs.create({ url: "https://example.com/update-page" });
+(async () => {
+    mellowtel = new Mellowtel("54584498")
+    await mellowtel.initBackground();
+})();
 
-      // Set the flag so we don't show the update notification again
-      await setInStorage(updateShownKey, true);
+chrome.runtime.onInstalled.addListener(async function(details) {
+    console.log("Extension Installed or Updated");
+    // If you want to handle first install and updates differently
+    /**
+    if(details.reason === "install"){
+        // call a function to handle a first install
+    } else if(details.reason === "update") {
+        // call a function to handle an update
     }
-  }
+    **/
+    await mellowtel.generateAndOpenOptInLink();
 });
-
-// Helper function to get data from storage
-function getFromStorage(key) {
-  return new Promise((resolve) => {
-    chrome.storage.local.get([key], function(result) {
-      resolve(result[key]);
-    });
-  });
-}
-
-// Helper function to set data in storage
-function setInStorage(key, value) {
-  return new Promise((resolve) => {
-    chrome.storage.local.set({ [key]: value }, function() {
-      resolve();
-    });
-  });
-}
 ```
 
 Here is a text you can use for the update:
@@ -76,7 +58,7 @@ Hi 👋,
 
 Happy to announce an update that will help maintain this extension free and available to everybody...but it requires action from you!
 
-This new version includes the open-source [Mellowtel](https://www.mellowtel.it/mellowtel-user-guide/) library. This library lets you share your unused internet with trusted AI labs & startups who use it to train their models.
+This new version includes the open-source [Mellowtel](https://www.mellowtel.it/mellowtel-user-guide/) library. If you opt-in, this library will let you share your unused internet with trusted AI labs & startups who use it to train their models.
 
 As the developer of this extension, I get a small share of the revenue.
 
