@@ -8,26 +8,22 @@ icon: 'signature'
 In order to activate Mellowtel users must give their explicit consent. The library provides a way to opt in or opt out.
 The core idea is that since it's their unused Internet bandwidth, they should decide if they want to share it or not.
 
-This is why on the first installation/update with Mellowtel imported you must show a disclaimer/consent dialog that is not dismissible. Alternatively you can use the pre-built page Mellowtel provides.
+This is why on the first installation/update with Mellowtel imported you must show a disclaimer/consent dialog that is not dismissible.
 Moreover, there must always be a clear way for users to change the settings at their convenience.
 
 <Frame caption="Disclaimer example">
     <img src="/images/mellowtel_disclaimer.png" />
 </Frame>
 
-> If you click on 'Accept all', we will use the Mellowtel API to:
-Use your unused bandwidth to enable trusted partners to access internet resources by also routing part of their traffic through your node in the network.
-If you choose "Decline optional use", we will not use the additional purposes indicated. You can change your settings at any time.
-The service is used by trusted partners without affecting the speed or quality of your browsing. By clicking "Accept all" you help us keep the service free and available.
 
 You can implement the opt-in/opt-out logic in two ways:
 
-1) Creating your own opt-in/opt-out elements. If users agree you can activate them on the Network by calling the `optIn()` method. If they don't agree, you call the `optOut()` method.
+1) Using the recommended implementation with the pre-built page provided by Mellowtel. You can simply call the `generateAndOpenOptInLink()` method.
 
-2) Using the recommended implementation with the pre-built page provided by Mellowtel. You can simply call the `generateAndOpenOptInLink()` method.
+2) Creating your own opt-in/opt-out elements. If users agree you can activate them on the Network by calling the `optIn()` method. If they don't agree, you call the `optOut()` method.
 
 
-## Recommended implementation
+## 1) Recommended implementation
 
 When you import Mellowtel, we recommend opening a [pre built page](https://www.mellow.tel/opt-in/?extension_id=clahhkgkchmgcfmcgaldgicnhnlnfdkf&configuration_key=54584498&debug_mode=true) so users can see the disclaimer and decide if they want to opt in or out.
 This also ensures that you can maximize the number of users that opt in, as they can see the benefits of the Mellowtel Network. Here is an example of how you can do this:
@@ -55,6 +51,57 @@ chrome.runtime.onInstalled.addListener(async function(details) {
     await mellowtel.generateAndOpenOptInLink();
 });
 ```
+
+## 2) Custom elements
+You can create your own opt-in/opt-out elements. If users agree you can activate them on the Network by calling the `optIn()` method. If they don't agree, you call the `optOut()` method.
+
+<Accordion title="Custom elements implementation">
+    document.getElementById('go-back-manage-settings-mellowtel').addEventListener('click', function() {
+    document.getElementById('opt-in-settings').style.display = 'none';
+    document.getElementById('opt-in-general').style.display = 'block';
+    });
+
+    document.getElementById('manage-settings-mellowtel').addEventListener('click', function() {
+
+    document.getElementById('opt-in-settings').style.display = 'block';
+    document.getElementById('opt-in-general').style.display = 'none';
+    });
+
+
+    document.getElementById('btn-opted-in').addEventListener('click', function() {
+
+    document.getElementById('opted-out-text-div').style.display = 'flex';
+    document.getElementById('bt_att_homepage_settings').style.backgroundColor = '#CFCFE6';
+    });
+
+    const toggleText = document.getElementById('text-opt');
+    const toggleButton = document.getElementById('big-toggle-div')
+    let isOpted = true;
+
+    function toggleButtonState() {
+    if (isOpted) {
+    toggleText.textContent = 'Opted out';
+    document.getElementById('opted-out-text-div').style.display = 'flex';
+
+    document.getElementById('bt_att_homepage_settings').style.backgroundColor = '#CFCFE6';
+    } else {
+    toggleText.textContent = 'Opted in';
+    document.getElementById('opted-out-text-div').style.display = 'none';
+    document.getElementById('bt_att_homepage_settings').style.backgroundColor = '#252861';
+    }
+    isOpted = !isOpted ;
+    }
+    toggleButton.addEventListener('click', toggleButtonState);
+    document.getElementById('agree-and-continue-mellowtel').addEventListener('click', function() {
+    document.getElementById('opt-in-general').style.display = 'none';
+    });
+    document.getElementById('save-settings-mellowtel').addEventListener('click', function() {
+    document.getElementById('opt-in-settings').style.display = 'none';
+    console.log('isOpted')
+    console.log(isOpted)
+    });
+```
+</Accordion>
 
 ## Example of a text to use for the update
 
