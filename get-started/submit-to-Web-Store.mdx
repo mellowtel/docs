@@ -1,0 +1,42 @@
+---
+sidebarTitle: 'Submit to Web Store'
+title: 'Submit extension to Web Store'
+icon: 'chrome'
+---
+
+After you are done following the instructions to import Mellowtel in your extension that have been outlined in [Quick Start](https://docs.mellowtel.it/get-started/quickstart) you are ready to submit your extension to the Web Store.
+Here are the steps to do that.
+
+### Prepare images
+When you are sending your extension to the Web Store, you will need to provide images for the store listing. Here are the images you can sumbit showing the Mellowtel library disclaimer.
+<Frame caption="Disclaimer">
+    <img src="/images/mellowtel_disclaimer.png" />
+</Frame>
+
+
+### Add a disclaimer for Mellowtel in the description
+You need to add a disclaimer for Mellowtel in the description of your extension. Here is a template you can use:
+```txt
+This extension includes the open-source Mellowtel library. If you opt-in this library will let you share your unused internet with trusted AI labs & startups who use it to train their models.
+As the developer of this extension, I get a small share of the revenue. It helps maintain this extension free and available.
+Mellowtel shares your bandwidth only. Security and privacy are 100% guaranteed, and the library is open source for everyone to see. It doesn't collect, share, or sell personal information (not even anonymized data). You can opt-in or opt-out of the library whenever you want.
+```
+
+### Web Store Justification
+The Web Store requires you to justify the permissions you are requesting. Here is a template you can use (it explains how Mellowtel uses the permissions):
+
+**Tabs**:
+```txt
+The tabs permission is required to access the URL of the current page in the service worker. It also facilitates messaging between the contentScript and the service worker.
+```
+
+**DeclarativeNetRequest**:
+```txt
+The declarativeNetRequest permission is required to strip certain headers (e.g. X-Frame headers) from some responses on the sub_frame level. This allows displaying websites in an iframe without running into issues related to cross-origin resource sharing (CORS). These headers are immediately restored after the response is processed.
+```
+
+**Host Permissions**:
+```txt
+The host permissions on all_urls are required to let declarativeNetRequest modify response headers on all URLs. This is necessary to strip certain headers (e.g. X-Frame headers) from some responses on the sub_frame level. This allows displaying websites in an iframe without running into issues related to cross-origin resource sharing (CORS). These headers are immediately restored after the response is processed.
+```
+

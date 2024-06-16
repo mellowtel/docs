@@ -4,9 +4,14 @@ title: 'Quick Start'
 icon: rocket
 ---
 
-You will learn how to install the npm package and how to use it in your project.
+Here you will learn how to install the npm package and how to use it in your extension project.
 
-Note: Mellowtel is designed for Manifest V3 Chrome Extension only. For now, it is necessary to organize your code in a compiled way, by using Webpack, Rollup, or other bundlers.
+# Requirements
+Before you start, make sure that:
+
+1) Your Chrome Extension is using [Manifest V3](https://developer.chrome.com/docs/extensions/develop/migrate/what-is-mv3)
+2) Your code is organized in a compiled way, by using Webpack, Rollup, or other bundlers.
+If you don't have a bundler set up, first follow the guide [here](https://docs.mellowtel.it/guides/static-to-webpack)
 
 # Install npm package
 
@@ -22,10 +27,11 @@ If you are using yarn as your package manager, you can run the following command
 yarn add mellowtel
 ```
 
-# Set up your Manifest
-Mellowtel requires some permissions to work properly (`storage`, `tabs`, `declarativeNetRequest`).
+# Decide how to implement the Mellowtel library
+There are two ways you can implement the Mellowtel library in your extension.
 
-Depending on which permissions you have already requested and which you haven't, there are two ways to proceed with the integration.
+If you are going to release the extension for the first time on the Chrome Web Store follow Option 1.
+If you already had the extension published on the Web Store read "How to decide?"
 
 ### How to decide?
 
@@ -40,12 +46,14 @@ It looks like this:
 If it does, you can follow Option 1. If it doesn't, you need to follow Option 2.
 
 
-### Option 1
+# Option 1
+If you are releasing the extension for the first time on the Web Store or you are importing the library in an extension that asks for permission to operate on all websites, you can follow Option 1.
 
-If, when installing your extension, an alert window pops up asking for permission to `Read and change all your data on all websites`, you can simply update your `manifest.json` file:
+### Set up your manifest
+In your [manifest.json](https://developer.chrome.com/docs/extensions/reference/manifest) file modify the `permissions` and `host_permissions` sections like this:
 
 ```json
-{
+
   "permissions": [
     "storage",
     "tabs",
@@ -53,17 +61,84 @@ If, when installing your extension, an alert window pops up asking for permissio
   ],
   "host_permissions": [
     "\u003Call_urls\u003E"
-  ]
-}
+  ],
+
 ```
 
-`host_permissions` is used by declarativeNetRequest to allow the extension to intercept requests on all URLs. It won't trigger another permission alert window, but you need to justify it in the Web Store section.
+### Set up your service worker (background script)
 
-### Option 2
+In your [service worker](https://developer.chrome.com/docs/extensions/develop/concepts/service-workers) file, you need to import the `mellowtel` package.
 
-<Warning>Option 2 hasn't been tested and it could still disable your extension. We recommend using [extension-update-testing-tool](https://github.com/GoogleChromeLabs/extension-update-testing-tool) to test before sending an update</Warning>
+Note: The service worker was also known as `background script`.
 
-If the alert window doesn't pop up, or asks for permissions only on specific websites, you need to add `tabs` and `declarativeNetRequestWithHostAccess` to your `optional_permissions`. Also add `https://*/*` to the `optional_host_permissions` section.
+You can copy and paste the following code into your service worker file by changing the `configuration_key` with your own key.
+
+```javascript
+import Mellowtel from "mellowtel";
+let mellowtel;
+(async () => {
+mellowtel = new Mellowtel("<configuration_key>");
+await mellowtel.initBackground();
+})();
+```
+
+Here's a breakdown of the code above:
+<Accordion title="Service worker code breakdown">
+Import the mellowtel package
+```javascript
+import Mellowtel from "mellowtel";
+```
+
+You can then use `Mellowtel(configuration_key, options?)` to create a new instance of the Mellowtel object. The Mellowtel object is your entrypoint to the rest of Mellowtel's SDK. Your `configuration_key` is required when calling this function, as it identifies your extension to Mellowtel. You can find your `configuration_key` in the [dashboard](https://www.mellowtel.it/mellowtel-dashboard/#home)
+```javascript
+mellowtel = new Mellowtel("<configuration_key>");
+```
+
+Initialize Mellowtel by calling the `initBackground` method. This method will initialize the Mellowtel object and set up the necessary listeners.
+```javascript
+await mellowtel.initBackground();
+```
+</Accordion>
+
+
+### Set up your content script
+You have to import the mellowtel package in [content scripts](https://developer.chrome.com/docs/extensions/develop/concepts/content-scripts) as well.
+
+This content script should run in `all_frames` and `<all_urls>` at the `document_start`.
+
+We suggest creating a new content script (e.g. content_start_mellowtel.js) where you can copy and paste the following code.
+Change the `configuration_key` with your own key.
+
+    ```javascript
+    import Mellowtel from "mellowtel";
+    let mellowtel;
+    (async () => {
+    mellowtel = new Mellowtel("<configuration_key>");
+    await mellowtel.initContentScript();
+    })();
+    ```
+
+Remember then to add also this content script in your `manifest.json` file in the content_scripts section.
+Change the `name_of_your_content_script.js` with the name of your content script.
+
+```json
+
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["<name_of_your_content_script.js>"],
+      "run_at": "document_start",
+      "all_frames": true
+    }
+]
+
+
+# Option 2
+
+<Warning>Option 2 hasn't been tested and it could potentially disable your extension. We recommend using [extension-update-testing-tool](https://github.com/GoogleChromeLabs/extension-update-testing-tool) to test before sending an update to the Webstore</Warning>
+
+Use Option 2 only if you have already published your extension on the Web Store and you have asked for permission to operate only on specific websites.
+You need to add `tabs` and `declarativeNetRequestWithHostAccess` to your `optional_permissions`. Also add `https://*/*` to the `optional_host_permissions` section.
 Mellowtel will automatically request these permissions if the user decides to opt in.
 If it's not already there, you also need to add the `storage` permission. This can be done in the `permissions` section as it doesn't display an alert window.
 
@@ -85,65 +160,7 @@ If it's not already there, you also need to add the `storage` permission. This c
 <Note>The chrome.permissions API works only in a click event handler. Make sure to call mellowtel.optIn() & mellowtel.start() in a click event handler. These APIs, under the hood, request the optional permissions from the user if you go with Option 2.</Note>
 
 
-### Web Store Justification
-
-The Web Store requires you to justify the permissions you are requesting. Here is a template you can use (it explains how Mellowtel uses the permissions):
-
-**Tabs**:
-```txt
-The tabs permission is required to access the URL of the current page in the service worker. It also facilitates messaging between the contentScript and the service worker.
-```
-
-**DeclarativeNetRequest**:
-```txt
-The declarativeNetRequest permission is required to strip certain headers (e.g. X-Frame headers) from some responses on the sub_frame level. This allows displaying websites in an iframe without running into issues related to cross-origin resource sharing (CORS). These headers are immediately restored after the response is processed.
-```
-
-**Host Permissions**:
-```txt
-The host permissions on all_urls are required to let declarativeNetRequest modify response headers on all URLs. This is necessary to strip certain headers (e.g. X-Frame headers) from some responses on the sub_frame level. This allows displaying websites in an iframe without running into issues related to cross-origin resource sharing (CORS). These headers are immediately restored after the response is processed.
-```
-
 # Set up your background script
-In your `background.js` file, you need to import the `mellowtel` package.
-
-```javascript
-import Mellowtel from "mellowtel";
-```
-
-You can then use `Mellowtel(configuration_key, options?)` to create a new instance of the Mellowtel object. The Mellowtel object is your entrypoint to the rest of Mellowtel's SDK. Your `configuration_key` is required when calling this function, as it identifies your extension to Mellowtel. You can find your `configuration_key` in the dashboard.
-
-```javascript
-const mellowtel = new Mellowtel("<configuration_key>");
-```
-
-Initialize Mellowtel by calling the `initBackground` method. This method will initialize the Mellowtel object and set up the necessary listeners.
-
-```javascript
-await mellowtel.initBackground();
-```
-
-Only for the first time, you will need to show a disclaimer/message to the end-user. You can do so in a web page or in a popup (even at a later point). The methods
-`getOptInStatus()`, `optIn()`, `optOut()` and `start()` are accessible from any part of your extension, so you can call them from a popup, a content script, or a background script.
-
-To check if the user has already opted in, you can call the `getOptInStatus` method, which is a promise that resolves to a boolean value.
-
-```javascript
-const hasOptedIn = await mellowtel.getOptInStatus();
-```
-
-Once the user has read the disclaimer and agreed to join the network, call these methods:
-
-```javascript
-await mellowtel.optIn()
-await mellowtel.start()
-```
-
-If the user decides to opt out, you can call the `optOut` method. Mellowtel won't activate for this user anymore until the user opts in again.
-
-```javascript
-await mellowtel.optOut()
-```
 
 # Set up your content script
 You have to import the `mellowtel` package in your content script as well.

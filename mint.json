@@ -38,8 +38,14 @@
       "pages": [
         "get-started/welcome",
         "get-started/quickstart",
-        "get-started/static-to-webpack",
-        "get-started/web-extension-framework"
+        "get-started/submit-to-Web-Store"
+      ]
+    },
+    {
+      "group": "Guides",
+      "pages": [
+        "guides/static-to-webpack",
+        "guides/web-extension-framework"
       ]
     },
     {

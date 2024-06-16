@@ -53,10 +53,60 @@ chrome.runtime.onInstalled.addListener(async function(details) {
 ```
 
 ## 2) Custom elements
-If you want you can create your own custom opt-in/opt-out elements and handle user's choice by using the `optIn()` and `optOut()` method.
+If you want you can create your own custom opt-in/opt-out elements and handle user's choice by using the `optIn()` and `optOut()` method as shown here.
 
 <Accordion title="Custom elements implementation">
-    Great
+    Here is an example of how you can handle user's choice by using the `optIn()` and `optOut()` method.
+
+    ```javascript
+    document.getElementById('go-back-manage-settings-mellowtel').addEventListener('click', function() {
+        document.getElementById('opt-in-settings').style.display = 'none';
+        document.getElementById('opt-in-general').style.display = 'block';
+    });
+
+
+    document.getElementById('manage-settings-mellowtel').addEventListener('click', function() {
+        document.getElementById('opt-in-settings').style.display = 'block';
+        document.getElementById('opt-in-general').style.display = 'none';
+    });
+
+
+    document.getElementById('btn-opted-in').addEventListener('click', function() {
+        document.getElementById('opted-out-text-div').style.display = 'flex';
+        document.getElementById('bt_att_homepage_settings').style.backgroundColor = '#CFCFE6';
+    });
+
+
+    const toggleText = document.getElementById('text-opt');
+    const toggleButton = document.getElementById('big-toggle-div')
+
+    let isOpted = true;
+
+    function toggleButtonState() {
+        if (isOpted) {
+        toggleText.textContent = 'Opted out';
+        document.getElementById('opted-out-text-div').style.display = 'flex';
+        document.getElementById('bt_att_homepage_settings').style.backgroundColor = '#CFCFE6';
+        } else {
+        toggleText.textContent = 'Opted in';
+        document.getElementById('opted-out-text-div').style.display = 'none';
+        document.getElementById('bt_att_homepage_settings').style.backgroundColor = '#252861';
+        }
+        isOpted = !isOpted ;
+    }
+
+    toggleButton.addEventListener('click', toggleButtonState);
+
+    document.getElementById('agree-and-continue-mellowtel').addEventListener('click', function() {
+        document.getElementById('opt-in-general').style.display = 'none';
+    });
+
+    document.getElementById('save-settings-mellowtel').addEventListener('click', function() {
+        document.getElementById('opt-in-settings').style.display = 'none';
+        console.log('isOpted')
+        console.log(isOpted)
+    });
+    ```
 </Accordion>
 
 ## Example of a text to use for the update
