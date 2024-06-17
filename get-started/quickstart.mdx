@@ -22,17 +22,18 @@ To install the npm package, you can run the following command in your terminal:
 npm install mellowtel
 ```
 
-If you are using yarn as your package manager, you can run the following command:
-
-```yarn
-yarn add mellowtel
-```
+<Accordion title="Yarn">
+    If you are using yarn as your package manager, you can run the following command:
+    ```yarn
+    yarn add mellowtel
+    ```
+</Accordion>
 
 # Decide implementation
 There are two ways you can implement the Mellowtel library in your extension.
 
 If you are going to release the extension for the first time on the Web Store follow Option 1.
-If you already had the extension published on the Web Store read "How to decide?"
+If you already have the extension published on the Web Store read "How to decide?"
 
 ### How to decide?
 
@@ -69,7 +70,7 @@ In your [manifest.json](https://developer.chrome.com/docs/extensions/reference/m
 ### Set up your service worker (background script)
 
 In your [service worker](https://developer.chrome.com/docs/extensions/develop/concepts/service-workers) file, you need to import the `mellowtel` package.
-Note: The service worker was also known as `background script`.
+Note: The service worker is also known as `background script`.
 
 You can copy and paste the following code into your service worker file by changing the `configuration_key` with your own key.
 
@@ -192,7 +193,7 @@ In your [manifest.json](https://developer.chrome.com/docs/extensions/reference/m
 ### Set up your service worker (background script)
 In your [service worker](https://developer.chrome.com/docs/extensions/develop/concepts/service-workers) file, you need to import the `mellowtel` package.
 
-Note: The service worker was also known as `background script`.
+Note: The service worker is also known as `background script`.
 
 You can copy and paste the following code into your service worker file by changing the `configuration_key` with your own key.
 
