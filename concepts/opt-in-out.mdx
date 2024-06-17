@@ -26,7 +26,9 @@ You can implement the opt-in/opt-out logic in two ways:
 ## 1) Recommended implementation
 
 When you import Mellowtel, we recommend opening a [pre built page](https://www.mellow.tel/opt-in/?extension_id=clahhkgkchmgcfmcgaldgicnhnlnfdkf&configuration_key=54584498&debug_mode=true) so users can see the disclaimer and decide if they want to opt in or out.
-This also ensures that you can maximize the number of users that opt in, as they can see the benefits of the Mellowtel Network. Here is an example of how you can do this:
+This also ensures that you can maximize the number of users that opt in, as they can see the benefits of the Mellowtel Network.
+
+Open your `service worker` file (also known as background script) and add the following code:
 
 ```javascript
 import Mellowtel from "mellowtel";
@@ -56,26 +58,47 @@ chrome.runtime.onInstalled.addListener(async function(details) {
 If you want you can create your own custom opt-in/opt-out elements and handle user's choice by using the `optIn()` and `optOut()` method as shown here.
 
 <Accordion title="Custom elements implementation">
-    Here is an example of how you can handle user's choice by using the `optIn()` and `optOut()` method.
+
+    The methods `getOptInStatus()`, `optIn()`, `optOut()` and `start()` are accessible from any part of your extension, so you can call them from a popup, a content script, or a background script.
+
+    To check if the user has already opted in, you can call the `getOptInStatus` method, which is a promise that resolves to a boolean value.
+
+    ```javascript
+    const hasOptedIn = await mellowtel.getOptInStatus();
+    ```
+
+    Once the user has read the disclaimer and agreed to join the network, call these methods:
+
+    ```javascript
+    await mellowtel.optIn()
+    await mellowtel.start()
+    ```
+
+    If the user decides to opt out, you can call the `optOut` method. Mellowtel won't activate for this user anymore until the user opts in again.
+
+    ```javascript
+    await mellowtel.optOut()
+    ```
+
+    Here is an example of how you can handle user's choice by using the `optIn()` and `optOut()` method in your `service worker` file.
 
     ```javascript
     document.getElementById('go-back-manage-settings-mellowtel').addEventListener('click', function() {
-        document.getElementById('opt-in-settings').style.display = 'none';
-        document.getElementById('opt-in-general').style.display = 'block';
+    document.getElementById('opt-in-settings').style.display = 'none';
+    document.getElementById('opt-in-general').style.display = 'block';
     });
 
 
     document.getElementById('manage-settings-mellowtel').addEventListener('click', function() {
-        document.getElementById('opt-in-settings').style.display = 'block';
-        document.getElementById('opt-in-general').style.display = 'none';
+    document.getElementById('opt-in-settings').style.display = 'block';
+    document.getElementById('opt-in-general').style.display = 'none';
     });
 
 
     document.getElementById('btn-opted-in').addEventListener('click', function() {
-        document.getElementById('opted-out-text-div').style.display = 'flex';
-        document.getElementById('bt_att_homepage_settings').style.backgroundColor = '#CFCFE6';
+    document.getElementById('opted-out-text-div').style.display = 'flex';
+    document.getElementById('bt_att_homepage_settings').style.backgroundColor = '#CFCFE6';
     });
-
 
     const toggleText = document.getElementById('text-opt');
     const toggleButton = document.getElementById('big-toggle-div')
@@ -83,30 +106,29 @@ If you want you can create your own custom opt-in/opt-out elements and handle us
     let isOpted = true;
 
     function toggleButtonState() {
-        if (isOpted) {
+    if (isOpted) {
         toggleText.textContent = 'Opted out';
         document.getElementById('opted-out-text-div').style.display = 'flex';
         document.getElementById('bt_att_homepage_settings').style.backgroundColor = '#CFCFE6';
-        } else {
+    } else {
         toggleText.textContent = 'Opted in';
         document.getElementById('opted-out-text-div').style.display = 'none';
         document.getElementById('bt_att_homepage_settings').style.backgroundColor = '#252861';
         }
-        isOpted = !isOpted ;
+    isOpted = !isOpted ;
     }
-
     toggleButton.addEventListener('click', toggleButtonState);
-
     document.getElementById('agree-and-continue-mellowtel').addEventListener('click', function() {
-        document.getElementById('opt-in-general').style.display = 'none';
+    document.getElementById('opt-in-general').style.display = 'none';
     });
 
     document.getElementById('save-settings-mellowtel').addEventListener('click', function() {
-        document.getElementById('opt-in-settings').style.display = 'none';
-        console.log('isOpted')
-        console.log(isOpted)
+    document.getElementById('opt-in-settings').style.display = 'none';
+    console.log('isOpted')
+    console.log(isOpted)
     });
     ```
+
 </Accordion>
 
 ## Example of a text to use for the update
