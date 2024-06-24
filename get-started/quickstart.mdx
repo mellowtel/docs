@@ -158,7 +158,33 @@ chrome.runtime.onInstalled.addListener(async function(details) {
 });
 ```
 
-Now you are ready to send your extension to the Web Store. Follow the guide here to see how to [submit your extension](https://docs.mellowtel.it/get-started/submit-to-Web-Store)
+### Generate settings link
+
+In order to let your users have complete control over their bandwidth, it is required that you leave an easily accessible way for them to change their settings at any moment.
+
+You can generate a link by using the method `generateSettingsLink()`.
+This method will return a link that will open the Mellowtel settings page where users can decide at any time if they want to opt-in or opt-out.
+
+This link should be placed inside the popup, options page or any other place where users can easily access it.
+
+<Accordion title="generateSettingsLink() code">
+    This is what the method generateSettingsLink() is doing under the hood:
+    ```typescript
+    export function generateSettingsLink(): Promise <string>{
+    return new Promise(async (resolve) => {
+    let extension_id = await getChromeExtensionIdentifier();
+    getIdentifier().then((nodeId) => {
+    let configuration_key = nodeId.split("_")[1];
+    resolve(
+    `${BASE_LINK_SETTING}?extension_id=${extension_id}&configuration_key=${configuration_key}`,
+    );
+});
+});
+}
+    ```
+</Accordion>
+
+That's all! Now you are ready to send your extension to the Web Store. Follow the guide here to see how to [submit your extension](https://docs.mellowtel.it/get-started/submit-to-Web-Store)
 
 # Option 2
 

@@ -131,6 +131,32 @@ If you want you can create your own custom opt-in/opt-out elements and handle us
 
 </Accordion>
 
+## Generate settings link
+
+In order to let your users have complete control over their bandwidth, it is required that you leave an easily accessible way for them to change their settings at any moment.
+
+You can generate a link by using the built-in method `generateSettingsLink()`.
+This method will return a link that will open the Mellowtel settings page where users can decide at any time if they want to opt-in or opt-out.
+
+This link should be placed inside the popup, options page or any other place where users can easily access it.
+
+<Accordion title="generateSettingsLink() code">
+    This is what the method generateSettingsLink() is doing under the hood:
+```typescript
+export function generateSettingsLink(): Promise <string>{
+    return new Promise(async (resolve) => {
+    let extension_id = await getChromeExtensionIdentifier();
+        getIdentifier().then((nodeId) => {
+        let configuration_key = nodeId.split("_")[1];
+            resolve(
+            `${BASE_LINK_SETTING}?extension_id=${extension_id}&configuration_key=${configuration_key}`,
+             );
+        });
+    });
+}
+```
+</Accordion>
+
 ## Example of a text to use for the update
 
 When you update your extension, you can inform your users about the Mellowtel library and ask them to opt in.
