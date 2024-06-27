@@ -34,6 +34,11 @@ The declarativeNetRequest permission is required to strip certain headers (e.g. 
 The host permissions on all_urls are required to let declarativeNetRequest modify response headers on all URLs. This is necessary to strip certain headers (e.g. X-Frame headers) from some responses on the sub_frame level. This allows displaying websites in an iframe without running into issues related to cross-origin resource sharing (CORS). These headers are immediately restored after the response is processed.
 ```
 
+**Storage**:
+```txt
+The storage permissions is required to persist state specific to the extension and have a local logic to facilitate communications across the various parts of the extension.
+```
+
 ### Prepare images (optional)
 When you are sending your extension to the Web Store, you will need to provide images for the store listing. Here are the images you could send showing the Mellowtel library disclaimer.
 <Frame caption="Disclaimer">
