@@ -34,7 +34,7 @@
   ],
   "topbarCtaButton": {
     "name": "Get Started",
-    "url": "https://mellowtel.it/"
+    "url": "https://mellowtel.com/"
   },
   "navigation": [
     {
@@ -64,6 +64,6 @@
   ],
   "footerSocials": {
     "github": "https://github.com/mellowtel-inc/mellowtel-js",
-    "website": "https://mellowtel.it/"
+    "website": "https://mellowtel.com/"
   }
 }
