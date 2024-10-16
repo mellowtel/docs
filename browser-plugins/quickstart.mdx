@@ -10,7 +10,7 @@ Estimated time to complete: 5-7 minutes.
 # Requirements
 Before you start, make sure that:
 
-1) Your plugin is using [Manifest V3](https://developer.chrome.com/docs/extensions/develop/migrate/what-is-mv3). For firefox plugins, you can use Manifest V2 as well.
+1) Your plugin is using [Manifest V3](https://developer.chrome.com/docs/extensions/develop/migrate/what-is-mv3). For FireFox plugins, you can use Manifest V2 as well.
 2) Your code is organized in a compiled way, by using Webpack, Rollup, or other bundlers.
 If you don't have a bundler set up, first follow the guide [here](https://docs.mellowtel.com/guides/static-to-webpack)
 
@@ -170,11 +170,10 @@ This method will return a link that will open the Mellowtel settings page where 
 
 This link should be placed inside the popup, options page or any other place where users can easily access it.
 
-For example you can put it in a handleSettings() function like this:
+For example you can put it in a `openSettings()` function like this. You can call `openSettings()` on a button click or any other relevant event:
 
 ```javascript
-async function handleSettings(details) {
-    console.log("let users manage settings");
+async function openSettings() {
     try {
         // Generate and manage the settings link
         const settingsLink = await mellowtel.generateSettingsLink();

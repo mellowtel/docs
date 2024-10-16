@@ -44,10 +44,10 @@
       ]
     },
     {
-      "group": "Browser plugin",
+      "group": "Browser plugins",
       "pages": [
-        "browser-plugin/quickstart",
-        "browser-plugin/submit-to-Web-Store"
+        "browser-plugins/quickstart",
+        "browser-plugins/submit-to-web-store"
       ]
     },
     {
