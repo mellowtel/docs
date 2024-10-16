@@ -2,7 +2,7 @@
 sidebarTitle: 'Firefox integration'
 title: 'Setting Up Mellowtel with Firefox Extensions'
 icon: 'firefox'
----  
+---
 
 This guide will walk you through integrating Mellowtel into your Firefox extension, supporting both Manifest V2 and V3.
 
@@ -40,7 +40,10 @@ The `manifest.json` file needs specific configurations for Mellowtel to work pro
       "run_at": "document_start",
       "all_frames": true
     }
-  ]
+  ],
+  "browser_action": {
+    "default_popup": "popup.html"
+  }
 }
 ```
 
@@ -67,7 +70,10 @@ The `manifest.json` file needs specific configurations for Mellowtel to work pro
       "run_at": "document_start",
       "all_frames": true
     }
-  ]
+  ],
+  "action": {
+    "default_popup": "popup.html"
+  }
 }
 ```
 
@@ -107,4 +113,45 @@ import Mellowtel from "mellowtel";
 ```
 
 Again, replace `<your_configuration_key>` with your actual Mellowtel configuration key.
+
+## Popup for Mellowtel Settings
+
+To allow users to access Mellowtel settings easily, you should create a popup. Here's how to set it up:
+
+1. Create a `popup.html` file:
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Mellowtel Settings</title>
+</head>
+<body>
+  <h1>Mellowtel Settings</h1>
+  <button id="openSettings">Open Mellowtel Settings</button>
+  <script src="popup.js"></script>
+</body>
+</html>
+```
+
+2. Create a `popup.js` file:
+
+```javascript
+import Mellowtel from "mellowtel";
+
+const mellowtel = new Mellowtel("<your_configuration_key>");
+
+async function openSettings() {
+    try {
+        const settingsLink = await mellowtel.generateSettingsLink();
+        browser.tabs.create({ url: settingsLink });
+    } catch (error) {
+        console.error("Error generating settings link:", error);
+    }
+}
+
+document.getElementById('openSettings').addEventListener('click', openSettings);
+```
+
+Remember to replace `<your_configuration_key>` with your actual Mellowtel configuration key.
 
