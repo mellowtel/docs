@@ -58,7 +58,6 @@ In your [manifest.json](https://developer.chrome.com/docs/extensions/reference/m
 
   "permissions": [
     "storage",
-    "tabs",
     "declarativeNetRequest"
   ],
   "host_permissions": [
@@ -85,8 +84,9 @@ await mellowtel.initBackground();
 
 <Accordion title="Service worker code breakdown">
 Import the mellowtel package
+
 ```javascript
-import Mellowtel from "mellowtel";
+    import Mellowtel from "mellowtel";
 ```
 
 You can then use `Mellowtel(configuration_key, options?)` to create a new instance of the Mellowtel object. The Mellowtel object is your entrypoint to the rest of Mellowtel's SDK. Your `configuration_key` is required when calling this function, as it identifies your extension to Mellowtel. You can find your `configuration_key` in the [dashboard](https://www.mellowtel.it/mellowtel-dashboard/#home)
@@ -109,14 +109,15 @@ This content script should run in `all_frames` and `<all_urls>` at the `document
 We suggest creating a new content script (e.g. content_start_mellowtel.js) where you can copy and paste the following code.
 Change the `configuration_key` with your own key.
 
-    ```javascript
+```javascript
     import Mellowtel from "mellowtel";
     let mellowtel;
+
     (async () => {
-    mellowtel = new Mellowtel("<configuration_key>"); //Change here with your configuration key
-    await mellowtel.initContentScript();
+        mellowtel = new Mellowtel("<configuration_key>"); //Change here with your configuration key
+        await mellowtel.initContentScript();
     })();
-    ```
+```
 
 Then remember to add also this content script in your `manifest.json` file in the content_scripts section alongside any other content script you already have.
 You can copy and paste the following code by changing the `name_of_your_content_script.js` with the name you chose.
@@ -167,22 +168,22 @@ This method will return a link that will open the Mellowtel settings page where 
 
 This link should be placed inside the popup, options page or any other place where users can easily access it.
 
-<Accordion title="generateSettingsLink() code">
-    This is what the method generateSettingsLink() is doing under the hood:
-    ```typescript
-    export function generateSettingsLink(): Promise <string>{
-    return new Promise(async (resolve) => {
-    let extension_id = await getChromeExtensionIdentifier();
-    getIdentifier().then((nodeId) => {
-    let configuration_key = nodeId.split("_")[1];
-    resolve(
-    `${BASE_LINK_SETTING}?extension_id=${extension_id}&configuration_key=${configuration_key}`,
-    );
-});
-});
+For example you can put it in a handleSettings() function like this:
+
+```javascript
+async function handleSettings(details) {
+    console.log("let users manage settings");
+    try {
+        // Generate and manage the settings link
+        const settingsLink = await mellowtel.generateSettingsLink();
+        // Log the generated link for debugging
+        console.log("Generated Settings Link:", settingsLink);
+        // You can now use this link within a popup, options page, or any UI element
+    } catch (error) {
+        console.error("Error generating settings link:", error);
+    }
 }
-    ```
-</Accordion>
+```
 
 Perfect! Now you are ready to send your extension to the Web Store. Follow the guide here to see how to [submit your extension](https://docs.mellowtel.it/get-started/submit-to-Web-Store)
 

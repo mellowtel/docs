@@ -61,6 +61,13 @@
         "concepts/opt-in-out",
         "concepts/privacy"
       ]
+    },
+    {
+      "group": "Flutter",
+      "pages": [
+        "flutter/flutter-integration",
+        "flutter/submit-app"
+      ]
     }
   ],
   "footerSocials": {
