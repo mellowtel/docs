@@ -12,7 +12,7 @@ Before you start, make sure that:
 
 1) Your plugin is using [Manifest V3](https://developer.chrome.com/docs/extensions/develop/migrate/what-is-mv3). For firefox plugins, you can use Manifest V2 as well.
 2) Your code is organized in a compiled way, by using Webpack, Rollup, or other bundlers.
-If you don't have a bundler set up, first follow the guide [here](https://docs.mellowtel.it/guides/static-to-webpack)
+If you don't have a bundler set up, first follow the guide [here](https://docs.mellowtel.com/guides/static-to-webpack)
 
 # Install npm package
 
@@ -75,11 +75,14 @@ You can copy and paste the following code into your service worker file by chang
 
 ```javascript
 import Mellowtel from "mellowtel";
+
 let mellowtel;
+
 (async () => {
-mellowtel = new Mellowtel("<configuration_key>");
-await mellowtel.initBackground();
+    mellowtel = new Mellowtel("<configuration_key>"); // Replace with your configuration key
+    await mellowtel.initBackground();
 })();
+
 ```
 
 <Accordion title="Service worker code breakdown">
