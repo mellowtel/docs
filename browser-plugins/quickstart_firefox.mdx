@@ -1,0 +1,110 @@
+---
+sidebarTitle: 'Firefox integration'
+title: 'Setting Up Mellowtel with Firefox Extensions'
+icon: 'firefox'
+---  
+
+This guide will walk you through integrating Mellowtel into your Firefox extension, supporting both Manifest V2 and V3.
+
+## Installation
+
+First, install the Mellowtel npm package:
+
+```bash
+npm install mellowtel
+```
+
+## Manifest Configuration
+
+The `manifest.json` file needs specific configurations for Mellowtel to work properly. Here are the required parts for both Manifest V2 and V3:
+
+### Manifest V2
+
+```json
+{
+  "manifest_version": 2,
+  "permissions": [
+    "storage",
+    "<all_urls>",
+    "webRequest",
+    "webRequestBlocking"
+  ],
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": true
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content_start_mellowtel.js"],
+      "run_at": "document_start",
+      "all_frames": true
+    }
+  ]
+}
+```
+
+### Manifest V3
+
+```json
+{
+  "manifest_version": 3,
+  "permissions": [
+    "storage",
+    "declarativeNetRequest"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "scripts": ["background.js"],
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content_start_mellowtel.js"],
+      "run_at": "document_start",
+      "all_frames": true
+    }
+  ]
+}
+```
+
+## Background Script Setup
+
+Create a file named `background.js` with the following content:
+
+```javascript
+import Mellowtel from "mellowtel";
+
+let mellowtel;
+
+(async () => {
+    mellowtel = new Mellowtel("<your_configuration_key>");
+    await mellowtel.initBackground();
+})();
+
+browser.runtime.onInstalled.addListener(async function(details) {
+    console.log("Extension Installed or Updated");
+    await mellowtel.generateAndOpenOptInLink();
+});
+```
+
+Replace `<your_configuration_key>` with your actual Mellowtel configuration key.
+
+## Content Script Setup
+
+Create a file named `content_start_mellowtel.js` with the following content:
+
+```javascript
+import Mellowtel from "mellowtel";
+
+(async () => {
+    const mellowtel = new Mellowtel("<your_configuration_key>");
+    await mellowtel.initContentScript();
+})();
+```
+
+Again, replace `<your_configuration_key>` with your actual Mellowtel configuration key.
+
