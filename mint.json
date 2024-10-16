@@ -40,9 +40,21 @@
     {
       "group": "Get Started",
       "pages": [
-        "get-started/welcome",
-        "get-started/quickstart",
-        "get-started/submit-to-Web-Store"
+        "get-started/welcome"
+      ]
+    },
+    {
+      "group": "Browser plugin",
+      "pages": [
+        "browser-plugin/quickstart",
+        "browser-plugin/submit-to-Web-Store"
+      ]
+    },
+    {
+      "group": "Flutter",
+      "pages": [
+        "flutter/flutter-integration",
+        "flutter/submit-app"
       ]
     },
     {
@@ -60,13 +72,6 @@
         "concepts/rate-limiting",
         "concepts/opt-in-out",
         "concepts/privacy"
-      ]
-    },
-    {
-      "group": "Flutter",
-      "pages": [
-        "flutter/flutter-integration",
-        "flutter/submit-app"
       ]
     }
   ],
