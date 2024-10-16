@@ -110,13 +110,12 @@ We suggest creating a new content script (e.g. content_start_mellowtel.js) where
 Change the `configuration_key` with your own key.
 
 ```javascript
-    import Mellowtel from "mellowtel";
-    let mellowtel;
+import Mellowtel from "mellowtel";
 
-    (async () => {
-        mellowtel = new Mellowtel("<configuration_key>"); //Change here with your configuration key
-        await mellowtel.initContentScript();
-    })();
+(async () => {
+    const mellowtel = new Mellowtel("<configuration_key>"); // Replace with your configuration key
+    await mellowtel.initContentScript();
+})();
 ```
 
 Then remember to add also this content script in your `manifest.json` file in the content_scripts section alongside any other content script you already have.
