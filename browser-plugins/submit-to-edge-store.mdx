@@ -1,0 +1,89 @@
+---
+sidebarTitle: 'Submit to Microsoft Edge Add-ons'
+title: 'Submit extension to Microsoft Edge Add-ons'
+icon: 'edge'
+---
+
+After importing Mellowtel into your extension as outlined in the [Quick Start](https://docs.mellowtel.com/browser-plugin/quickstart) guide, follow these steps to submit your extension to the Microsoft Edge Add-ons store.
+
+## Prepare Your Extension
+
+1. **Develop and Test**: Ensure you have a working prototype of your extension tested in Microsoft Edge.
+
+2. **Create a ZIP File**: Package your extension files into a ZIP archive, including:
+   - The extension manifest
+   - All required images and files
+
+3. **Review Manifest**: Check that the following fields in your manifest are accurate:
+   - `Name`
+   - `Description`
+
+## Submit to Microsoft Edge Add-ons
+
+1. **Create a Developer Account**:
+   - If you don't have one, create a developer account on [Partner Center](https://partner.microsoft.com/dashboard/microsoftedge/public/login?ref=addons).
+   - For detailed instructions on creating a developer account, see the [Developer registration guide](https://docs.microsoft.com/microsoft-edge/extensions-chromium/publish/create-dev-account).
+
+2. **Start a New Submission**:
+   - Go to the developer dashboard and select "Create new extension".
+
+3. **Upload Your Package**:
+   - On the Packages page, upload your extension ZIP file.
+   - Wait for validation and resolve any issues if necessary.
+
+   ![Upload package screen](/images/edge/packages.png)
+   
+   The upload screen allows you to drag and drop your ZIP file or browse to select it. Ensure your package contains:
+   1. The manifest file with details like name, version, short description, permissions, and default language.
+   2. Images and other files that your extension requires.
+
+4. **Provide Availability Details**:
+   - Set visibility (Public or Hidden).
+   - Choose markets for distribution.
+
+   ![Availability settings](/images/edge/availability.png)
+   
+   In the Availability section:
+   - Choose between Public (anyone can find and use the extension) or Hidden (only those with the store listing URL can use it).
+   - Select the markets where your extension will be available. By default, it's set to all current and future markets.
+
+5. **Set Extension Properties**:
+   - Select a category.
+   - Specify privacy policy requirements.
+   - Add website URL and support contact details.
+   - Indicate if there's mature content.
+
+   ![Properties section](/images/edge/properties.png)
+   
+   In the Properties section:
+   - Choose the category that best describes your extension.
+   - Indicate if your extension accesses, collects, or transmits personal information.
+   - Provide a privacy policy URL if required.
+   - Add your website URL and support contact details.
+
+6. **Add Store Listing Details**:
+   - Provide a description (up to 10,000 characters).
+   - Upload an Extension Store logo (300x300 pixels recommended).
+   - Add optional promotional tiles and screenshots.
+   - Include search terms to improve discoverability.
+
+7. **Complete Submission**:
+   - Add any notes for certification.
+   - Click "Publish" to submit your extension.
+
+## After Submission
+
+- Microsoft will review your extension, which can take up to seven business days.
+- You'll be notified when the review is complete.
+- If issues are found, address them and resubmit.
+
+## Tips for a Successful Submission
+
+- Follow the [Developer policies for Microsoft Edge Add-ons](https://docs.microsoft.com/microsoft-edge/extensions-chromium/store-policies/developer-policies).
+- Provide clear, concise descriptions and high-quality images.
+- Ensure your privacy policy is comprehensive if you collect any user data.
+- Respond promptly to any reviewer comments or questions.
+
+Remember, integrating Mellowtel should not affect your submission process, but ensure it complies with Microsoft's policies regarding data collection and user privacy.
+
+For more detailed information, visit the [Microsoft Edge Add-ons Developer Documentation](https://docs.microsoft.com/microsoft-edge/extensions-chromium/publish/publish-extension).
