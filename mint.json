@@ -57,8 +57,8 @@
     {
       "group": "Flutter",
       "pages": [
-        "flutter/flutter-integration",
-        "flutter/submit-app"
+        "flutter/setup",
+        "flutter/user-consent"
       ]
     },
     {
