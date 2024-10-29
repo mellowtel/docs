@@ -39,6 +39,12 @@ The consent dialog by default opens when the `start()` method is called if the u
 ```dart
 await mellowtel.start(
     ... // other configuration
+    onOptIn: () async {
+        // Enable the incentives if user has provided consent. 
+    }, 
+    onOptOut: () async {
+        // Disable the incentives if user has denied/revoked consent.
+    },
     showConsentDialog: true
 );
 ```
@@ -62,10 +68,10 @@ Use the `showConsentSettingsPage()` method to open the consent settings dialog.
 await mellowtel.showConsentSettingsPage(
     context,
     onOptIn: () async {
-    // Handle enabling services when consent is provided.
-    },
+        // Enable the incentives if user has provided consent. 
+    }, 
     onOptOut: () async {
-    // Handle disabling services if consent is denied.
+        // Disable the incentives if user has denied/revoked consent.
     },
 );
 ```
