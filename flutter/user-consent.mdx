@@ -1,0 +1,102 @@
+---
+title: 'User Consent'
+description: 'Users can decide at any time if they want to be part of the Mellowtel Network or not.'
+icon: 'toggle_on'
+---
+
+## Introduction
+
+In order to activate Mellowtel, users must give their explicit consent. The package provides a way to opt in or opt out. The core idea is that since it's their unused Internet bandwidth, they should decide if they want to share it or not.
+
+Users can provide their consent via a consent settings dialog.
+
+### Consent Dialog Configuration
+
+The consent dialog is a crucial part of the Mellowtel integration. It ensures that users are fully informed and provide explicit consent before sharing their unused internet bandwidth.
+
+You can define the consent dialog configuration when creating an instance of `Mellowtel`
+
+```dart
+import 'package:mellowtel/mellowtel.dart';
+
+final Mellowtel mellowtel = Mellowtel(
+    "your_configuration_key",
+    dialogConfiguration: const ConsentDialogConfiguration(
+        appName: 'Your App Name',
+        incentive: 'Earn rewards by sharing your unused internet'
+        appIcon: 'assets/logo.png', // Optional app icon displayed in the consent dialog. Helps build trust.
+        acceptButtonText: 'Yes, let's go!', // Optional Text for the accept button ("Yes" by default).
+        declineButtonText: 'Not now', // Optional Text for the decline button ("No" by default).
+        dialogTextOverride: 'Custom consent message', // Optional custom or localized consent dialog message.
+    ),
+);
+```
+
+#### Opening the consent Dialog
+
+The consent dialog by default opens when the `start()` method is called if the user has not provided their preference yet.
+
+```dart
+await mellowtel.start(
+    ... // other configuration
+    onOptIn: () async {
+        // Enable the incentives if user has provided consent. 
+    }, 
+    onOptOut: () async {
+        // Disable the incentives if user has denied/revoked consent.
+    },
+    showConsentDialog: true
+);
+```
+
+You can set `showConsentDialog` to false if you'd like to manage where the dialog shows up. We recommend you to call `start` method at two different locations:
+
+1. **On App Launch** with `showConsentDialog: false` to begin operating if permission is already provided.
+2. **After First "Aha" Moment:** with `showConsentDialog: true` o request consent after users experience the app's value.
+
+This approach ensures Mellowtel starts operating immediately while obtaining user consent at an optimal time.
+
+### Consent Settings Dialog
+
+Mellowtel ensures full control and privacy for your users. Your users can change their consent at any time from the Consent Settings Page. You may provide it as an option within the settings page of your app.
+
+#### Show Consent Settings Page
+
+Use the `showConsentSettingsPage()` method to open the consent settings dialog.
+
+```dart
+await mellowtel.showConsentSettingsPage(
+    context,
+    onOptIn: () async {
+        // Enable the incentives if user has provided consent. 
+    }, 
+    onOptOut: () async {
+        // Disable the incentives if user has denied/revoked consent.
+    },
+);
+```
+
+<img src="https://raw.githubusercontent.com/mellowtel-inc/mellowtel-flutter/main/assets/settings-popup.png" width="300px" />
+
+### Manual Methods (Not Recommended)
+
+In addition to the consent dialog and settings page, you can manually manage the user's consent using the `optIn()` and `optOut()` methods.
+
+#### Opt-In
+
+Manually mark the user as opted in.
+```dart
+await mellowtel.optIn();
+```
+#### Opt-Out
+
+Manually mark the user as opted out.
+```dart
+await mellowtel.optOut();
+```
+#### Check Consent Status
+
+You can check the user's current consent status using the `checkConsent()` method.
+```dart
+bool? hasOptedIn = await mellowtel.checkConsent();
+```
