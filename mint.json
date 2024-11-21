@@ -51,7 +51,8 @@
         "browser-plugins/submit-to-web-store",
         "browser-plugins/submit-to-firefox-store",
         "browser-plugins/submit-to-edge-store",
-        "browser-plugins/submit-to-safari-store"
+        "browser-plugins/submit-to-safari-store",
+        "browser-plugins/feedback-page"
       ]
     },
     {
