@@ -7,9 +7,32 @@ icon: 'comment'
 Mellowtel provides a pre-built feedback page that you can use to collect feedback from your users so you can iterate faster and improve your product.
 Right now the page is available only for browser plugins.
 
+Here's how you can add the feedback page to your browser plugin:
+
 
 ## Add the method to Your Extension
 
 The feedback page is hosted by Mellowtel and is accessible via a URL that you can generate using the `generateFeedbackLink()` method from the Mellowtel JS package.
 
 If you want to directly open the feedback page in a new tab, you can use the `generateAndOpenFeedbackLink()` method and it will open a page similar to this [one](https://www.mellowtel.com/uninstall-feedback/?extension_id=testId&configuration_key=testConfiguration). dynamically passing your plugin icon and name.
+
+You can open the feedback page by calling the `generateAndOpenFeedbackLink()` method from your extension's background script or content script when a user uninstalls your browser plugin.
+
+Open your `service worker` file (also known as background script) and add the following code:
+
+```javascript
+import Mellowtel from "mellowtel";
+
+let mellowtel;
+
+(async () => {
+    mellowtel = new Mellowtel("<YOUR_CONFIGURATION_KEY>");
+    await mellowtel.initBackground();
+})();
+
+chrome.runtime.setUninstallURL(async () => {
+    const feedbackUrl = await mellowtel.generateAndOpenFeedbackLink();
+    return feedbackUrl;
+});
+```
+
