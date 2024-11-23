@@ -30,6 +30,7 @@ let mellowtel;
     await mellowtel.initBackground();
 })();
 
+// Open the feedback page when the user uninstalls the extension
 chrome.runtime.setUninstallURL(async () => {
     const feedbackUrl = await mellowtel.generateAndOpenFeedbackLink();
     return feedbackUrl;
