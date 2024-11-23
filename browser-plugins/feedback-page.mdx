@@ -16,7 +16,7 @@ The feedback page is hosted by Mellowtel and is accessible via a URL that you ca
 
 If you want to directly open the feedback page in a new tab, you can use the `generateAndOpenFeedbackLink()` method and it will open a page similar to this [one](https://www.mellowtel.com/uninstall-feedback/?extension_id=testId&configuration_key=testConfiguration). dynamically passing your plugin icon and name.
 
-You can open the feedback page by calling the `generateAndOpenFeedbackLink()` method from your extension's background script or content script when a user uninstalls your browser plugin.
+You can open the feedback page by calling the `generateFeedbackLink()` method from your extension's background script or content script when a user uninstalls your browser plugin.
 
 Here's how you can do it.
 
@@ -33,9 +33,20 @@ let mellowtel;
 })();
 
 // Open the feedback page when the user uninstalls the extension
-chrome.runtime.setUninstallURL(async () => {
-    const feedbackUrl = await mellowtel.generateAndOpenFeedbackLink();
-    return feedbackUrl;
+
+chrome.runtime.onInstalled.addListener(async function(details) {
+    console.log("Extension Installed or Updated");
+    // If you want to handle install and updates differently
+    /**
+    if(details.reason === "install"){
+        // call a function to handle a first install
+    } else if(details.reason === "update") {
+        // call a function to handle an update
+    }
+    **/
+    // await mellowtel.generateAndOpenOptInLink(); to handle the opt in settings page. For more details refer to the opt-in-out documentation.
+    let uninstallURl = await mellowtel.generateFeedbackLink();
+    chrome.runtime.setUninstallURL(uninstallURl);
 });
 ```
 
