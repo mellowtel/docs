@@ -45,7 +45,7 @@ chrome.runtime.onInstalled.addListener(async function(details) {
     }
     **/
     // await mellowtel.generateAndOpenOptInLink(); to handle the opt in settings page. For more details refer to the opt-in-out documentation.
-    let uninstallURl = await mellowtel.generateFeedbackLink();
+    const uninstallURl = await mellowtel.generateFeedbackLink();
     chrome.runtime.setUninstallURL(uninstallURl);
 });
 ```
