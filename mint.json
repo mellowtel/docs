@@ -18,15 +18,15 @@
       "to": "#9563FF"
     }
   },
+  "modeToggle": {
+    "default": "light",
+    "isHidden": false
+  },
   "feedback": {
     "suggestEdit": true,
     "raiseIssue": true
   },
   "topbarLinks": [
-    {
-      "name": "Github",
-      "url": "https://github.com/mellowtel-inc/mellowtel-js"
-    },
     {
       "name": "NPM",
       "url": "https://www.npmjs.com/package/mellowtel"
@@ -34,8 +34,25 @@
   ],
   "topbarCtaButton": {
     "name": "Get Started",
-    "url": "https://mellowtel.com/"
+    "url": "https://www.mellowtel.com/mellowtel-auth/"
   },
+  "primaryTab": {
+    "name": "Welcome"
+  },
+  "tabs": [
+    {
+      "name": "Browser Plugins",
+      "url": "browser-plugins"
+    },
+    {
+      "name": "Flutter",
+      "url": "flutter"
+    },
+    {
+      "name": "Electron",
+      "url": "electron"
+    }
+  ],
   "navigation": [
     {
       "group": "Get Started",
@@ -43,31 +60,44 @@
         "get-started/welcome"
       ]
     },
+
     {
-      "group": "Browser plugins",
+      "group": "Browser Plugins SDK",
       "pages": [
-        "browser-plugins/quickstart",
-        "browser-plugins/quickstart_firefox",
-        "browser-plugins/submit-to-web-store",
-        "browser-plugins/submit-to-firefox-store",
-        "browser-plugins/submit-to-edge-store",
-        "browser-plugins/submit-to-safari-store",
-        "browser-plugins/feedback-page"
+        {
+          "group": "Integrate Mellowtel",
+          "pages": ["browser-plugins/quickstart", "browser-plugins/quickstart_firefox", "browser-plugins/feedback-page", "browser-plugins/static-to-webpack"
+          ]
+        },
+        {
+          "group": "Guides",
+          "pages": ["browser-plugins/guides/plasmo", "browser-plugins/guides/web-extension-framework"
+          ]
+        },
+        {
+          "group": "Submit to Stores",
+          "pages": ["browser-plugins/submit-to-chrome-store",
+            "browser-plugins/submit-to-firefox-store",
+            "browser-plugins/submit-to-edge-store",
+            "browser-plugins/submit-to-safari-store"
+          ]
+        }
+
+
       ]
     },
     {
-      "group": "Flutter",
+      "group": "Flutter SDK",
       "pages": [
         "flutter/setup",
         "flutter/user-consent"
       ]
     },
     {
-      "group": "Guides",
+      "group": "Electron SDK",
       "pages": [
-        "guides/static-to-webpack",
-        "guides/web-extension-framework",
-        "guides/plasmo"
+        "electron/setup",
+        "electron/user-consent"
       ]
     },
     {
@@ -80,8 +110,26 @@
       ]
     }
   ],
+  "anchors": [
+    {
+      "name": "Discord",
+      "icon": "discord",
+      "url": "https://discord.com/invite/txAZp4MSDe"
+    },
+    {
+      "name": "Website",
+      "icon": "globe",
+      "url": "https://www.mellowtel.com/mellowtel-auth/"
+    },
+    {
+      "name": "Concepts",
+      "icon": "graduation-cap",
+      "url": "concepts"
+    }
+  ],
+
   "footerSocials": {
-    "github": "https://github.com/mellowtel-inc/mellowtel-js",
+    "github": "https://github.com/orgs/mellowtel-inc/repositories",
     "website": "https://mellowtel.com/"
   }
 }

@@ -1,12 +1,13 @@
 ---
 title: 'Rate Limiting'
-description: 'Protect your extension users from a slow browsing experience'
+description: 'Protect your users from a slow browsing experience'
 icon: 'stopwatch'
 ---
 
 ## Introduction
-To perform a request, Mellowtel opens a credentialless iframe. Iframes are very performant (they are used for most ad networks like Google AdSense) and secure thanks to their credentialless nature. This means that the request is not tied to any user's session and is not able to access any user's data (such as cookies, local storage, etc).
+
+To perform a request, Mellowtel opens a sandboxed environment that is very performant (it's the same used for most ad networks like Google AdSense) and secure thanks to their credentialless nature. This means that the request is not tied to any user's session and is not able to access any user's data (such as cookies, local storage, etc).
 
 ## Implementation
 
-To avoid slowing down a user's browsing experience, Mellowtel automatically applies a rate limit to how many requests every node in the network can accept. This limit varies based on bandwidth speed, geolocation and overall availability, but it always ensures that the user's browsing experience is not affected.
+To avoid slowing down a user's browsing experience, Mellowtel automatically applies a rate limit to how many requests a single node can accept. This limit varies based on bandwidth speed, geolocation and overall availability, but it always ensures that the user's browsing experience is not affected.

@@ -1,6 +1,6 @@
 ---
 title: 'Opt In / Opt Out'
-description: 'Users can decide at any time if they want to be part of the Mellowtel Network or not.'
+description: 'Users can decide at any time if they want to share their bandwidth or not.'
 icon: 'signature'
 ---
 ## Introduction
@@ -26,7 +26,9 @@ You can implement the opt-in/opt-out logic in two ways:
 ## 1) Recommended implementation
 
 When you import Mellowtel, we recommend opening a [pre built page](https://www.mellow.tel/opt-in/?extension_id=clahhkgkchmgcfmcgaldgicnhnlnfdkf&configuration_key=54584498&debug_mode=true) so users can see the disclaimer and decide if they want to opt in or out.
-This also ensures that you can maximize the number of users that opt in, as they can see the benefits of the Mellowtel Network.
+This also ensures that you can maximize the number of users that opt in, as they can see the benefits of Mellowtel.
+
+If you are creating a browser plugin you can follow these instructions.
 
 Open your `service worker` file (also known as background script) and add the following code:
 
