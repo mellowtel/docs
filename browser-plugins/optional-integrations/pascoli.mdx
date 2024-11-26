@@ -8,9 +8,9 @@ Mellowtel provides an optional feature that allows you to handle more requests a
 
 This is how you can enable the Pascoli feature in your browser plugin.
 
-## Create an html file named `pascoli.html`
+## Create an HTML file named `pascoli.html`
 
-In the root directory of your project, create a file named `pascoli.html` and add the following code:
+Create a file named `pascoli.html` and add the following code. Make sure this file gets included in your final build (/dist) directory:
 
 ```html
 <!DOCTYPE html>
@@ -37,9 +37,11 @@ In the root directory of your project, create a file named `pascoli.html` and ad
 </html>
 ```
 
+<Warning>Make sure to modify the `src` attribute of the script tag to point to the correct location of your `pascoli.js` file in the final build</Warning>
+
 ## Create a js file named `pascoli.js`
 
-In the src directory, or wherever you have js files, create a file named `pascoli.js` and add the following code:
+In the src directory, or wherever you have js files, create a file named `pascoli.js` and add the following code. Also here, make sure this file gets included in your final build (/dist) directory:
 
 ```javascript
 import Mellowtel from "mellowtel";
