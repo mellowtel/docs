@@ -114,8 +114,7 @@
       "pages": [
         {
           "group": "Integrate Mellowtel",
-          "pages": ["electron/quickstart", "electron/user-consent"
-          ]
+          "pages": ["electron/quickstart"]
         },
         {
           "group": "NPM",
