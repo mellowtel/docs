@@ -1,9 +1,162 @@
 ---
 sidebarTitle: 'Plasmo'
-title: 'Implementing Mellowtel in an extension built with Plasmo'
-icon: 'wand-magic-sparkles'
+title: 'Integrate Mellowtel in your Plasmo extension'
+description: 'A quick guide on how to integrate Mellowtel in your Plasmo browser extension'
+icon: puzzle
 ---
 
-You can follow this guide to set up Mellowtel with an extension developed in the Plasmo framework
+Here you will learn how to monetize your Plasmo browser extension by integrating Mellowtel.
+Estimated time to complete: 5-15 minutes.
 
-[Plasmo](https://www.plasmo.com/) is a framework that allows you to quickly build and deploy browser extensions that work on all major browsers.
+# Manual Installation
+
+If you have an existing Plasmo project, follow these steps to add Mellowtel integration.
+
+### Install Dependencies
+
+First, add the Mellowtel package to your project:
+
+```bash
+pnpm add mellowtel
+```
+
+### Configure Package.json
+
+Update your `package.json` to include the required permissions:
+
+```json
+{
+  "manifest": {
+    "permissions": [
+      "storage",
+      "declarativeNetRequest"
+    ],
+    "host_permissions": ["<all_urls>"]
+  }
+}
+```
+
+### Set Environment Variables
+
+Create or update your `.env` file:
+
+```plaintext
+PLASMO_PUBLIC_MELLOWTEL=your_mellowtel_api_key_here
+```
+
+<Warning>
+    Make sure to replace `your_mellowtel_api_key_here` with your actual Mellowtel API key from the dashboard.
+</Warning>
+
+# Implementation
+
+### Background Script Setup
+
+Create or modify your background script (`background.ts`):
+
+```typescript
+import Mellowtel from "mellowtel"
+
+let mellowtel;
+
+(async () => {
+  mellowtel = new Mellowtel(process.env.PLASMO_PUBLIC_MELLOWTEL)
+  await mellowtel.initBackground()
+})()
+
+// Handle installation and updates
+chrome.runtime.onInstalled.addListener(async function (details) {
+  console.log("Extension Installed or Updated", details)
+  await mellowtel.generateAndOpenOptInLink()
+})
+```
+
+### Content Script Setup
+
+Create or modify your content script (`content.ts`):
+
+```typescript
+import Mellowtel from "mellowtel"
+import type { PlasmoCSConfig } from "plasmo"
+
+let mellowtel;
+
+// Configure content script behavior
+export const config: PlasmoCSConfig = {
+  matches: ["<all_urls>"],
+  all_frames: true,
+  run_at: "document_start"
+}
+
+const start = async () => {
+  mellowtel = new Mellowtel(process.env.PLASMO_PUBLIC_MELLOWTEL)
+  const resp = await mellowtel.initContentScript()
+}
+
+start()
+```
+
+### Popup Implementation
+
+Create or modify your popup component (`popup.tsx`):
+
+```typescript
+import Mellowtel from "mellowtel"
+
+const Popup: React.FC = () => {
+  const handleMellowtelSettings = async () => {
+    const mellowtel = new Mellowtel(process.env.PLASMO_PUBLIC_MELLOWTEL)
+    const link = await mellowtel.generateSettingsLink()
+    chrome.tabs.create({ url: link })
+  }
+
+  return (
+    <div>
+      <button onClick={handleMellowtelSettings}>
+        Change Mellowtel Settings
+      </button>
+    </div>
+  )
+}
+
+export default Popup
+```
+
+# Development Commands
+
+Use these commands during development:
+
+```bash
+# Start development server
+pnpm dev
+
+# Build for production
+pnpm build
+
+# Package the extension
+pnpm package
+```
+
+<Accordion title="Development Best Practices">
+    1. Always test your extension thoroughly in both development and production environments
+    2. Monitor the console for any Mellowtel-related warnings or errors
+    3. Test the opt-in flow from a user's perspective
+    4. Verify that the settings link works correctly
+    5. Ensure all permissions are properly configured
+</Accordion>
+
+# Testing
+
+Before submitting your extension:
+
+1. Test the installation flow
+2. Verify the opt-in process works
+3. Check that the settings page is accessible
+4. Confirm all permissions are working correctly
+5. Test on different browsers if targeting multiple platforms
+
+<Note>
+    For additional information about Mellowtel's features and API, visit the [Quickstart](https://docs.mellowtel.com/browser-plugins/quickstart).
+</Note>
+
+Need help? Join our [Discord community](https://discord.com/invite/txAZp4MSDe) for support.
