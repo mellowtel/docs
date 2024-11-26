@@ -16,14 +16,14 @@ Before you start, make sure that:
 
 # Install npm package
 
-To install the npm package, you can run the following command in your terminal:
+To install the npm package, run the following command in your terminal:
 
 ```npm
 npm install mellowtel-electron
 ```
 
 <Accordion title="Yarn">
-    If you are using yarn as your package manager, you can run the following command:
+    If you are using yarn as your package manager, run the following command:
     ```yarn
     yarn add mellowtel-electron
     ```
@@ -37,52 +37,126 @@ There are two ways you can implement the library in your Electron application:
 
 ## Option 1: Using Built-in Consent Dialog
 
-### TypeScript Implementation
-
-First, import the necessary dependencies and initialize Mellowtel:
+First, import the necessary dependencies and initialize Mellowtel in your main process (usually the file called: `main.ts`):
 
 ```typescript
+// 1. importing necessary dependencies
+import { app, BrowserWindow } from 'electron';
 import Mellowtel from 'mellowtel-electron';
-import { BrowserWindow } from 'electron';
 
-const mellowtel = new Mellowtel('<configuration_key>'); // Replace with your configuration key
+function createWindow(): BrowserWindow {
+  // Create the browser window
+  const win: BrowserWindow = new BrowserWindow({
+    width: 800,
+    height: 600,
+    webPreferences: {
+      nodeIntegration: true
+    }
+  });
+
+  // Load the index.html file
+  win.loadFile('index.html');
+  return win
+}
+
+// When the app is ready, create the window
+app.whenReady().then(async () => {
+  let win = createWindow();
+
+  // 2. Initialize Mellowtel
+  const mellowtel: Mellowtel = new Mellowtel('<configuration_key>'); // Replace with your configuration key
+
+  // 3. (View the next section for more details) Request consent and initialize Mellowtel
+  /*
+  // Request consent with custom reward message
+  const consent = await mellowtel.requestConsent(window, "Get Premium Free");
+
+  if (consent) {
+      // Handle successful opt-in (e.g., activate premium features)
+  }
+
+  // Initialize Mellowtel
+  await mellowtel.init();
+
+  */
+
+  // 4. (View the next section for more details) Enable from the settings page.
+  // await mellowtel.showConsentSettings(win);
+
+  // On macOS, create a new window when clicking the dock icon if no windows are open
+  app.on('activate', (): void => {
+    if (BrowserWindow.getAllWindows().length === 0) {
+      createWindow();
+    }
+  });
+});
+
+// Quit the app when all windows are closed (except on macOS)
+app.on('window-all-closed', (): void => {
+  if (process.platform !== 'darwin') {
+    app.quit();
+  }
+});
+
 ```
 
 Then, request user consent and initialize the service:
 
 ```typescript
-const window = new BrowserWindow();
+// 1. importing necessary dependencies
+import { app, BrowserWindow } from 'electron';
+import Mellowtel from 'mellowtel-electron';
 
-// Request consent with custom reward message
-const consent = await mellowtel.requestConsent(window, "Get Premium Free");
+function createWindow(): BrowserWindow {
+  // Create the browser window
+  const win: BrowserWindow = new BrowserWindow({
+    width: 800,
+    height: 600,
+    webPreferences: {
+      nodeIntegration: true
+    }
+  });
 
-if (consent) {
-    // Handle successful opt-in (e.g., activate premium features)
+  // Load the index.html file
+  win.loadFile('index.html');
+  return win
 }
 
-// Initialize Mellowtel
-await mellowtel.init();
-```
+// When the app is ready, create the window
+app.whenReady().then(async () => {
+  let win = createWindow();
 
-<Accordion title="JavaScript Implementation">
-    ```javascript
-    const Mellowtel = require('mellowtel-electron').default;
-    const { BrowserWindow } = require('electron');
+  // 2. Initialize Mellowtel
+  const mellowtel: Mellowtel = new Mellowtel('<configuration_key>'); // Replace with your configuration key
 
-    const mellowtel = new Mellowtel('<configuration_key>'); // Replace with your configuration key
+  // 3. Request consent with custom reward message
+  const consent = await mellowtel.requestConsent(window, "Get Premium Free");
 
-    const window = new BrowserWindow();
+  if (consent) {
+      // Handle successful opt-in (e.g., activate premium features)
+  }
 
-    // Request consent with custom reward message
-    mellowtel.requestConsent(window, "Get Premium Free")
-    .then(consent => {
-        if (consent) {
-        // Handle successful opt-in (e.g., activate premium features)
+  // Initialize Mellowtel
+  await mellowtel.init();
+
+  // 4. (View the next section for more details) Enable from the settings page.
+  // await mellowtel.showConsentSettings(win);
+
+  // On macOS, create a new window when clicking the dock icon if no windows are open
+  app.on('activate', (): void => {
+    if (BrowserWindow.getAllWindows().length === 0) {
+      createWindow();
     }
-        return mellowtel.init();
-    });
-    ```
-</Accordion>
+  });
+});
+
+// Quit the app when all windows are closed (except on macOS)
+app.on('window-all-closed', (): void => {
+  if (process.platform !== 'darwin') {
+    app.quit();
+  }
+});
+```
 
 ### Implementing Settings Access
 
@@ -96,8 +170,6 @@ await mellowtel.showConsentSettings(window);
 ## Option 2: Custom Consent Interface
 
 If you prefer to create your own consent interface, you can manually manage the opt-in/opt-out process.
-
-### TypeScript Implementation
 
 ```typescript
 import Mellowtel from 'mellowtel-electron';
@@ -119,28 +191,6 @@ async function handleOptOut() {
 }
 ```
 
-<Accordion title="JavaScript Implementation">
-    ```javascript
-    const Mellowtel = require('mellowtel-electron').default;
-
-    const mellowtel = new Mellowtel('<configuration_key>');
-
-    // Check current opt-in status
-    const isOptedIn = mellowtel.getOptInStatus();
-
-    // Manual opt-in
-    if (!isOptedIn) {
-        mellowtel.optIn()
-            .then(() => mellowtel.init());
-    }
-
-    // Manual opt-out
-    function handleOptOut() {
-        return mellowtel.optOut();
-    }
-    ```
-</Accordion>
-
 # Best Practices
 
 1) Always initialize Mellowtel after obtaining user consent
@@ -149,6 +199,8 @@ async function handleOptOut() {
 4) Use meaningful reward messages that align with your application's features
 
 # API Reference
+
+The Mellowtel library for Electron provides the following methods. You can use this reference to understand how to interact with the library:
 
 ### `new Mellowtel(configurationKey: string)`
 Creates a new instance of the Mellowtel client.
