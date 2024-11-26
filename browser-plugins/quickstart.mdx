@@ -55,6 +55,7 @@ If you are releasing the extension for the first time on the Web Store or you ar
 In your [manifest.json](https://developer.chrome.com/docs/extensions/reference/manifest) file modify the `permissions` and `host_permissions` sections like this:
 
 ```json
+{
 
   "permissions": [
     "storage",
@@ -62,8 +63,9 @@ In your [manifest.json](https://developer.chrome.com/docs/extensions/reference/m
   ],
   "host_permissions": [
     "\u003Call_urls\u003E"
-  ],
+  ]
 
+}
 ```
 
 ### Set up your service worker (background script)
@@ -82,7 +84,6 @@ let mellowtel;
     mellowtel = new Mellowtel("<configuration_key>"); // Replace with your configuration key
     await mellowtel.initBackground();
 })();
-
 ```
 
 <Accordion title="Service worker code breakdown">
@@ -125,15 +126,16 @@ Then remember to add also this content script in your `manifest.json` file in th
 You can copy and paste the following code by changing the `name_of_your_content_script.js` with the name you chose.
 
 ```json
-
+{
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["<name_of_your_content_script.js>"], //Change here with the name of your content script
+      "js": ["<name_of_your_content_script.js>"], // <-- Change here with the name of your content script
       "run_at": "document_start",
       "all_frames": true
     }
-]
+  ]
+}
 ```
 
 ### Set up opt-in/opt-out logic
