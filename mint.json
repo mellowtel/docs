@@ -66,7 +66,7 @@
       "pages": [
         {
           "group": "Integrate Mellowtel",
-          "pages": ["browser-plugins/quickstart", "browser-plugins/quickstart_firefox", "browser-plugins/feedback-page", "browser-plugins/static-to-webpack"
+          "pages": ["browser-plugins/quickstart", "browser-plugins/quickstart_firefox",  "browser-plugins/static-to-webpack"
           ]
         },
         {
@@ -78,13 +78,18 @@
           ]
         },
         {
-          "group": "NPM",
-          "pages": ["browser-plugins/npm/npm"
+          "group": "Frameworks",
+          "pages": ["browser-plugins/guides/plasmo", "browser-plugins/guides/web-extension-framework"
           ]
         },
         {
-          "group": "Frameworks",
-          "pages": ["browser-plugins/guides/plasmo", "browser-plugins/guides/web-extension-framework"
+            "group": "Optional Integrations",
+            "pages": ["browser-plugins/optional-integrations/feedback-page", "browser-plugins/optional-integrations/pascoli"
+            ]
+        },
+        {
+          "group": "NPM",
+          "pages": ["browser-plugins/npm/npm"
           ]
         }
       ]
@@ -92,8 +97,11 @@
     {
       "group": "Flutter SDK",
       "pages": [
-        "flutter/setup",
-        "flutter/user-consent",
+        {
+          "group": "Integrate Mellowtel",
+          "pages": ["flutter/quickstart", "flutter/user-consent"
+          ]
+        },
         {
           "group": "Pub.dev Package",
           "pages": ["flutter/pub-dev/pub-dev"
@@ -104,8 +112,11 @@
     {
       "group": "Electron SDK",
       "pages": [
-        "electron/setup",
-        "electron/user-consent",
+        {
+          "group": "Integrate Mellowtel",
+          "pages": ["electron/quickstart", "electron/user-consent"
+          ]
+        },
         {
           "group": "NPM",
           "pages": ["electron/npm/npm-electron"

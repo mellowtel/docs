@@ -1,0 +1,75 @@
+---
+sidebarTitle: 'Earn more'
+title: 'Earn more by enabling an additional feature in Mellowtel'
+icon: 'phoenix-framework'
+---
+
+Mellowtel provides an optional feature that allows you to handle more requests and therefore earn more. This feature is called "Pascoli".
+
+This is how you can enable the Pascoli feature in your browser plugin.
+
+## Create an html file named `pascoli.html`
+
+In the root directory of your project, create a file named `pascoli.html` and add the following code:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" />
+    <style>
+        html,
+        body {
+            padding: 0;
+            margin: 0;
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            background-color: transparent;
+        }
+    </style>
+    <script type="module" crossorigin src="/pascoli.js"></script>
+</head>
+<body>
+</body>
+</html>
+```
+
+## Create a js file named `pascoli.js`
+
+In the src directory, or wherever you have js files, create a file named `pascoli.js` and add the following code:
+
+```javascript
+import M from "mellowtel";
+
+let m;
+
+(async () => {
+    m = new M("54584498", {
+        disableLogs: true,
+        MAX_DAILY_RATE: 5000
+    });
+    await m.initPascoli();
+})();
+```
+
+## Add pascoli.html to your manifest.json
+
+In the `manifest.json` file, add the `pascoli.html` file as web_accessible_resources:
+
+```json
+{
+
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "pascoli.html"
+      ],
+      "matches": [ "<all_urls>" ]
+    }
+  ]
+
+}
+```
