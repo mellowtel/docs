@@ -28,8 +28,8 @@
   },
   "topbarLinks": [
     {
-      "name": "NPM",
-      "url": "https://www.npmjs.com/package/mellowtel"
+      "name": "Github",
+      "url": "https://github.com/orgs/mellowtel-inc/repositories"
     }
   ],
   "topbarCtaButton": {
@@ -45,12 +45,12 @@
       "url": "browser-plugins"
     },
     {
-      "name": "Flutter",
-      "url": "flutter"
-    },
-    {
       "name": "Electron",
       "url": "electron"
+    },
+    {
+      "name": "Flutter",
+      "url": "flutter"
     }
   ],
   "navigation": [
@@ -70,34 +70,47 @@
           ]
         },
         {
-          "group": "Guides",
-          "pages": ["browser-plugins/guides/plasmo", "browser-plugins/guides/web-extension-framework"
-          ]
-        },
-        {
           "group": "Submit to Stores",
           "pages": ["browser-plugins/submit-to-chrome-store",
             "browser-plugins/submit-to-firefox-store",
             "browser-plugins/submit-to-edge-store",
             "browser-plugins/submit-to-safari-store"
           ]
+        },
+        {
+          "group": "NPM",
+          "pages": ["browser-plugins/npm/npm"
+          ]
+        },
+        {
+          "group": "Frameworks",
+          "pages": ["browser-plugins/guides/plasmo", "browser-plugins/guides/web-extension-framework"
+          ]
         }
-
-
       ]
     },
     {
       "group": "Flutter SDK",
       "pages": [
         "flutter/setup",
-        "flutter/user-consent"
+        "flutter/user-consent",
+        {
+          "group": "Pub.dev Package",
+          "pages": ["flutter/pub-dev/pub-dev"
+          ]
+        }
       ]
     },
     {
       "group": "Electron SDK",
       "pages": [
         "electron/setup",
-        "electron/user-consent"
+        "electron/user-consent",
+        {
+          "group": "NPM",
+          "pages": ["electron/npm/npm-electron"
+          ]
+        }
       ]
     },
     {
@@ -117,7 +130,7 @@
       "url": "https://discord.com/invite/txAZp4MSDe"
     },
     {
-      "name": "Website",
+      "name": "Dashboard",
       "icon": "globe",
       "url": "https://www.mellowtel.com/mellowtel-auth/"
     },
