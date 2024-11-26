@@ -42,16 +42,16 @@ In the root directory of your project, create a file named `pascoli.html` and ad
 In the src directory, or wherever you have js files, create a file named `pascoli.js` and add the following code:
 
 ```javascript
-import M from "mellowtel";
+import Mellowtel from "mellowtel";
 
-let m;
+let mellowtel;
 
 (async () => {
-    m = new M("54584498", {
+    mellowtel = new Mellowtel("54584498", {
         disableLogs: true,
         MAX_DAILY_RATE: 5000
     });
-    await m.initPascoli();
+    await mellowtel.initPascoli();
 })();
 ```
 
