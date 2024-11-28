@@ -1,14 +1,16 @@
 ---
 sidebarTitle: 'Earn more'
 title: 'Earn more by enabling an additional feature in Mellowtel'
-icon: 'phoenix-framework'
+icon: 'feather'
 ---
 
 Mellowtel provides an optional feature that allows you to handle more requests and therefore earn more. This feature is called "Pascoli".
 
-This is how you can enable the Pascoli feature in your browser plugin.
+Below are instructions for enabling the Pascoli feature in your browser plugin, with options for both standard and Plasmo framework implementations.
 
-## Create an HTML file named `pascoli.html`
+## Standard Implementation
+
+### 1. Create an HTML file named `pascoli.html`
 
 Create a file named `pascoli.html` and add the following code. Make sure this file gets included in your final build (/dist) directory:
 
@@ -37,11 +39,13 @@ Create a file named `pascoli.html` and add the following code. Make sure this fi
 </html>
 ```
 
-<Warning>Make sure to modify the `src` attribute of the script tag to point to the correct location of your `pascoli.js` file in the final build</Warning>
+<Warning>
+    Make sure to modify the `src` attribute of the script tag to point to the correct location of your `pascoli.js` file in the final build
+</Warning>
 
-## Create a js file named `pascoli.js`
+### 2. Create a JavaScript file named `pascoli.js`
 
-In the src directory, or wherever you have js files, create a file named `pascoli.js` and add the following code. Also here, make sure this file gets included in your final build (/dist) directory:
+In the src directory, or wherever you have js files, create a file named `pascoli.js` and add the following code. Ensure this file gets included in your final build (/dist) directory:
 
 ```javascript
 import Mellowtel from "mellowtel";
@@ -49,21 +53,17 @@ import Mellowtel from "mellowtel";
 let mellowtel;
 
 (async () => {
-    mellowtel = new Mellowtel("54584498", {
-        disableLogs: true,
-        MAX_DAILY_RATE: 5000
-    });
+    mellowtel = new Mellowtel("<configuration_key>"); // Replace with your configuration key
     await mellowtel.initPascoli();
 })();
 ```
 
-## Add pascoli.html to your manifest.json
+### 3. Update manifest.json
 
-In the `manifest.json` file, add the `pascoli.html` file as web_accessible_resources:
+Add the `pascoli.html` file to your `manifest.json` as web_accessible_resources:
 
 ```json
 {
-
   "web_accessible_resources": [
     {
       "resources": [
@@ -72,6 +72,68 @@ In the `manifest.json` file, add the `pascoli.html` file as web_accessible_resou
       "matches": [ "<all_urls>" ]
     }
   ]
-
 }
 ```
+
+## Plasmo Framework Implementation
+
+If you're using the Plasmo framework, follow these alternative steps:
+
+### 1. Create PascoliPage Component
+
+Create a file named `pascoli.tsx` in your `tabs` directory. If you don't have a `tabs` directory, create one. More info on `tabs` in the Plasmo framework can be found [here](https://docs.plasmo.com/framework/tab-pages). Add the following code to the `pascoli.tsx` file:
+
+```typescript
+import { useEffect } from "react"
+import Mellowtel from "mellowtel"
+
+function PascoliPage() {
+    useEffect(() => {
+        const initMellowtel = async () => {
+            const mellowtel = new Mellowtel("<configuration_key>"); // Replace with your configuration key
+            await mellowtel.initPascoli()
+        }
+
+        initMellowtel().catch(console.error)
+    }, [])
+
+    return (
+        <div
+            style={{
+                padding: 0,
+                margin: 0,
+                height: "100vh",
+                width: "100vw",
+                overflow: "hidden",
+                backgroundColor: "transparent"
+            }}>
+        </div>
+    )
+}
+
+export default PascoliPage
+```
+
+### 2. Update package.json for Plasmo
+
+Add the following to your `package.json` file:
+
+```json
+{
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "tabs/pascoli.html"
+      ],
+      "matches": [ "<all_urls>" ]
+    }
+  ]
+}
+```
+
+## Update initContentScript
+
+For both implementations, modify your `initContentScript` method in the content script to include the correct path to the Pascoli file:
+
+- For standard implementation: `initContentScript("pascoli.html");`
+- For Plasmo framework: `initContentScript("tabs/pascoli.html");`
