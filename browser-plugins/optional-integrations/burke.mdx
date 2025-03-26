@@ -1,0 +1,56 @@
+---
+sidebarTitle: 'Earn more - Burke'
+title: 'Earn more by enabling an additional feature: Burke'
+icon: 'circle-nodes'
+---
+
+Mellowtel provides an optional feature that allows you to handle more requests and therefore earn more. This feature is called "Burke".
+
+Below are instructions for enabling the Burke feature in your browser plugin, with options for both standard and Plasmo framework implementations.
+
+## Standard Implementation
+
+### 1. Create a JavaScript file named `burke.js`
+
+In the src directory, or wherever you have js files, create a file named `burke.js` and add the following code. Ensure this file gets included in your final build (/dist) directory:
+
+```javascript
+import Mellowtel from "mellowtel";
+
+let mellowtel;
+
+(async () => {
+    mellowtel = new Mellowtel("<configuration_key>"); // Replace with your configuration key
+    await mellowtel.initBurke();
+})();
+```
+
+### 3. Update manifest.json
+
+Add the `burke.js` file to your `manifest.json` as web_accessible_resources:
+
+```json
+{
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "burke.js"
+      ],
+      "matches": [ "<all_urls>" ]
+    }
+  ]
+}
+```
+
+## Plasmo Framework Implementation
+
+The implementation is the same as the standard implementation. If you have any issues, contact us via Discord.
+
+## Update initContentScript
+
+For both implementations, modify your `initContentScript` method in the content script to include the correct path to the Burke file:
+
+- For standard implementation: `initContentScript("", "burke.js");`
+- For Plasmo framework: `initContentScript("", "burke.js");`
+
+If you also have `Pascoli` enabled, the first parameter should be the name of the `pascoli.html` file.
