@@ -84,7 +84,7 @@
         },
         {
             "group": "Optional Integrations",
-            "pages": ["browser-plugins/optional-integrations/feedback-page", "browser-plugins/optional-integrations/pascoli", "browser-plugins/optional-integrations/burke"
+            "pages": ["browser-plugins/optional-integrations/feedback-page", "browser-plugins/optional-integrations/pascoli", "browser-plugins/optional-integrations/meucci"
             ]
         },
         {

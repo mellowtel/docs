@@ -1,0 +1,207 @@
+---
+sidebarTitle: 'Earn more - Meucci'
+title: 'Earn more by enabling an additional feature: Meucci'
+icon: 'circle-nodes'
+---
+
+<Warning>
+    This feature requires Mellowtel version 1.6.2 or higher. This is a breaking change compared to previous versions.
+</Warning>
+
+Mellowtel provides an optional feature that allows you to handle more requests and therefore earn more. This feature is called "Meucci".
+
+## Installation
+
+First, install the required npm package using your preferred package manager:
+
+### Using npm
+```bash
+npm install @mellowtel/module-meucci
+```
+
+### Using yarn
+```bash
+yarn add @mellowtel/module-meucci
+```
+
+### Using pnpm
+```bash
+pnpm add @mellowtel/module-meucci
+```
+
+Below are instructions for enabling the Meucci feature in your browser plugin, with options for both standard and Plasmo framework implementations.
+
+## Standard Implementation
+
+### 1. Create a JavaScript file named `meucci.js`
+
+In the src directory, or wherever you have js files, create a file named `meucci.js` and add the following code. Ensure this file gets included in your final build (/dist) directory:
+
+```javascript
+import ModuleMeucci from "@mellowtel/module-meucci";
+
+let moduleMeucci;
+
+(async () => {
+    moduleMeucci = new ModuleMeucci();
+    await moduleMeucci.init();
+})();
+```
+
+### 2. Update manifest.json
+
+Add the `meucci.js` file to your `manifest.json` as web_accessible_resources:
+
+```json
+{
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "meucci.js"
+      ],
+      "matches": [ "<all_urls>" ]
+    }
+  ]
+}
+```
+
+## Plasmo Framework Implementation
+
+If you're using the Plasmo framework, follow these alternative steps:
+
+### 1. Create a TypeScript file named `meucci.ts`
+
+In the src directory, or wherever you have ts files, create a file named `meucci.ts` and add the following code:
+
+```typescript
+import ModuleMeucci from "@mellowtel/module-meucci";
+
+let moduleMeucci;
+
+(async () => {
+    moduleMeucci = new ModuleMeucci();
+    await moduleMeucci.init();
+})();
+```
+
+### 2. Create Build Script
+
+Create a `build-meucci.js` file in your project root with the following content:
+
+```javascript
+const esbuild = require('esbuild')
+const fs = require('fs')
+const path = require('path')
+
+// Function to wait for a directory to exist
+const waitForDirectory = async (dir, timeout = 10000) => {
+  const start = Date.now()
+  while (!fs.existsSync(dir)) {
+    if (Date.now() - start > timeout) {
+      throw new Error(`Timeout waiting for directory: ${dir}`)
+    }
+    await new Promise(resolve => setTimeout(resolve, 100))
+  }
+}
+
+// Create the build function
+async function buildMeucci() {
+  // Build the bundle
+  await esbuild.build({
+    entryPoints: ['src/meucci.ts'], // TODO: REPLACE with the path to your meucci.ts file
+    bundle: true,
+    outfile: 'meucci.bundled.js',
+    platform: 'browser',
+    format: 'iife',
+    minify: true,
+    target: ['es2020'],
+    define: {
+      'process.env.NODE_ENV': '"production"'
+    }
+  })
+
+  // Read the bundled file
+  const bundledContent = fs.readFileSync('meucci.bundled.js', 'utf8')
+
+  // Copy to dev and prod directories
+  const directories = [ 
+    'build/chrome-mv3-dev',
+    'build/chrome-mv3-prod',
+    'build/firefox-mv2-dev',
+    'build/firefox-mv2-prod',
+    'build/safari-mv2-dev',
+    'build/safari-mv2-prod',
+    'build/opera-mv3-dev',
+    'build/opera-mv3-prod'
+  ] // TODO: REPLACE with the paths to your dev and prod directories
+
+  // Process all directories concurrently
+  await Promise.all(directories.map(async (dir) => {
+    try {
+      console.log(`Waiting for directory: ${dir}`)
+      await waitForDirectory(dir)
+      // Write the bundled file
+      fs.writeFileSync(path.join(dir, 'meucci.js'), bundledContent)
+      console.log(`Added meucci.js to ${dir}`)
+    } catch (err) {
+      console.log(`Skipping ${dir} - ${err.message}`)
+    }
+  }))
+
+  // Clean up the temporary file
+  fs.unlinkSync('meucci.bundled.js')
+}
+
+buildMeucci().catch(err => {
+  console.error(err)
+  process.exit(1)
+})
+```
+
+### 3. Update package.json
+
+Add the following to your `package.json` file:
+
+```json
+{
+  "scripts": {
+    "build:meucci": "node build-meucci.js"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "meucci.js"
+      ],
+      "matches": [ "<all_urls>" ]
+    }
+  ]
+}
+```
+
+You can either:
+1. Run the build script manually after your main build: `npm run build:meucci`
+2. Or append it to your existing build script with `&`: `"build": "your-existing-build-command & npm run build:meucci"`
+
+This will ensure the Meucci file is properly bundled and copied to all build directories in the correct Plasmo structure.
+
+## Update initContentScript
+
+For both implementations, modify your `initContentScript` method in the content script to include the correct path to the Meucci file:
+
+```typescript
+// For standard implementation
+await initContentScript({
+    meucciFilePath: "meucci.js"
+});
+
+// For Plasmo framework
+await initContentScript({
+    meucciFilePath: "meucci.js"
+});
+
+// If you also have Pascoli enabled
+await initContentScript({
+    pascoliFilePath: "pascoli.html",
+    meucciFilePath: "meucci.js"
+});
+```
