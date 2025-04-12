@@ -35,7 +35,9 @@ Below are instructions for enabling the Meucci feature in your browser plugin, w
 
 ### 1. Create a JavaScript file named `meucci.js`
 
-In the src directory, or wherever you have js files, create a file named `meucci.js` and add the following code. Ensure this file gets included in your final build (/dist) directory:
+In the src directory, or wherever you have js files, create a file named `meucci.js` and add the following code. Ensure this file gets included in your final build (/dist) directory.
+
+If you followed the initial [webpack config setup](/browser-plugins/static-to-webpack), you can simply add this file to the `entry` object in your webpack config.
 
 ```javascript
 import ModuleMeucci from "@mellowtel/module-meucci";
@@ -48,7 +50,28 @@ let moduleMeucci;
 })();
 ```
 
-### 2. Update manifest.json
+### 2. Update your webpack config
+
+Make sure your final build directory includes the `meucci.js` file.
+
+If you followed the initial [webpack config setup](/browser-plugins/static-to-webpack), you can simply add this file to the `entry` object in your webpack config.
+
+```javascript
+module.exports = {
+    // ...
+    entry: {
+        // background: path.join(__dirname, 'src', 'background.js'),
+        // popup: path.join(__dirname, 'src', 'popup.js'),
+        // content_script: path.join(__dirname, 'src', 'content_script.js'), ...
+        // pascoli: path.join(__dirname, 'src', 'pascoli.js'),
+        meucci: path.join(__dirname, 'src', 'meucci.js'),
+        // ...
+    },
+    // ...
+}
+```
+
+### 3. Update manifest.json
 
 Add the `meucci.js` file to your `manifest.json` as web_accessible_resources:
 
@@ -193,15 +216,22 @@ For both implementations, modify your `initContentScript` method in the content 
 await initContentScript({
     meucciFilePath: "meucci.js"
 });
+```
 
+For Plasmo framework, you can use the following:
+
+```typescript
 // For Plasmo framework
 await initContentScript({
     meucciFilePath: "meucci.js"
 });
+```
 
-// If you also have Pascoli enabled
+If you also have Pascoli enabled, you can use the following:
+
+```typescript
 await initContentScript({
-    pascoliFilePath: "pascoli.html",
+    pascoliFilePath: "pascoli.html", // or "tabs/pascoli.html" if using Plasmo framework
     meucciFilePath: "meucci.js"
 });
 ```

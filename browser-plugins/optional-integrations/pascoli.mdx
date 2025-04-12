@@ -34,8 +34,9 @@ Below are instructions for enabling the Pascoli feature in your browser plugin, 
 ## Standard Implementation
 
 ### 1. Create an HTML file named `pascoli.html`
+Create a file named `pascoli.html` and add the following code. Make sure this file gets included in your final build (/dist) directory. 
 
-Create a file named `pascoli.html` and add the following code. Make sure this file gets included in your final build (/dist) directory:
+If you followed the initial [webpack config setup](/browser-plugins/static-to-webpack), you can simply add this file to the `public` directory as `pascoli.html`
 
 ```html
 <!DOCTYPE html>
@@ -68,7 +69,9 @@ Create a file named `pascoli.html` and add the following code. Make sure this fi
 
 ### 2. Create a JavaScript file named `pascoli.js`
 
-In the src directory, or wherever you have js files, create a file named `pascoli.js` and add the following code. Ensure this file gets included in your final build (/dist) directory:
+In the src directory, or wherever you have js files, create a file named `pascoli.js` and add the following code. Ensure this file gets included in your final build (/dist) directory.
+
+If you followed the initial [webpack config setup](/browser-plugins/static-to-webpack), you can simply add this file to the `entry` object in your webpack config.
 
 ```javascript
 import ModulePascoli from "@mellowtel/module-pascoli";
@@ -81,7 +84,28 @@ let modulePascoli;
 })();
 ```
 
-### 3. Update manifest.json
+### 3. Update your webpack config
+
+Make sure your final build directory includes the `pascoli.html` and `pascoli.js` files.
+
+Add the following to your webpack config to ensure `pascoli.js` is included in the build:
+
+```javascript
+module.exports = {
+    mode: 'development', // Use 'production' for production builds
+    entry: {
+        // background: path.join(__dirname, 'src', 'background.js'),
+        // popup: path.join(__dirname, 'src', 'popup.js'),
+        // content_script: path.join(__dirname, 'src', 'content_script.js'), ...
+        pascoli: path.join(__dirname, 'src', 'pascoli.js'),
+    },
+    // ...
+}
+```
+
+`pascoli.html` should be included in your build directory as well automatically if you followed the initial [webpack config setup](/browser-plugins/static-to-webpack) and added it to the `public` directory.
+
+### 4. Update manifest.json
 
 Add the `pascoli.html` file to your `manifest.json` as web_accessible_resources:
 
@@ -163,7 +187,11 @@ For both implementations, modify your `initContentScript` method in the content 
 await initContentScript({
     pascoliFilePath: "pascoli.html"
 });
+```
 
+For Plasmo framework, you can use the following:
+
+```typescript
 // For Plasmo framework
 await initContentScript({
     pascoliFilePath: "tabs/pascoli.html"
