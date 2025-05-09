@@ -99,7 +99,7 @@
       "pages": [
         {
           "group": "Integrate Mellowtel",
-          "pages": ["flutter/quickstart", "flutter/user-consent"
+          "pages": ["flutter/quickstart", "flutter/user-consent", "flutter/windows"
           ]
         },
         {
