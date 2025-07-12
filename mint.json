@@ -51,6 +51,18 @@
     {
       "name": "Flutter",
       "url": "flutter"
+    },
+    {
+      "name": "Mobile App",
+      "url": "mobile-app"
+    },
+    {
+      "name": "Website",
+      "url": "website"
+    },
+    {
+      "name": "Followers",
+      "url": "followers"
     }
   ],
   "navigation": [
@@ -120,6 +132,33 @@
           "group": "NPM",
           "pages": ["electron/npm/npm-electron"
           ]
+        }
+      ]
+    },
+    {
+      "group": "Mobile App SDK",
+      "pages": [
+        {
+          "group": "Integrate Mellowtel",
+          "pages": ["mobile-app/quickstart"]
+        }
+      ]
+    },
+    {
+      "group": "Website SDK",
+      "pages": [
+        {
+          "group": "Integrate Mellowtel",
+          "pages": ["website/quickstart"]
+        }
+      ]
+    },
+    {
+      "group": "Followers SDK",
+      "pages": [
+        {
+          "group": "Integrate Mellowtel",
+          "pages": ["followers/quickstart"]
         }
       ]
     },
