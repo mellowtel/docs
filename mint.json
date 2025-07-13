@@ -45,6 +45,14 @@
       "url": "browser-plugins"
     },
     {
+      "name": "Website",
+      "url": "website"
+    },
+    {
+      "name": "Followers",
+      "url": "followers"
+    },
+    {
       "name": "Electron",
       "url": "electron"
     },
@@ -55,14 +63,6 @@
     {
       "name": "Mobile App",
       "url": "mobile-app"
-    },
-    {
-      "name": "Website",
-      "url": "website"
-    },
-    {
-      "name": "Followers",
-      "url": "followers"
     }
   ],
   "navigation": [
@@ -107,16 +107,20 @@
       ]
     },
     {
+      "group": "Website SDK",
+      "pages": [
+        {
+          "group": "Integrate Mellowtel",
+          "pages": ["website/quickstart"]
+        }
+      ]
+    },
+    {
       "group": "Flutter SDK",
       "pages": [
         {
           "group": "Integrate Mellowtel",
-          "pages": ["flutter/quickstart", "flutter/user-consent", "flutter/windows"
-          ]
-        },
-        {
-          "group": "Pub.dev Package",
-          "pages": ["flutter/pub-dev/pub-dev"
+          "pages": ["flutter/quickstart"
           ]
         }
       ]
@@ -127,11 +131,6 @@
         {
           "group": "Integrate Mellowtel",
           "pages": ["electron/quickstart"]
-        },
-        {
-          "group": "NPM",
-          "pages": ["electron/npm/npm-electron"
-          ]
         }
       ]
     },
@@ -144,15 +143,7 @@
         }
       ]
     },
-    {
-      "group": "Website SDK",
-      "pages": [
-        {
-          "group": "Integrate Mellowtel",
-          "pages": ["website/quickstart"]
-        }
-      ]
-    },
+
     {
       "group": "Followers SDK",
       "pages": [
