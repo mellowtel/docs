@@ -6,13 +6,13 @@ icon: 'toggle-on'
 
 ## Introduction
 
-In order to activate Mellowtel, users must give their explicit consent. The package provides a way to opt in or opt out. The core idea is that since it's their unused Internet bandwidth, they should decide if they want to share it or not.
+In order to activate Mellowtel, users must give their explicit consent. The package provides a way to opt in or opt out. The core idea is that since it's their Internet bandwidth, they should decide if they want to share it or not.
 
 Users can provide their consent via a consent settings dialog.
 
 ### Consent Dialog Configuration
 
-The consent dialog is a crucial part of the Mellowtel integration. It ensures that users are fully informed and provide explicit consent before sharing their unused internet bandwidth.
+The consent dialog is a crucial part of the Mellowtel integration. It ensures that users are fully informed and provide explicit consent before sharing their internet bandwidth.
 
 You can define the consent dialog configuration when creating an instance of `Mellowtel`
 
@@ -23,7 +23,7 @@ final Mellowtel mellowtel = Mellowtel(
     "your_configuration_key",
     dialogConfiguration: const ConsentDialogConfiguration(
         appName: 'Your App Name',
-        incentive: 'Earn rewards by sharing your unused internet'
+        incentive: 'Earn rewards by sharing your internet'
         appIcon: 'assets/logo.png', // Optional app icon displayed in the consent dialog. Helps build trust.
         acceptButtonText: "Yes, let's go!", // Optional Text for the accept button ("Yes" by default).
         declineButtonText: 'Not now', // Optional Text for the decline button ("No" by default).

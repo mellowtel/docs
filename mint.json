@@ -53,12 +53,8 @@
       "url": "followers"
     },
     {
-      "name": "Electron",
-      "url": "electron"
-    },
-    {
-      "name": "Flutter",
-      "url": "flutter"
+      "name": "Desktop App",
+      "url": "desktop-app"
     },
     {
       "name": "Mobile App",
@@ -116,21 +112,11 @@
       ]
     },
     {
-      "group": "Flutter SDK",
+      "group": "Desktop App SDK",
       "pages": [
         {
           "group": "Integrate Mellowtel",
-          "pages": ["flutter/quickstart"
-          ]
-        }
-      ]
-    },
-    {
-      "group": "Electron SDK",
-      "pages": [
-        {
-          "group": "Integrate Mellowtel",
-          "pages": ["electron/quickstart"]
+          "pages": ["desktop-app/quickstart"]
         }
       ]
     },
