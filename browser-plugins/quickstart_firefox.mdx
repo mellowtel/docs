@@ -8,10 +8,10 @@ This guide will walk you through integrating Mellowtel into your Firefox extensi
 
 ## Installation
 
-First, install the Mellowtel npm package:
+First, install the Mellowtel Lite (`mellowtel-lite`) npm package. Please note that for Firefox you can only import the `mellowtel-lite` package to stay compliant with the browser's policies regarding ancillary user data:
 
 ```bash
-npm install mellowtel
+npm install mellowtel-lite
 ```
 
 ## Manifest Configuration
@@ -81,7 +81,7 @@ The `manifest.json` file needs specific configurations for Mellowtel to work pro
 Create a file named `background.js` with the following content:
 
 ```javascript
-import Mellowtel from "mellowtel";
+import Mellowtel from "mellowtel-lite";
 
 let mellowtel;
 
@@ -103,7 +103,7 @@ Replace `<your_configuration_key>` with your actual Mellowtel configuration key.
 Create a file named `content_start_mellowtel.js` with the following content:
 
 ```javascript
-import Mellowtel from "mellowtel";
+import Mellowtel from "mellowtel-lite";
 
 (async () => {
     const mellowtel = new Mellowtel("<your_configuration_key>");
@@ -136,7 +136,7 @@ To allow users to access Mellowtel settings easily, you should create a popup. H
 2. Create a `popup.js` file:
 
 ```javascript
-import Mellowtel from "mellowtel";
+import Mellowtel from "mellowtel-lite";
 
 const mellowtel = new Mellowtel("<your_configuration_key>");
 

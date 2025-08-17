@@ -74,7 +74,11 @@
       "pages": [
         {
           "group": "Integrate Mellowtel",
-          "pages": ["browser-plugins/quickstart", "browser-plugins/quickstart_firefox",  "browser-plugins/static-to-webpack"
+          "pages": [
+            "browser-plugins/quickstart",
+            "browser-plugins/chrome_edge",
+            "browser-plugins/quickstart_firefox",
+            "browser-plugins/static-to-webpack"
           ]
         },
         {
