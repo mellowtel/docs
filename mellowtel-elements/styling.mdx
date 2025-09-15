@@ -1,0 +1,162 @@
+---
+sidebarTitle: 'Styling Elements'
+title: 'Style Mellowtel Elements'
+icon: palette
+---
+
+Here you will see how to customize Mellowtel Elements appearance using built-in styling options and CSS container positioning.
+Container styling gives you full control over layout and positioning, while package styling options control the element appearance.
+
+## Package Styling Options
+
+Mellowtel Elements package provides built-in styling options that allow you to customize the appearance of your elements without writing custom CSS. You can control colors, dimensions, and visual properties directly through the configuration object.
+
+```javascript
+const styles = {
+  textColor: '#FFFFFF',        // Text color (hex format)
+  backgroundColor: '#4CAF50',  // Background color (hex format)
+  radius: 8,                   // Border radius in pixels
+  width: 200,                  // Width in pixels (50-300 range)
+  height: 50                   // Height in pixels (20-200 range)
+};
+```
+
+### Example
+
+```javascript
+// Create a green opt-in button
+await mellowtel.createElement('opt-in-container', {
+  type: 'opt-in',
+  styles: {
+    textColor: '#FFFFFF',
+    backgroundColor: '#10B981',
+    radius: 12,
+    width: 180,
+    height: 45
+  }
+});
+```
+
+## Container Positioning
+
+Style the container divs to position elements:
+
+```css
+/* Basic positioning */
+.mellowtel-container {
+  display: flex;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+/* Fixed positioning */
+#opt-in-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+}
+
+/* Responsive layout */
+.mellowtel-elements {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  padding: 20px;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .mellowtel-container {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+```
+
+### Complete Styling Example
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        .mellowtel-wrapper {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px;
+            border-radius: 12px;
+            margin: 20px;
+        }
+        
+        .mellowtel-elements {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .element-container {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+    <div class="mellowtel-wrapper">
+        <h2>Mellowtel Elements</h2>
+        <div class="mellowtel-elements">
+            <div class="element-container">
+                <div id="opt-in-container"></div>
+            </div>
+            <div class="element-container">
+                <div id="opt-out-container"></div>
+            </div>
+            <div class="element-container">
+                <div id="settings-container"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        import { MellowtelElements } from 'mellowtel-elements';
+        
+        const mellowtel = new MellowtelElements('your-extension-id', 'your-config-key');
+
+        // Create elements with custom styling
+        mellowtel.createElement('opt-in-container', {
+            type: 'opt-in',
+            styles: {
+                backgroundColor: '#10B981',
+                textColor: '#FFFFFF',
+                radius: 12,
+                width: 180,
+                height: 45
+            }
+        });
+
+        mellowtel.createElement('opt-out-container', {
+            type: 'opt-out',
+            styles: {
+                backgroundColor: '#EF4444',
+                textColor: '#FFFFFF',
+                radius: 12,
+                width: 180,
+                height: 45
+            }
+        });
+
+        mellowtel.createElement('settings-container', {
+            type: 'settings',
+            styles: {
+                backgroundColor: '#3B82F6',
+                textColor: '#FFFFFF',
+                radius: 12,
+                width: 180,
+                height: 45
+            }
+        });
+    </script>
+</body>
+</html>
+```

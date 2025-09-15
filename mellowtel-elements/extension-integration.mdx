@@ -1,0 +1,57 @@
+---
+sidebarTitle: 'Extension Integration'
+title: 'Implement Mellowtel Elements in Browser Extensions'
+icon: puzzle-piece
+---
+
+Here you will see how to integrate Mellowtel Elements into your browser extension for seamless user consent management.
+
+## Installation
+
+Install the package in your extension project:
+
+```bash
+npm install mellowtel-elements
+```
+
+## Implementation
+
+### 1. Create HTML Div Containers
+
+Add container divs in your extension's HTML:
+
+```html
+<!-- In popup.html or options page -->
+<div id="opt-in-container"></div>
+<div id="opt-out-container"></div>
+<div id="settings-container"></div>
+```
+
+### 2. Initialize Mellowtel Elements
+
+```javascript
+import { MellowtelElements } from 'mellowtel-elements';
+
+// Create instance with extension ID and config key
+const mellowtel = new MellowtelElements(
+  'your-extension-id-here',    // Extension ID
+  'your-config-key-here'       // Configuration key
+);
+```
+
+### 3. Create Elements
+
+Add elements to your extension's popup or options page:
+
+```javascript
+// Create opt-in element
+await mellowtel.createElement('opt-in-container', { type: 'opt-in' });
+
+// Create opt-out element
+await mellowtel.createElement('opt-out-container', { type: 'opt-out' });
+
+// Create settings element
+await mellowtel.createElement('settings-container', { type: 'settings' });
+```
+
+Perfect! Now your extension is ready to use Mellowtel Elements for seamless opt-in, opt-out, and managing settings.
