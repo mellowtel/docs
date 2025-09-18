@@ -4,7 +4,7 @@ title: 'Integrating Mellowtel without Bundlers'
 icon: 'box'
 ---
 
-This guide explains how to integrate Mellowtel into your browser extension without using bundlers like Webpack or Vite. Instead, you'll use esbuild to pre-bundle Mellowtel and import it directly into your extension.
+This guide explains how to integrate Mellowtel into your browser extension without using bundlers like Webpack or Vite. Instead, you'll use esbuild to create a single pre-bundled file that works in both content scripts and service workers.
 
 ### Step 1: Project Setup
 
@@ -19,8 +19,7 @@ your-extension/
 ├── background.js           # Your service worker
 ├── content_script.js
 ├── manifest.json
-├── mellowtel.bundle.js     # Copy from Step 4
-└── mellowtel.bundle.iife.js # Copy from Step 4
+└── mellowtel.js           # Copy from Step 4
 ```
 
 ### Step 2: Create a Temporary Bundling Directory
@@ -38,52 +37,43 @@ This creates a separate folder with the Mellowtel package that you'll use only f
 
 ### Step 3: Bundle Mellowtel with esbuild
 
-From inside the `mellowtel-bundling` directory, create two different bundles: one for the service worker (ESM format) and one for content scripts (IIFE format).
-
-#### For Service Worker (ESM format):
+From inside the `mellowtel-bundling` directory, create a single bundle that works in both service workers and content scripts:
 
 ```bash
-npx esbuild node_modules/mellowtel/dist/index.js --bundle --format=esm --platform=browser --outfile=mellowtel.bundle.js
+npx esbuild node_modules/mellowtel/dist/index.js --bundle --format=iife --global-name=Mellowtel --footer:js="globalThis.Mellowtel = Mellowtel.default" --platform=browser --outfile=mellowtel.js --minify --legal-comments=none
 ```
 
-#### For Content Scripts (IIFE format):
+This command:
+- Takes the Mellowtel source from `node_modules/mellowtel/dist/index.js`
+- Bundles all dependencies into a single file
+- Uses IIFE format with a global name for universal compatibility
+- Adds a footer to make the default export available globally
+- Optimizes for browser environment and minifies the output
+- Creates `mellowtel.js` in the bundling directory
+
+### Step 4: Copy the Bundle to Your Extension
+
+After running the esbuild command, you'll have one file in the `mellowtel-bundling` directory:
+- `mellowtel.js` - For use in both service workers and content scripts
+
+Copy this file to your extension directory:
 
 ```bash
-npx esbuild node_modules/mellowtel/dist/index.js --bundle --format=iife --global-name=Mellowtel --platform=browser --outfile=mellowtel.bundle.iife.js
+cp mellowtel.js ../your-extension/
 ```
 
-These commands:
-- Take the Mellowtel source from `node_modules/mellowtel/dist/index.js`
-- Bundle all dependencies into single files
-- Output in different formats: ESM for service worker, IIFE for content scripts
-- Optimize for browser environment
-- Create `mellowtel.bundle.js` and `mellowtel.bundle.iife.js` in the bundling directory
-
-### Step 4: Copy the Bundles to Your Extension
-
-After running both esbuild commands, you'll have two files in the `mellowtel-bundling` directory:
-- `mellowtel.bundle.js` - For use in the service worker (ESM format)
-- `mellowtel.bundle.iife.js` - For use in content scripts (IIFE format)
-
-Copy these files to your extension directory:
-
-```bash
-cp mellowtel.bundle.js ../your-extension/
-cp mellowtel.bundle.iife.js ../your-extension/
-```
-
-Now you can delete the temporary bundling directory since you only needed the output files:
+Now you can delete the temporary bundling directory since you only needed the output file:
 
 ```bash
 cd ..
 rm -rf mellowtel-bundling
 ```
 
-Your extension folder now contains the bundled Mellowtel files ready to use.
+Your extension folder now contains the bundled Mellowtel file ready to use.
 
 ### Step 5: Configure Your Manifest
 
-Make sure your `manifest.json` is configured to use ES modules for the service worker:
+Configure your `manifest.json` to include the Mellowtel bundle in content scripts:
 
 ```json
 {
@@ -97,7 +87,7 @@ Make sure your `manifest.json` is configured to use ES modules for the service w
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["mellowtel.bundle.iife.js", "content_script.js"]
+      "js": ["mellowtel.js", "content_script.js"]
     }
   ],
   "permissions": [
@@ -111,31 +101,31 @@ Make sure your `manifest.json` is configured to use ES modules for the service w
 ```
 
 **Important**: 
-- The `"type": "module"` field is crucial for enabling ES module imports in your service worker.
-- In the content scripts array, `mellowtel.bundle.iife.js` must be loaded **before** `content_script.js` so that the Mellowtel global variable is available when your content script runs.
+- The `"type": "module"` field enables ES module imports in your service worker.
+- In the content scripts array, `mellowtel.js` must be loaded **before** `content_script.js` so that the Mellowtel global variable is available when your content script runs.
 
-### Step 6: Import Mellowtel in Your Extension
+### Step 6: Use Mellowtel in Your Extension
 
-Now you can import Mellowtel in your background script using ES module syntax:
+For your service worker (background.js), import the bundled file:
 
 ```javascript
 // background.js
-import Mellowtel from './mellowtel.bundle.js';
+import './mellowtel.js';
 
 (async () => {
-    const mellowtel = new Mellowtel.default("<configuration_key>"); // Replace with your configuration key
+    const mellowtel = new Mellowtel("<configuration_key>"); // Replace with your configuration key
     await mellowtel.initBackground();
 })();
 ```
 
-For content scripts, use the IIFE bundle (no import needed, as it's loaded via the manifest):
+For content scripts, Mellowtel is available as a global variable (no import needed, as it's loaded via the manifest):
 
 ```javascript
 // content_script.js
-// Mellowtel is available as a global variable from mellowtel.bundle.iife.js
+// Mellowtel is available as a global variable from mellowtel.js
 
 (async () => {
-  const mellowtel = new Mellowtel.default("<configuration_key>"); // Replace with your configuration key
+  const mellowtel = new Mellowtel("<configuration_key>"); // Replace with your configuration key
   await mellowtel.initContentScript();
 })();
 ```
@@ -147,20 +137,5 @@ To test your extension:
 1. Go to `chrome://extensions/` in Chrome (or equivalent in other browsers)
 2. Enable "Developer mode"
 3. Click "Load unpacked" and select your extension folder
-4. Verify that Mellowtel loads without errors in the extension's service worker
-
-### Important Notes
-
-- **File Size**: The bundled `mellowtel.bundle.js` file will contain all dependencies and may be larger than the original source. This is normal for a bundled approach.
-- **Updates**: When you update Mellowtel, you'll need to re-run the esbuild command to update your bundle.
-- **Browser Compatibility**: This approach works with all modern browsers that support ES modules in extensions.
-
-### Troubleshooting
-
-If you encounter issues:
-
-1. **Module not found errors**: Ensure the path to `mellowtel.bundle.js` is correct in your import statements
-2. **Service worker errors**: Verify that `"type": "module"` is set in your manifest.json
-3. **Import errors**: Make sure you're using the correct import syntax for ES modules
 
 This approach gives you the benefits of using Mellowtel without the complexity of setting up a full build system like Webpack or Vite.
