@@ -59,6 +59,10 @@
     {
       "name": "Mobile App",
       "url": "mobile-app"
+    },
+    {
+      "name": "UI Elements",
+      "url": "mellowtel-elements"
     }
   ],
   "navigation": [
@@ -140,6 +144,30 @@
         {
           "group": "Integrate Mellowtel",
           "pages": ["followers/quickstart"]
+        }
+      ]
+    },
+    {
+      "group": "UI Elements",
+      "pages": [
+        {
+          "group": "Get Started",
+          "pages": [
+            "mellowtel-elements/quickstart"
+          ]
+        },
+        {
+          "group": "Integration",
+          "pages": [
+            "mellowtel-elements/extension-integration",
+            "mellowtel-elements/website-integration"
+          ]
+        },
+        {
+          "group": "Customization",
+          "pages": [
+            "mellowtel-elements/styling"
+          ]
         }
       ]
     },
