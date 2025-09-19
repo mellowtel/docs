@@ -4,9 +4,9 @@ title: 'Integrating Mellowtel without Bundlers'
 icon: 'box'
 ---
 
-This guide explains how to integrate Mellowtel into your browser extension without using bundlers like Webpack or Vite. Instead, you'll use esbuild to create a single pre-bundled file that works in both content scripts and service workers.
+This guide explains how to integrate Mellowtel into your browser extension without using bundlers like Webpack or Vite. Instead, you'll use a single pre-bundled file that works in both content scripts and service workers.
 
-### Step 1: Project Setup
+## Project Setup
 
 Start with a basic browser extension structure:
 
@@ -19,12 +19,28 @@ your-extension/
 ├── background.js           # Your service worker
 ├── content_script.js
 ├── manifest.json
-└── mellowtel.js           # Copy from Step 4
+└── mellowtel.js           # Will be added in next step
 ```
 
-### Step 2: Create a Temporary Bundling Directory
+## Getting the Mellowtel Bundle
 
-Create a temporary directory to install Mellowtel and generate the bundles:
+You have two options to get the `mellowtel.js` file for your extension:
+
+### Option 1: Use Pre-bundled File
+
+The easiest way to get started is to use the pre-bundled `mellowtel.js` file from the [mellowtel-bundled repository](https://github.com/mellowtel-inc/mellowtel-bundled).
+
+1. Go to the [mellowtel-bundled repository](https://github.com/mellowtel-inc/mellowtel-bundled)
+2. Download the `mellowtel.js` file
+3. Copy it to your extension directory
+
+### Option 2: Generate Your Own Bundle
+
+If you prefer to generate the bundle yourself, follow these steps:
+
+#### Create a Temporary Bundling Directory
+
+Create a temporary directory to install Mellowtel and generate the bundle:
 
 ```bash
 mkdir mellowtel-bundling
@@ -35,7 +51,7 @@ npm install mellowtel
 
 This creates a separate folder with the Mellowtel package that you'll use only for bundling.
 
-### Step 3: Bundle Mellowtel with esbuild
+#### Bundle Mellowtel with esbuild
 
 From inside the `mellowtel-bundling` directory, create a single bundle that works in both service workers and content scripts:
 
@@ -51,12 +67,9 @@ This command:
 - Optimizes for browser environment and minifies the output
 - Creates `mellowtel.js` in the bundling directory
 
-### Step 4: Copy the Bundle to Your Extension
+#### Copy the Bundle to Your Extension
 
-After running the esbuild command, you'll have one file in the `mellowtel-bundling` directory:
-- `mellowtel.js` - For use in both service workers and content scripts
-
-Copy this file to your extension directory:
+After running the esbuild command, copy the generated file to your extension directory:
 
 ```bash
 cp mellowtel.js ../your-extension/
@@ -71,9 +84,9 @@ rm -rf mellowtel-bundling
 
 Your extension folder now contains the bundled Mellowtel file ready to use.
 
-### Step 5: Configure Your Manifest
+## Configure Your Manifest (Both Options)
 
-Configure your `manifest.json` to include the Mellowtel bundle in content scripts:
+Regardless of which option you chose above, configure your `manifest.json` to include the Mellowtel bundle in content scripts:
 
 ```json
 {
@@ -104,7 +117,7 @@ Configure your `manifest.json` to include the Mellowtel bundle in content script
 - The `"type": "module"` field enables ES module imports in your service worker.
 - In the content scripts array, `mellowtel.js` must be loaded **before** `content_script.js` so that the Mellowtel global variable is available when your content script runs.
 
-### Step 6: Use Mellowtel in Your Extension
+## Use Mellowtel in Your Extension
 
 For your service worker (background.js), import the bundled file:
 
@@ -130,7 +143,7 @@ For content scripts, Mellowtel is available as a global variable (no import need
 })();
 ```
 
-### Step 7: Testing Your Extension
+## Testing Your Extension
 
 To test your extension:
 
