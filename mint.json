@@ -168,6 +168,12 @@
           "pages": [
             "mellowtel-elements/styling"
           ]
+        },
+        {
+          "group": "Components",
+          "pages": [
+            "mellowtel-elements/modal"
+          ]
         }
       ]
     },
