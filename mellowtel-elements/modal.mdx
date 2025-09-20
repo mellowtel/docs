@@ -1,0 +1,114 @@
+---
+sidebarTitle: 'Support Modal'
+title: 'Mellowtel Support Modal'
+icon: window-maximize
+---
+
+The Mellowtel Support Modal is a non-intrusive modal that encourages users to support your extension or website through Support with Mellowtel extension.
+
+## Prerequisites
+
+Before using the modal, make sure you have Mellowtel Elements set up in your project:
+
+<CardGroup cols={2}>
+    <Card title="Extension Integration" icon="puzzle-piece" href="/mellowtel-elements/extension-integration">
+        Setup for browser extensions
+    </Card>
+    <Card title="Website Integration" icon="atom" href="/mellowtel-elements/website-integration">
+        Setup for websites using NPM or CDN
+    </Card>
+</CardGroup>
+
+## Key Features
+
+- **Cross-Platform** - Works in websites and extension content scripts
+- **Smart Snoozing** - Users can snooze for 1 week, 2 weeks, or disable permanently
+- **Chrome Storage** - Uses Chrome storage API when available, falls back to localStorage
+- **Shadow DOM** - Style isolation prevents conflicts with host page styles
+- **Mobile Responsive** - Optimized for all screen sizes
+- **Extension Details** - Automatically fetches and displays extension name and icon
+
+## Creating the Modal
+
+Once you have Mellowtel Elements initialized (see integration guides above), you can create and display the support modal:
+
+### Basic Usage
+
+```javascript
+// Basic usage with default title and body
+await mellowtel.createModal('your-invite-id-here');
+
+// Custom title and body
+await mellowtel.createModal(
+  'your-invite-id-here',
+  'Support Our Extension!',
+  'Help us maintain this free service by adding our extension.'
+);
+```
+
+### Usage Examples
+
+#### In Content Scripts
+
+```javascript
+// Show modal after user has been on page for 30 seconds
+setTimeout(async () => {
+    await mellowtel.createModal(
+        'content-script-invite-456',
+        'Thanks for using our extension!',
+        'Help us improve by supporting the development of this extension.'
+    );
+}, 30000);
+```
+
+#### On Websites
+
+```javascript
+// Show modal after page loads
+window.addEventListener('load', async () => {
+    await mellowtel.createModal(
+        'website-invite-123',
+        'Support Our Service',
+        'Install our extension to help keep this website free and ad-free.'
+    );
+});
+```
+
+#### Conditional Display
+
+```javascript
+// Only show on certain domains
+const allowedDomains = ['github.com', 'stackoverflow.com', 'reddit.com'];
+const currentDomain = window.location.hostname;
+
+if (allowedDomains.some(domain => currentDomain.includes(domain))) {
+    await mellowtel.createModal(
+        'conditional-invite-789',
+        'Enjoying our extension?',
+        'Show your support and help us keep improving this free tool.'
+    );
+}
+```
+
+## API Reference
+
+### `createModal(inviteId, title?, body?)`
+
+Creates and displays the support modal.
+
+**Parameters:**
+- `inviteId` (string, required): Unique identifier for tracking modal interactions
+- `title` (string, optional): Custom modal title (defaults to "Support with Mellowtel")
+- `body` (string, optional): Custom modal body text
+
+**Returns:** `Promise<void>`
+
+## Modal Behavior
+
+### Snooze Options
+
+Users can choose from three snooze options:
+
+- **1 week**: Modal won't appear for 7 days
+- **2 weeks**: Modal won't appear for 14 days  
+- **Disable**: Modal will never appear again
