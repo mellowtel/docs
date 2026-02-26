@@ -1,14 +1,351 @@
 ---
 sidebarTitle: 'Quick Start'
-title: 'Integrate Mellowtel in your Desktop app'
+title: 'Integrate Mellowtel in your Desktop App'
 icon: 'rocket'
 platforms:
   - desktop app
 ---
 
-This is currently under development. If you are interested in integrating Mellowtel with your desktop application, please contact us:
+Integrate Mellowtel into your Windows desktop application to allow users to share their unused internet bandwidth in exchange for rewards or premium features. It's privacy-focused, transparent, and fully compliant with user consent requirements.
 
-- Email: info@mellowtel.com
-- Join our [Discord community](https://discord.com/invite/txAZp4MSDe)
+<Warning>
+  **User consent is mandatory.** The SDK will throw an `InvalidOperationException` if you call `StartAsync()` without the user having opted in. You cannot bypass this check.
+</Warning>
 
-Earnings on desktop apps are higher. 
+## Prerequisites
+
+- A Mellowtel account and configuration key (get yours from the [dashboard](https://www.mellowtel.com/mellowtel-auth/))
+- A NuGet access token provided by Mellowtel
+- .NET desktop application (Console, WPF, or Windows Forms)
+
+---
+
+## Installation
+
+### 1. Configure NuGet Authentication
+
+Create a file named `nuget.config` in your project's root directory (the same folder as your `.csproj` or `.sln` file):
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+  <packageSources>
+    <clear />
+    <add key="nuget.org" value="https://api.nuget.org/v3/index.json" protocolVersion="3" />
+    <add key="github-mellowtel" value="https://nuget.pkg.github.com/olostep/index.json" />
+  </packageSources>
+  <packageSourceCredentials>
+    <github-mellowtel>
+      <add key="Username" value="mellowtel-packages" />
+      <add key="ClearTextPassword" value="YOUR_PROVIDED_TOKEN" />
+    </github-mellowtel>
+  </packageSourceCredentials>
+</configuration>
+```
+
+<Note>
+  Replace `YOUR_PROVIDED_TOKEN` with the token you received from Mellowtel.
+</Note>
+
+### 2. Install the Package
+
+Open your terminal in the project directory and run:
+
+```bash
+dotnet add package Mellowtel.Windows
+```
+
+Then restore packages:
+
+```bash
+dotnet restore
+```
+
+### 3. Add to Your Code
+
+```csharp
+using MellowtelWin;
+
+// Initialize Mellowtel with your configuration key
+var mellowtel = new Mellowtel("YOUR_CONFIGURATION_KEY");
+
+// Check if user has already opted in
+if (!mellowtel.GetOptInStatus())
+{
+    // Show your consent dialog — ONLY call OptIn() if the user agrees
+    mellowtel.OptIn();
+}
+
+// Start the service (throws InvalidOperationException if not opted in)
+try
+{
+    await mellowtel.StartAsync();
+}
+catch (InvalidOperationException ex)
+{
+    Console.WriteLine($"Error: {ex.Message}");
+}
+
+// Stop when your app closes
+await mellowtel.StopAsync();
+```
+
+<Note>
+  Replace `YOUR_CONFIGURATION_KEY` with the configuration key from your Mellowtel dashboard.
+</Note>
+
+---
+
+## Examples by Application Type
+
+<Tabs>
+  <Tab title="Console App">
+    ```csharp
+    using MellowtelWin;
+
+    class Program
+    {
+        static async Task Main(string[] args)
+        {
+            using var mellowtel = new Mellowtel("YOUR_CONFIG_KEY");
+
+            if (!mellowtel.GetOptInStatus())
+            {
+                Console.WriteLine("User must opt in before using this service.");
+                return;
+            }
+
+            using var cts = new CancellationTokenSource();
+            Console.CancelKeyPress += (s, e) => { e.Cancel = true; cts.Cancel(); };
+
+            try
+            {
+                await mellowtel.StartAsync(cts.Token);
+                Console.WriteLine("Mellowtel running. Press Ctrl+C to stop.");
+                await Task.Delay(Timeout.Infinite, cts.Token);
+            }
+            catch (InvalidOperationException ex)
+            {
+                Console.WriteLine($"Cannot start: {ex.Message}");
+            }
+            catch (OperationCanceledException)
+            {
+                Console.WriteLine("Stopping...");
+            }
+            finally
+            {
+                await mellowtel.StopAsync();
+            }
+        }
+    }
+    ```
+  </Tab>
+  <Tab title="WPF App">
+    Add to your `MainWindow.xaml.cs`:
+
+    ```csharp
+    using MellowtelWin;
+    using System.Windows;
+
+    public partial class MainWindow : Window
+    {
+        private Mellowtel? _mellowtel;
+
+        public MainWindow()
+        {
+            InitializeComponent();
+            Loaded += Window_Loaded;
+        }
+
+        private async void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            _mellowtel = new Mellowtel("YOUR_CONFIG_KEY");
+
+            _mellowtel.ConnectionStateChanged += (s, connected) =>
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    StatusTextBlock.Text = connected ? "Connected" : "Disconnected";
+                });
+            };
+
+            if (_mellowtel.GetOptInStatus())
+            {
+                try
+                {
+                    await _mellowtel.StartAsync();
+                }
+                catch (InvalidOperationException ex)
+                {
+                    Dispatcher.Invoke(() => MessageBox.Show($"Error: {ex.Message}", "Error"));
+                }
+            }
+            else
+            {
+                // Show your consent dialog here
+            }
+        }
+
+        protected override async void OnClosing(CancelEventArgs e)
+        {
+            if (_mellowtel != null)
+            {
+                await _mellowtel.StopAsync();
+                _mellowtel.Dispose();
+            }
+            base.OnClosing(e);
+        }
+    }
+    ```
+  </Tab>
+  <Tab title="Windows Forms">
+    Add to your `MainForm.cs`:
+
+    ```csharp
+    using MellowtelWin;
+
+    public partial class MainForm : Form
+    {
+        private Mellowtel? _mellowtel;
+
+        public MainForm()
+        {
+            InitializeComponent();
+            Load += MainForm_Load;
+            FormClosing += MainForm_FormClosing;
+        }
+
+        private async void MainForm_Load(object sender, EventArgs e)
+        {
+            _mellowtel = new Mellowtel("YOUR_CONFIG_KEY");
+
+            _mellowtel.ConnectionStateChanged += (s, connected) =>
+            {
+                if (InvokeRequired)
+                    Invoke(() => statusLabel.Text = connected ? "Connected" : "Disconnected");
+                else
+                    statusLabel.Text = connected ? "Connected" : "Disconnected";
+            };
+
+            if (_mellowtel.GetOptInStatus())
+            {
+                try
+                {
+                    await _mellowtel.StartAsync();
+                }
+                catch (InvalidOperationException ex)
+                {
+                    Invoke(() => MessageBox.Show($"Error: {ex.Message}", "Error"));
+                }
+            }
+            else
+            {
+                // Show your consent dialog here
+            }
+        }
+
+        private async void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (_mellowtel != null)
+            {
+                await _mellowtel.StopAsync();
+                _mellowtel.Dispose();
+            }
+        }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+---
+
+## User Consent
+
+<Warning>
+  Displaying a consent dialog is **mandatory**. The SDK enforces this — `StartAsync()` throws an `InvalidOperationException` if the user hasn't opted in.
+</Warning>
+
+```csharp
+var mellowtel = new Mellowtel("YOUR_CONFIG_KEY");
+
+if (!mellowtel.GetOptInStatus())
+{
+    var userAgreed = ShowConsentDialog(); // your custom dialog
+
+    if (userAgreed)
+        mellowtel.OptIn();
+    else
+        return; // user declined — do not start
+}
+
+try
+{
+    await mellowtel.StartAsync();
+}
+catch (InvalidOperationException ex)
+{
+    Console.WriteLine($"Error: {ex.Message}");
+}
+```
+
+### What your consent dialog must include
+
+<Steps>
+  <Step title="Explain what Mellowtel does">
+    Use plain language. Example: *"This app uses Mellowtel to share your unused internet bandwidth. This allows you to [benefit/feature]. You can opt out at any time in settings."*
+  </Step>
+  <Step title="Give users a clear choice">
+    Include distinct Accept and Decline options.
+  </Step>
+  <Step title="Link to policies">
+    Include links to the [Terms of Service](https://www.mellowtel.com/terms-and-conditions) and [Privacy Policy](https://www.mellowtel.com/privacy-policy).
+  </Step>
+</Steps>
+
+### Let users change their consent in settings
+
+```csharp
+// Check current status
+bool isOptedIn = mellowtel.GetOptInStatus();
+
+// Opt out
+if (userWantsToOptOut)
+{
+    mellowtel.OptOut();
+    await mellowtel.StopAsync();
+}
+
+// Opt back in
+if (userWantsToOptIn)
+{
+    mellowtel.OptIn();
+    await mellowtel.StartAsync();
+}
+```
+
+---
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title='"Package not found" error'>
+    1. Verify `nuget.config` is in the correct location (the project root, next to `.csproj` or `.sln`)
+    2. Check that the token has no extra spaces
+    3. Clear the NuGet cache and retry:
+
+    ```bash
+    dotnet nuget locals all --clear
+    dotnet restore
+    ```
+  </Accordion>
+  <Accordion title='"Unauthorized" or "Authentication failed"'>
+    1. Verify the token in `nuget.config` is correct
+    2. Make sure there are no extra spaces around the token value
+  </Accordion>
+</AccordionGroup>
+
+---
+
+Estimated time to complete: 10–15 minutes.
+
+If you need help or have feedback, contact us at [info@mellowtel.com](mailto:info@mellowtel.com) or join our [Discord community](https://discord.com/invite/txAZp4MSDe).
