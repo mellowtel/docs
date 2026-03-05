@@ -1,0 +1,58 @@
+---
+sidebarTitle: 'Electron'
+title: 'Integrate Mellowtel in your Electron App'
+icon: 'bolt'
+---
+
+This guide will help you get up and running in your Electron application.
+
+## 1. Installation
+
+First, you need to configure `npm` to use GitHub Packages. Create a `.npmrc` file in your project's root directory with the following content:
+
+```bash
+@mellowtel-inc:registry=https://npm.pkg.github.com/
+//npm.pkg.github.com/:_authToken=YOUR_NPM_TOKEN
+```
+
+You'll need to replace `YOUR_NPM_TOKEN` with `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`
+
+Now, you can install the Electron package:
+
+```bash
+npm install @mellowtel-inc/mellowtel-electron
+```
+
+## 2. Implementation
+
+Here's a basic example of how to integrate into your Electron `main.ts` file.
+
+First, import `Mellowtel` and initialize it in your main process file:
+
+```typescript
+import { app, BrowserWindow } from 'electron';
+import Mellowtel from '@mellowtel-inc/mellowtel-electron';
+
+
+// When the app is ready, create the window
+app.whenReady().then(async () => {
+  let win = createWindow();
+  
+  const mellowtel: Mellowtel = new Mellowtel('IDENTIFIER');
+
+  await mellowtel.requestConsent(win, "Get 3 months free")
+  await mellowtel.init()
+});
+```
+
+Make sure to replace your `IDENTIFIER`.
+
+Other available methods are:
+- `showConsentSettings(window: BrowserWindow)`
+- `optIn()`
+- `optOut()`
+- `getOptInStatus()`
+
+The last three are useful if you want to create and manage your own consent UI and experiences.
+It is necessary to ask users for consent before calling the `optIn()` method. It is also mandatory to leave a settings option to manage
+their status and leave links to the [Terms of Service](https://www.mellowtel.com/terms-and-conditions) and [Privacy Policy](https://www.mellowtel.com/privacy-policy).
