@@ -1,42 +1,160 @@
 ---
 sidebarTitle: 'Quick Start'
 title: 'Monetize your website with Mellowtel'
+description: 'Add a single script tag to let visitors support you by opting in to share unused bandwidth.'
 icon: 'rocket'
 ---
 
-Integrate Mellowtel into your website to allow users to support you
+Mellowtel lets your visitors opt in to share unused bandwidth in exchange for supporting you. You add a small widget to your site, visitors choose to install the companion extension, and you earn based on the requests their browser handles.
 
-## Prerequisites
+<Info>
+  **Estimated time:** 5 to 10 minutes. **You will need:** a [Mellowtel account](https://www.mellowtel.com/mellowtel-auth/) and access to your site's HTML (or a framework equivalent).
+</Info>
 
-- A Mellowtel account
-- Basic knowledge of HTML/JavaScript
+## How it works
 
-## Installation
+<Steps>
+  <Step title="You embed the widget">
+    A script tag renders a button, icon, or banner on your site.
+  </Step>
+  <Step title="A visitor clicks it">
+    They are taken to install the Mellowtel companion extension.
+  </Step>
+  <Step title="You get credit">
+    Your `invite_id` links that visitor to your account, so requests handled by their browser are attributed to you.
+  </Step>
+</Steps>
 
-1. Sign up for a Mellowtel account if you haven't already
-2. Get your INVITE_ID from the Mellowtel dashboard
-3. Add the Mellowtel script to your website's HTML:
+## Before you start
 
-```html
-<!-- Replace INVITE_ID with the one you get when you create a support link from the dashboard -->
-<script 
-  src="https://cdn.mellow.tel/widget.js?type=button&position=bottom-right&invite_id=INVITE_ID">
+- A Mellowtel account. [Sign up here](https://www.mellowtel.com/mellowtel-auth/) if you don't have one.
+- Your `invite_id`, found on your [dashboard](https://www.mellowtel.com/mellowtel-auth/) after creating a support link.
+- Access to your site's HTML, or the ability to add a `<script>` tag through your framework or CMS.
+
+## Install the widget
+
+Paste this into your site, replacing `INVITE_ID` with the value from your dashboard. Placing it just before `</body>` is recommended so it does not block page rendering.
+
+<CodeGroup>
+
+```html HTML
+<script
+  src="https://cdn.mellow.tel/widget.js?type=button&position=bottom-right&invite_id=INVITE_ID"
+  async>
 </script>
-
 ```
 
-You can preview different widget designs at:
+```jsx Next.js (App Router)
+import Script from 'next/script'
 
-https://cdn.mellow.tel/preview?position=bottom-right&type=button&invite_id=ijxf49s9h2f
+export default function Layout({ children }) {
+  return (
+    <html>
+      <body>
+        {children}
+        <Script
+          src="https://cdn.mellow.tel/widget.js?type=button&position=bottom-right&invite_id=INVITE_ID"
+          strategy="afterInteractive"
+        />
+      </body>
+    </html>
+  )
+}
+```
 
-## Configuration
+```jsx React (Vite / CRA)
+import { useEffect } from 'react'
 
-This script will display a button, icon or banner, depending on your choice, within your website. If a user click on it they will be redirected to install a plugin (and in the near future an app).
-Thanks to your INVITE_ID we know they want to support you so we can assign you the earnings for requests handled by them.
+export function MellowtelWidget() {
+  useEffect(() => {
+    const s = document.createElement('script')
+    s.src = 'https://cdn.mellow.tel/widget.js?type=button&position=bottom-right&invite_id=INVITE_ID'
+    s.async = true
+    document.body.appendChild(s)
+    return () => { s.remove() }
+  }, [])
+  return null
+}
+```
 
+```html WordPress
+<!-- Add to your theme's footer.php just before </body>, -->
+<!-- or use a "Header & Footer Scripts" plugin and paste into the footer field. -->
+<script
+  src="https://cdn.mellow.tel/widget.js?type=button&position=bottom-right&invite_id=INVITE_ID"
+  async>
+</script>
+```
 
+```html Webflow / Shopify
+<!-- Webflow: Project Settings > Custom Code > Footer Code -->
+<!-- Shopify: Online Store > Themes > Edit Code > theme.liquid (before </body>) -->
+<script
+  src="https://cdn.mellow.tel/widget.js?type=button&position=bottom-right&invite_id=INVITE_ID"
+  async>
+</script>
+```
 
+</CodeGroup>
 
-Estimated time to complete: 5-10 minutes.
+## Configuration options
 
-If you need help or have feedback, feel free to contact us at [info@mellowtel.com](mailto:info@mellowtel.com) or on [Discord](https://discord.gg/mellowtel)
+Control the widget's appearance through query parameters on the script URL.
+
+| Parameter    | Required | Values                                                              | Description                                          |
+| ------------ | -------- | ------------------------------------------------------------------- | ---------------------------------------------------- |
+| `invite_id`  | Yes      | Your ID from the dashboard                                          | Attributes earnings to your account.                 |
+| `type`       | Yes      | `button`, `icon`, `banner`                                          | Widget style shown on your site.                     |
+| `position`   | Yes      | `bottom-right`, `bottom-left`, `top-right`, `top-left`              | Where the widget sits on the page.                   |
+
+<Tip>
+  Preview every combination live before shipping: [open the widget preview](https://cdn.mellow.tel/preview?position=bottom-right&type=button&invite_id=ijxf49s9h2f). Swap the `type` and `position` params in the URL to see each variant.
+</Tip>
+
+## Verify it works
+
+<Steps>
+  <Step title="Load your site">
+    Open the page in a fresh browser tab (or incognito window to bypass cache).
+  </Step>
+  <Step title="Confirm the widget renders">
+    You should see the button, icon, or banner in the position you chose. If it is missing, check the browser console for blocked requests.
+  </Step>
+  <Step title="Click through the flow">
+    Clicking the widget should take you to the extension install page with your `invite_id` attached.
+  </Step>
+  <Step title="Check your dashboard">
+    Once a visitor installs and opts in, their activity shows up on your Mellowtel dashboard.
+  </Step>
+</Steps>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="The widget is not showing up">
+    - Confirm the script tag is inside `<body>` and your `invite_id` is filled in.
+    - Open DevTools and check the Network tab for a request to `cdn.mellow.tel/widget.js`. If it is blocked, an ad blocker or content filter is likely the cause.
+    - Check your Content Security Policy. You may need to allow `https://cdn.mellow.tel` under `script-src`.
+  </Accordion>
+  <Accordion title="I see a 'missing invite_id' warning">
+    The `invite_id` parameter is empty or still contains the literal `INVITE_ID` placeholder. Copy the real value from your dashboard and paste it into the URL.
+  </Accordion>
+  <Accordion title="It works locally but not in production">
+    Most often a CSP or CDN rule is stripping the script. Check response headers on your production host and allowlist `cdn.mellow.tel`.
+  </Accordion>
+  <Accordion title="How do I remove the widget?">
+    Delete the `<script>` tag (or the framework component wrapping it). There is nothing else to clean up.
+  </Accordion>
+</AccordionGroup>
+
+## Disclose to your visitors
+
+We recommend adding a short note to your privacy policy so visitors understand what opting in means. Something like:
+
+> This site partners with Mellowtel. If you choose to install their extension, your browser may share unused bandwidth to support this site. Installation is optional and you can opt out at any time.
+
+See [Privacy](/concepts/privacy) and [Opt in / Opt out](/concepts/opt-in-out) for the full details you can link to.
+
+## Need help?
+
+Reach out at [info@mellowtel.com](mailto:info@mellowtel.com) or join us on [Discord](https://discord.gg/mellowtel).

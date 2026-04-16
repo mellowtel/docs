@@ -1,187 +1,89 @@
 ---
 title: 'Opt In / Opt Out'
-description: 'Users can decide at any time if they want to share their bandwidth or not.'
+description: 'Users must explicitly consent before any bandwidth is shared, and can revoke consent at any time'
 icon: 'signature'
 ---
-## Introduction
 
-In order to activate Mellowtel users must give their explicit consent. The library provides a way to opt in or opt out.
-The core idea is that since it's their Internet bandwidth, they should decide if they want to share it or not.
+## What it is
 
-This is why on the first installation/update with Mellowtel imported you must show a disclaimer/consent dialog that is not dismissible.
-Moreover, there must always be a clear way for users to change the settings at their convenience.
+Mellowtel will not share a single byte of bandwidth until the user has explicitly opted in, and the user must always have an obvious way to opt back out. This is a hard requirement of the SDK and a hard requirement of every browser store policy that allows Mellowtel-based extensions.
+
+## Why it matters
+
+It's the user's bandwidth. Anything less than explicit, revocable consent is both unethical and grounds for store removal. The SDK is designed so the *easy* path is also the *compliant* path. If you follow the recommended implementation, you cannot accidentally ship a version that activates without consent.
+
+## How it works
+
+On first install (and on any update that newly introduces Mellowtel) you must show the user a non-dismissible disclaimer that explains what Mellowtel does, then capture their choice. From then on, a settings link must be reachable from somewhere obvious in your UI so they can change their mind.
 
 <Frame caption="Disclaimer example">
     <img src="/images/mellowtel_disclaimer.png" />
 </Frame>
 
+You have two implementation options:
 
-You can implement the opt-in/opt-out logic in two ways:
+1. **Recommended:** open the pre-built Mellowtel opt-in page with `generateAndOpenOptInLink()`. One method call, fully compliant, maximizes opt-in conversion.
+2. **Custom UI:** build your own consent surface and call `optIn()` / `optOut()` yourself.
 
-1) Using the recommended implementation with the pre-built page provided by Mellowtel. You can simply call the `generateAndOpenOptInLink()` method.
+## API surface
 
-2) Creating your own opt-in/opt-out elements. If users agree you can activate them on the Network by calling the `optIn()` method. If they don't agree, you call the `optOut()` method.
+| Method | Returns | Use it to |
+|---|---|---|
+| `generateAndOpenOptInLink()` | `Promise<void>` | Open the hosted opt-in page (recommended path). |
+| `getOptInStatus()` | `Promise<boolean>` | Check whether the user has already opted in. |
+| `optIn()` | `Promise<void>` | Record consent from your own UI. |
+| `optOut()` | `Promise<void>` | Revoke consent from your own UI. |
+| `start()` | `Promise<void>` | Begin serving requests after opt-in. |
+| `generateSettingsLink()` | `Promise<string>` | URL to the hosted settings page so users can change their choice later. |
 
+All methods are accessible from any part of your extension: popup, content script, or background script.
 
-## 1) Recommended implementation
+## Recommended implementation
 
-When you import Mellowtel, we recommend opening a [pre built page](https://www.mellow.tel/opt-in/?extension_id=clahhkgkchmgcfmcgaldgicnhnlnfdkf&configuration_key=54584498&debug_mode=true) so users can see the disclaimer and decide if they want to opt in or out.
-This also ensures that you can maximize the number of users that opt in, as they can see the benefits of Mellowtel.
+The full integration walkthrough lives in the platform quickstarts. They show where to put the SDK, how to wire it into the install/update lifecycle, and how to test it:
 
-If you are creating a browser plugin you can follow these instructions.
+- [Browser plugins quickstart](/browser-plugins/quickstart)
+- [Desktop app quickstart](/desktop-app/quickstart)
+- [Website quickstart](/website/quickstart)
+- [Mobile app quickstart](/mobile-app/quickstart)
 
-Open your `service worker` file (also known as background script) and add the following code:
+In short, after `new Mellowtel(...)` and `initBackground()`, call `generateAndOpenOptInLink()` from your install/update handler. That's it.
+
+## Custom UI
+
+If you want full control over the consent surface, capture the user's choice in your own UI and forward it to the SDK:
 
 ```javascript
-import Mellowtel from "mellowtel";
+// User agreed
+await mellowtel.optIn();
+await mellowtel.start();
 
-let mellowtel;
+// User declined or later revoked
+await mellowtel.optOut();
 
-(async () => {
-    mellowtel = new Mellowtel("<YOUR_CONFIGURATION_KEY>");
-    await mellowtel.initBackground();
-})();
-
-chrome.runtime.onInstalled.addListener(async function(details) {
-    console.log("Extension Installed or Updated");
-    // If you want to handle first install and updates differently
-    /**
-    if(details.reason === "install"){
-        // call a function to handle a first install
-    } else if(details.reason === "update") {
-        // call a function to handle an update
-    }
-    **/
-    await mellowtel.generateAndOpenOptInLink();
-});
+// Check status (e.g. to render a toggle)
+const hasOptedIn = await mellowtel.getOptInStatus();
 ```
 
-## 2) Custom elements
-If you want you can create your own custom opt-in/opt-out elements and handle user's choice by using the `optIn()` and `optOut()` method as shown here.
+Whatever UI you build, it must:
 
-<Accordion title="Custom elements implementation">
+1. Be non-dismissible on first install.
+2. Default to opted *out* until the user actively agrees.
+3. Be re-openable from somewhere obvious in your product so users can change their choice.
 
-    The methods `getOptInStatus()`, `optIn()`, `optOut()` and `start()` are accessible from any part of your extension, so you can call them from a popup, a content script, or a background script.
+## Settings link
 
-    To check if the user has already opted in, you can call the `getOptInStatus` method, which is a promise that resolves to a boolean value.
+Users must always have an easy way to change their settings. Use `generateSettingsLink()` to get a URL to the hosted settings page and place it somewhere persistent: your popup, an options page, an account screen.
 
-    ```javascript
-    const hasOptedIn = await mellowtel.getOptInStatus();
-    ```
-
-    Once the user has read the disclaimer and agreed to join the network, call these methods:
-
-    ```javascript
-    await mellowtel.optIn()
-    await mellowtel.start()
-    ```
-
-    If the user decides to opt out, you can call the `optOut` method. Mellowtel won't activate for this user anymore until the user opts in again.
-
-    ```javascript
-    await mellowtel.optOut()
-    ```
-
-    Here is an example of how you can handle user's choice by using the `optIn()` and `optOut()` method in your `service worker` file.
-
-    ```javascript
-    document.getElementById('go-back-manage-settings-mellowtel').addEventListener('click', function() {
-    document.getElementById('opt-in-settings').style.display = 'none';
-    document.getElementById('opt-in-general').style.display = 'block';
-    });
-
-
-    document.getElementById('manage-settings-mellowtel').addEventListener('click', function() {
-    document.getElementById('opt-in-settings').style.display = 'block';
-    document.getElementById('opt-in-general').style.display = 'none';
-    });
-
-
-    document.getElementById('btn-opted-in').addEventListener('click', function() {
-    document.getElementById('opted-out-text-div').style.display = 'flex';
-    document.getElementById('bt_att_homepage_settings').style.backgroundColor = '#CFCFE6';
-    });
-
-    const toggleText = document.getElementById('text-opt');
-    const toggleButton = document.getElementById('big-toggle-div')
-
-    let isOpted = true;
-
-    function toggleButtonState() {
-    if (isOpted) {
-        toggleText.textContent = 'Opted out';
-        document.getElementById('opted-out-text-div').style.display = 'flex';
-        document.getElementById('bt_att_homepage_settings').style.backgroundColor = '#CFCFE6';
-    } else {
-        toggleText.textContent = 'Opted in';
-        document.getElementById('opted-out-text-div').style.display = 'none';
-        document.getElementById('bt_att_homepage_settings').style.backgroundColor = '#252861';
-        }
-    isOpted = !isOpted ;
-    }
-    toggleButton.addEventListener('click', toggleButtonState);
-    document.getElementById('agree-and-continue-mellowtel').addEventListener('click', function() {
-    document.getElementById('opt-in-general').style.display = 'none';
-    });
-
-    document.getElementById('save-settings-mellowtel').addEventListener('click', function() {
-    document.getElementById('opt-in-settings').style.display = 'none';
-    console.log('isOpted')
-    console.log(isOpted)
-    });
-    ```
-
-</Accordion>
-
-## Generate settings link
-
-In order to let your users have complete control over their bandwidth, it is required that you leave an easily accessible way for them to change their settings at any moment.
-
-You can generate a link by using the built-in method `generateSettingsLink()`.
-This method will return a link that will open the Mellowtel settings page where users can decide at any time if they want to opt-in or opt-out.
-
-This link should be placed inside the popup, options page or any other place where users can easily access it.
-
-<Accordion title="generateSettingsLink() code">
-    This is what the method generateSettingsLink() is doing under the hood:
-```typescript
-export function generateSettingsLink(): Promise <string>{
-    return new Promise(async (resolve) => {
-    let extension_id = await getChromeExtensionIdentifier();
-        getIdentifier().then((nodeId) => {
-        let configuration_key = nodeId.split("_")[1];
-            resolve(
-            `${BASE_LINK_SETTING}?extension_id=${extension_id}&configuration_key=${configuration_key}`,
-             );
-        });
-    });
-}
-```
-</Accordion>
-
-## Example of a text to use for the update
-
-When you update your extension, you can inform your users about the Mellowtel library and ask them to opt in.
-Here is a text you could use for the update:
-
-```markdown
-Hi 👋,
-
-Happy to announce an update that will help maintain this extension free and available for everyone...but it requires an action from you.
-
-This new version includes the open-source [Mellowtel](https://www.mellowtel.com/mellowtel-user-guide/) library. Only if you opt-in, this library will let you share your internet bandwidth with companies that use it to access and retrieve data from the Web.
-
-As the developer of this extension, I get a share of the revenue.
-
-Mellowtel shares bandwidth only. Security and privacy are 100% guaranteed and the library is open source for everyone to see.
-
-By opting in now you will help keep this extension free and available for everyone and help me continue to improve it.
-
-You can opt-out at any time and can change your settings whenever you want from the settings page.
-
-If you have any feedback, please feel free to contact us. We are pleased to have you utilizing our service.
-
-Thanks!
+```javascript
+const settingsUrl = await mellowtel.generateSettingsLink();
 ```
 
-You can also link to the [Mellowtel User Guide](https://www.mellowtel.com/mellowtel-user-guide/) to provide more information to your users in non-technical terms.
+## Announcing Mellowtel to existing users
+
+If you are adding Mellowtel to an extension that already has users, you need to tell them what changed before asking for consent. We provide a [copy-paste announcement template](/concepts/update-announcement) you can adapt.
+
+## Related
+
+- [Privacy](/concepts/privacy): what users are actually agreeing to share.
+- [Rate Limiting](/concepts/rate-limiting): how the SDK protects users who do opt in.
