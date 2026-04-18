@@ -14,8 +14,8 @@ Integrate Mellowtel into your Windows desktop application to allow users to shar
 
 ## Prerequisites
 
-- A Mellowtel account and configuration key (get yours from the [dashboard](https://www.mellowtel.com/mellowtel-auth/))
-- A NuGet access token provided by Mellowtel (`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`)
+- A Mellowtel account and **Integration ID** (get yours from the [dashboard](https://www.mellowtel.com/mellowtel-auth/)). Each desktop app gets its own unique Integration ID.
+- A NuGet access token (revealed below in the installation section).
 - .NET desktop application (Console, WPF, or Windows Forms)
 
 ---
@@ -43,9 +43,13 @@ Create a file named `nuget.config` in your project's root directory (the same fo
 </configuration>
 ```
 
-<Note>
-  Replace `YOUR_PROVIDED_TOKEN` with the token you received from Mellowtel.
-</Note>
+Replace `YOUR_PROVIDED_TOKEN` with the install token below. Click to reveal, then use the copy icon on the code block to copy it to your clipboard.
+
+<Accordion title="Reveal install token">
+  ```
+  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
+  ```
+</Accordion>
 
 ### 2. Install the Package
 
@@ -66,14 +70,17 @@ dotnet restore
 ```csharp
 using MellowtelWin;
 
-// Initialize Mellowtel with your configuration key
-var mellowtel = new Mellowtel("YOUR_CONFIGURATION_KEY");
+// Initialize Mellowtel with your Integration ID
+var mellowtel = new Mellowtel("YOUR_INTEGRATION_ID");
 
 // Check if user has already opted in
 if (!mellowtel.GetOptInStatus())
 {
-    // Show your consent dialog — ONLY call OptIn() if the user agrees
-    mellowtel.OptIn();
+    // Show your consent dialog first, and ONLY call OptIn() if the user agrees
+    if (ShowConsentDialog())
+    {
+        mellowtel.OptIn();
+    }
 }
 
 // Start the service (throws InvalidOperationException if not opted in)
@@ -91,7 +98,7 @@ await mellowtel.StopAsync();
 ```
 
 <Note>
-  Replace `YOUR_CONFIGURATION_KEY` with the configuration key from your Mellowtel dashboard.
+  Replace `YOUR_INTEGRATION_ID` with the Integration ID from your Mellowtel dashboard. `ShowConsentDialog()` is your own UI that returns `true` only when the user explicitly agrees (see [User Consent](#user-consent) below).
 </Note>
 
 ---
@@ -107,7 +114,7 @@ await mellowtel.StopAsync();
     {
         static async Task Main(string[] args)
         {
-            using var mellowtel = new Mellowtel("YOUR_CONFIG_KEY");
+            using var mellowtel = new Mellowtel("YOUR_INTEGRATION_ID");
 
             if (!mellowtel.GetOptInStatus())
             {
@@ -159,7 +166,7 @@ await mellowtel.StopAsync();
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            _mellowtel = new Mellowtel("YOUR_CONFIG_KEY");
+            _mellowtel = new Mellowtel("YOUR_INTEGRATION_ID");
 
             _mellowtel.ConnectionStateChanged += (s, connected) =>
             {
@@ -217,7 +224,7 @@ await mellowtel.StopAsync();
 
         private async void MainForm_Load(object sender, EventArgs e)
         {
-            _mellowtel = new Mellowtel("YOUR_CONFIG_KEY");
+            _mellowtel = new Mellowtel("YOUR_INTEGRATION_ID");
 
             _mellowtel.ConnectionStateChanged += (s, connected) =>
             {
@@ -257,16 +264,26 @@ await mellowtel.StopAsync();
   </Tab>
 </Tabs>
 
+### Observing connection state
+
+The `Mellowtel` instance exposes a `ConnectionStateChanged` event that fires whenever the underlying WebSocket to Mellowtel's backend connects or disconnects. The WPF and Windows Forms examples above subscribe to it to drive a status indicator. The payload is a `bool` where `true` means connected and `false` means disconnected.
+
+The event fires on a background thread, so UI frameworks that enforce thread affinity must marshal updates onto the UI thread. In WPF use `Dispatcher.Invoke`, and in Windows Forms use `Control.Invoke` (both shown in the examples above).
+
+<Note>
+  **About the WPF `async void OnClosing` pattern.** The WPF example above uses `protected override async void OnClosing`, which is the simplest form but has a subtle issue: `base.OnClosing(e)` is called synchronously while `StopAsync()` is still awaiting, so the window can close before cleanup finishes. For most apps this is fine because the process exits immediately afterwards. If you need a guaranteed graceful shutdown (for example, to flush telemetry), follow the [Microsoft-documented deferral pattern](https://learn.microsoft.com/en-us/dotnet/api/system.windows.window.closing) where you set `e.Cancel = true`, `await` your async work, and then close the window explicitly.
+</Note>
+
 ---
 
 ## User Consent
 
 <Warning>
-  Displaying a consent dialog is **mandatory**. The SDK enforces this — `StartAsync()` throws an `InvalidOperationException` if the user hasn't opted in.
+  Displaying a consent dialog is **mandatory**. The SDK enforces this: `StartAsync()` throws an `InvalidOperationException` if the user has not opted in.
 </Warning>
 
 ```csharp
-var mellowtel = new Mellowtel("YOUR_CONFIG_KEY");
+var mellowtel = new Mellowtel("YOUR_INTEGRATION_ID");
 
 if (!mellowtel.GetOptInStatus())
 {

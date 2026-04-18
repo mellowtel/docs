@@ -1,13 +1,36 @@
 ---
 title: 'Rate Limiting'
-description: 'Protect your users from a slow browsing experience'
+description: 'How Mellowtel keeps itself invisible to the end user'
 icon: 'stopwatch'
 ---
 
-## Introduction
+## What it is
 
-To perform a request, Mellowtel opens a sandboxed environment that is very performant (it's the same used for most ad networks like Google AdSense) and secure thanks to their credentialless nature. This means that the request is not tied to any user's session and is not able to access any user's data (such as cookies, local storage, etc).
+Mellowtel automatically caps how many requests a single device (a "node") will accept and process. The cap is enforced inside the SDK. You do not configure it, and a misbehaving partner cannot raise it from the outside.
 
-## Implementation
+## Why it matters
 
-To avoid slowing down a user's browsing experience, Mellowtel automatically applies a rate limit to how many requests a single node can accept. This limit varies based on bandwidth speed, geolocation and overall availability, but it always ensures that the user's browsing experience is not affected.
+The whole product depends on users not noticing Mellowtel is running. If a node served unlimited requests, a user on a slow connection would feel it in their browser. Rate limiting is the mechanism that protects that promise, and it's why you can ship Mellowtel to real users without worrying about support tickets about "the browser feels slow."
+
+## How it works
+
+Each request is performed inside a sandboxed window that is created for the request and torn down immediately after. This is the same isolation model used by ad networks like Google AdSense, with the additional guarantee that the window is *credentialless* (see [Privacy](/concepts/privacy)). Because each request is short-lived and isolated, the only knob that matters for user experience is *how many* run, and that is what rate limiting controls.
+
+The current limit varies based on:
+
+- **Bandwidth speed**: slower connections receive fewer requests.
+- **Geolocation**: capacity is balanced regionally.
+- **Overall network availability**: the SDK backs off when global demand is low.
+
+<Note>
+**TODO:** Document concrete numbers (req/min ceilings, geo tiers, bandwidth thresholds) once finalized. For now the limits are intentionally adaptive and not exposed via the public API.
+</Note>
+
+## API surface
+
+There is no rate-limiting API to call. The throttle is internal and always on. You cannot disable it, and you should not need to inspect it. If you believe rate limiting is causing an issue in your integration, [open an issue on GitHub](https://github.com/mellowtel-inc/) or ping us on [Discord](https://discord.com/invite/txAZp4MSDe).
+
+## Related
+
+- [Privacy](/concepts/privacy): what the sandboxed window does and does not have access to.
+- [Opt-in / Opt-out](/concepts/opt-in-out): the consent layer that sits in front of all of this.

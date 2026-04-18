@@ -4,28 +4,58 @@ title: Welcome 👋
 icon: hand-wave
 ---
 
-Mellowtel is the open-source monetization platform for developers and creators in the AI world.
+**Mellowtel is the open-source monetization platform for developers and creators in the AI world.** Drop the SDK into your browser extension, desktop app, website, or mobile app and your users can opt in to share a fraction of their unused internet bandwidth with trusted partners. You earn a share of the revenue.
 
-Your users can decide if they want to support you -- the developer of products they use -- by opting in to share a fraction of their unused internet bandwidth. Trusted partners — from startups to enterprises — access the internet to retrieve publicly available data from websites and you get a share of the revenue they pay.
+## What integration looks like
 
-The revenue split is 55% to developers and 45% to Mellowtel. 
+```bash
+npm install mellowtel
+```
 
-As we scale, we will be able to offer more services and increase the revenue for you.
-Down the line, there might be features so that you can share part of this revenue with your users. In the meantime, you can give exclusive features and content to reward them for supporting you.
+```javascript
+import Mellowtel from "mellowtel";
 
-This is the Mellowtel documentation. It's a great place to find most answers. If you have other questions, need help or want to be part of our community please join us on [Discord](https://discord.com/invite/txAZp4MSDe).
+const mellowtel = new Mellowtel("<YOUR_CONFIGURATION_KEY>");
+await mellowtel.initBackground();
+await mellowtel.generateAndOpenOptInLink();
+```
+
+That's the whole integration for a browser extension. Other platforms are similar. See the quickstarts below.
+
+## Pick your platform
 
 <CardGroup cols={2}>
-    <Card title="Browser plugins" icon="puzzle-piece" href="/browser-plugins">
-        Implement Mellowtel in your Browser Plugin in 5 minutes
+    <Card title="Browser plugins" icon="puzzle-piece" href="/browser-plugins/quickstart">
+        Integrate Mellowtel into a Chrome, Edge, Firefox, or Safari extension in ~5 minutes.
     </Card>
-    <Card title="Desktop Apps" icon="desktop" href="/desktop-app">
-        Monetize your desktop app with Mellowtel
+    <Card title="Desktop apps" icon="desktop" href="/desktop-app/quickstart">
+        Monetize an Electron, Windows, or macOS desktop app.
     </Card>
-    <Card title="Websites" icon="atom" href="/website">
-        Monetize your website with Mellowtel
+    <Card title="Websites" icon="atom" href="/website/quickstart">
+        Add Mellowtel to any website with a single script.
     </Card>
-    <Card title="Mobile Apps" icon="mobile" href="/mobile-app">
-        Monetize your mobile app with Mellowtel
+    <Card title="Mobile apps" icon="mobile" href="/mobile-app/quickstart">
+        Monetize an iOS or Android mobile app.
     </Card>
 </CardGroup>
+
+## Before you ship, read the concepts
+
+These four pages explain the principles every Mellowtel integration must respect: consent, privacy, and rate limiting. Skim them once and the rest of the docs will make sense.
+
+<CardGroup cols={2}>
+    <Card title="Concepts overview" icon="compass" href="/concepts/overview">
+        The four ideas behind Mellowtel in one page.
+    </Card>
+    <Card title="Opt-in / Opt-out" icon="signature" href="/concepts/opt-in-out">
+        How to capture (and revoke) user consent the right way.
+    </Card>
+</CardGroup>
+
+## How the revenue works
+
+The split is **55% to developers, 45% to Mellowtel**. As we scale we will be able to offer more services and increase the developer share. Down the line there may be features that let you share part of this revenue with your users directly; in the meantime you can reward opted-in users with exclusive features or content.
+
+## Need help?
+
+This site is the source of truth for everything technical. For anything else (questions, feedback, or just to hang out with other Mellowtel developers), join us on [Discord](https://discord.com/invite/txAZp4MSDe).

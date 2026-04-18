@@ -1,14 +1,45 @@
 ---
 title: 'Privacy'
-description: "How Mellowtel keeps users data private"
+description: 'What Mellowtel can and cannot see about your users'
 icon: 'lock'
 ---
 
-## Introduction
-Every user is assigned a random identifier not linked to any personal information. This ensures total anonymity.
+## What it is
 
-Every request gets loaded in a sandboxed environment. You can look at the implementation as it's open-source on [Github](https://github.com/mellowtel-inc/), so no personal information is shared (no cookies, local storage, etc).
+Every Mellowtel request runs inside a sandboxed, credentialless window that is created on demand and destroyed immediately after. The window has no access to the user's session, identity, or any data your product stores on the device.
 
-Basically it's like the requests are being handled in an incognito tab that is not linked to the user's instance.
+## Why it matters
 
+You are asking your users to share their bandwidth. They will only say yes, and you will only stay compliant with browser store policies, if you can answer "what does Mellowtel actually see?" with a straight, specific list. This page is that list.
 
+## What Mellowtel does *not* have access to
+
+When a request runs, the sandboxed window cannot read:
+
+- Cookies (first-party or third-party)
+- `localStorage`, `sessionStorage`, or IndexedDB
+- The user's authentication state on any site
+- Any data your extension or app stores
+- The user's browsing history or open tabs
+- Personally identifying information of any kind
+
+Think of every request as running in a fresh incognito window that is unrelated to the user's normal browser instance.
+
+## What Mellowtel *does* see
+
+- A randomly generated node identifier, assigned once per install. It is not linked to any personal information and cannot be used to identify the user.
+- The URL the trusted partner asked to fetch (which is public web content by definition).
+- The HTTP response from that public URL.
+
+## Verify it yourself
+
+The sandboxing logic is open source. If you or your security team want to audit the isolation model before shipping, read the source on [GitHub](https://github.com/mellowtel-inc/).
+
+<Note>
+**TODO:** Replace the org link above with a deep-link to the specific file that creates the credentialless window, so reviewers can jump straight to the relevant code.
+</Note>
+
+## Related
+
+- [Opt-in / Opt-out](/concepts/opt-in-out): how user consent is captured before any of the above happens.
+- [Rate Limiting](/concepts/rate-limiting): how the request volume is kept invisible to the user.
