@@ -14,7 +14,7 @@ Integrate Mellowtel into your Windows desktop application to allow users to shar
 
 ## Prerequisites
 
-- A Mellowtel account and configuration key (get yours from the [dashboard](https://www.mellowtel.com/mellowtel-auth/))
+- A Mellowtel account and **Integration ID** (get yours from the [dashboard](https://www.mellowtel.com/mellowtel-auth/)). Each desktop app gets its own unique Integration ID.
 - A NuGet access token (revealed below in the installation section).
 - .NET desktop application (Console, WPF, or Windows Forms)
 
@@ -70,14 +70,17 @@ dotnet restore
 ```csharp
 using MellowtelWin;
 
-// Initialize Mellowtel with your configuration key
-var mellowtel = new Mellowtel("YOUR_CONFIGURATION_KEY");
+// Initialize Mellowtel with your Integration ID
+var mellowtel = new Mellowtel("YOUR_INTEGRATION_ID");
 
 // Check if user has already opted in
 if (!mellowtel.GetOptInStatus())
 {
-    // Show your consent dialog — ONLY call OptIn() if the user agrees
-    mellowtel.OptIn();
+    // Show your consent dialog first, and ONLY call OptIn() if the user agrees
+    if (ShowConsentDialog())
+    {
+        mellowtel.OptIn();
+    }
 }
 
 // Start the service (throws InvalidOperationException if not opted in)
@@ -95,7 +98,7 @@ await mellowtel.StopAsync();
 ```
 
 <Note>
-  Replace `YOUR_CONFIGURATION_KEY` with the configuration key from your Mellowtel dashboard.
+  Replace `YOUR_INTEGRATION_ID` with the Integration ID from your Mellowtel dashboard. `ShowConsentDialog()` is your own UI that returns `true` only when the user explicitly agrees (see [User Consent](#user-consent) below).
 </Note>
 
 ---
@@ -111,7 +114,7 @@ await mellowtel.StopAsync();
     {
         static async Task Main(string[] args)
         {
-            using var mellowtel = new Mellowtel("YOUR_CONFIG_KEY");
+            using var mellowtel = new Mellowtel("YOUR_INTEGRATION_ID");
 
             if (!mellowtel.GetOptInStatus())
             {
@@ -163,7 +166,7 @@ await mellowtel.StopAsync();
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            _mellowtel = new Mellowtel("YOUR_CONFIG_KEY");
+            _mellowtel = new Mellowtel("YOUR_INTEGRATION_ID");
 
             _mellowtel.ConnectionStateChanged += (s, connected) =>
             {
@@ -221,7 +224,7 @@ await mellowtel.StopAsync();
 
         private async void MainForm_Load(object sender, EventArgs e)
         {
-            _mellowtel = new Mellowtel("YOUR_CONFIG_KEY");
+            _mellowtel = new Mellowtel("YOUR_INTEGRATION_ID");
 
             _mellowtel.ConnectionStateChanged += (s, connected) =>
             {
@@ -280,7 +283,7 @@ The event fires on a background thread, so UI frameworks that enforce thread aff
 </Warning>
 
 ```csharp
-var mellowtel = new Mellowtel("YOUR_CONFIG_KEY");
+var mellowtel = new Mellowtel("YOUR_INTEGRATION_ID");
 
 if (!mellowtel.GetOptInStatus())
 {
