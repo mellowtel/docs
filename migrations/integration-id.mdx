@@ -1,0 +1,55 @@
+---
+title: 'Migrating to Integration ID'
+description: 'Replace your legacy configuration key with the new per-integration identifier'
+icon: 'arrow-right-arrow-left'
+---
+
+We are replacing the legacy `configuration_key` with a new identifier called the **Integration ID**. If you already ship Mellowtel, you will need to update the string you pass to the SDK.
+
+## TL;DR
+
+- Every integration now has its own **Integration ID**, prefixed with `intgr-`.
+- The old `configuration_key` still works today, but will be deprecated.
+- The only code change is the string passed to `new Mellowtel(...)`.
+
+## Configuration Key vs Integration ID
+
+| | Configuration Key (legacy) | Integration ID (new) |
+|---|---|---|
+| Scope | One key per account | One ID per integration |
+| Format | Opaque string | `intgr-XXXXXXXXXX` |
+| Stats | Bundled across all apps | Per app |
+
+## Why we are making this change
+
+Mellowtel now ships across browser extensions, desktop apps, mobile apps, and websites. With one shared key, teams could not tell which surface was actually driving earnings.
+
+One Integration ID per app fixes that. Once you migrate, you unlock per-app stats, per-app earnings, and the dashboard features we are building next to help you grow each app independently.
+
+## What you need to change
+
+Only the string you pass to `new Mellowtel(...)`.
+
+```javascript
+// Before
+const mellowtel = new Mellowtel("<your_configuration_key>");
+
+// After
+const mellowtel = new Mellowtel("intgr-MG8tHhnkDN");
+```
+
+Everything else stays the same.
+
+## Getting your Integration ID
+
+1. Open the [Integrations page](https://www.mellowtel.com/dashboard/integrations) in your dashboard.
+2. Create one integration per app, choosing the matching type (extension, desktop, mobile, website).
+3. Copy the Integration ID and paste it into your SDK init.
+
+## Backward compatibility
+
+Existing code keeps working. We will announce a deprecation date with plenty of notice before the legacy key is removed. Migrating sooner unlocks the per-app features, so there is no reason to wait.
+
+## Need help?
+
+Ping us on [Discord](https://discord.com/invite/txAZp4MSDe) and we will walk you through it.
