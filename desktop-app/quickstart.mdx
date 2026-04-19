@@ -4,7 +4,18 @@ title: 'Integrate Mellowtel in your Desktop App'
 icon: 'rocket'
 ---
 
-Here you will see how to implement Mellowtel in your desktop application.
+Mellowtel lets your users opt in to share a small fraction of their unused internet bandwidth with trusted partners (startups, researchers, and non-profits) that retrieve publicly available data from the web. You get paid for the requests served, users get whatever reward or premium feature you choose to offer them in return, and no personal data is collected, shared, or sold.
+
+## Prerequisites
+
+Before you start, make sure you have:
+
+- A Mellowtel account and a **configuration key**. Generate yours from the [Mellowtel dashboard](https://www.mellowtel.com/mellowtel-auth/).
+- A supported desktop framework (see below). Each framework guide includes a one-click reveal for the package registry install token, so you do not need to request one ahead of time.
+
+<Warning>
+  **User consent is mandatory.** Both SDKs enforce opt-in at the API level. Your app must display a clear consent dialog and must let users manage their opt-in state at any time.
+</Warning>
 
 ## Pick your Framework
 
@@ -12,9 +23,21 @@ Choose the framework you are using and follow the instructions.
 
 <CardGroup cols={2}>
   <Card title="Windows (.NET)" icon="windows" href="/desktop-app/windows">
-    Console, WPF, or Windows Forms applications using the .NET SDK.
+    Console, WPF, or Windows Forms applications using the .NET SDK. Windows only.
   </Card>
   <Card title="Electron" icon="bolt" href="/desktop-app/electron">
-    Cross-platform desktop apps built with Electron.
+    Cross-platform desktop apps built with Electron. Works on macOS, Windows, and Linux.
   </Card>
 </CardGroup>
+
+{/*
+<Note>
+  **Native macOS and Linux SDKs are not available yet.** If you ship a native Cocoa, Swift, Qt, or GTK app and want Mellowtel support, let us know on [Discord](https://discord.com/invite/txAZp4MSDe) so we can gauge demand.
+</Note>
+*/}
+
+---
+
+Estimated time to complete: 10-15 minutes per framework.
+
+If you need help or have feedback, contact us at [info@mellowtel.com](mailto:info@mellowtel.com) or join our [Discord community](https://discord.com/invite/txAZp4MSDe).
