@@ -1,0 +1,4 @@
+div.absolute.bottom-0.left-0.w-full.bg-primary,
+div.absolute.bottom-0.left-0.w-full.dark\:bg-primary-light {
+  display: none !important;
+}
