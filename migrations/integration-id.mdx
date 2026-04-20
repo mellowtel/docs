@@ -8,7 +8,7 @@ We are replacing the legacy `configuration_key` with a new identifier called the
 
 ## TL;DR
 
-- Every integration now has its own **Integration ID**, prefixed with `intgr-`.
+- Every integration now has its own **Integration ID**, prefixed with `intgr_`.
 - The old `configuration_key` still works today, but will be deprecated.
 - The only code change is the string passed to `new Mellowtel(...)`.
 
@@ -17,7 +17,7 @@ We are replacing the legacy `configuration_key` with a new identifier called the
 | | Configuration Key (legacy) | Integration ID (new) |
 |---|---|---|
 | Scope | One key per account | One ID per integration |
-| Format | Opaque string | `intgr-XXXXXXXXXX` |
+| Format | Opaque string | `intgr_XXXXXXXXXX` |
 | Stats | Bundled across all apps | Per app |
 
 ## Why we are making this change
@@ -35,7 +35,7 @@ Only the string you pass to `new Mellowtel(...)`.
 const mellowtel = new Mellowtel("<your_configuration_key>");
 
 // After
-const mellowtel = new Mellowtel("intgr-MG8tHhnkDN");
+const mellowtel = new Mellowtel("intgr_MG8tHhnkDN");
 ```
 
 Everything else stays the same.
