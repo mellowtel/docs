@@ -9,97 +9,80 @@ platforms:
 Integrate Mellowtel into your Windows desktop application to allow users to share their unused internet bandwidth in exchange for rewards or premium features.
 
 <Warning>
-  **User consent is mandatory.** The SDK will throw an `InvalidOperationException` if you call `StartAsync()` without the user having opted in.
+  **User consent is mandatory.** The SDK throws an `InvalidOperationException` if you call `StartAsync()` without the user having opted in.
 </Warning>
 
 ## Prerequisites
 
-- A Mellowtel account and **Integration ID** (get yours from the [dashboard](https://www.mellowtel.com/mellowtel-auth/)). Each desktop app gets its own unique Integration ID.
-- A NuGet access token (revealed below in the installation section).
-- .NET desktop application (Console, WPF, or Windows Forms)
+- A Mellowtel account and **Integration ID** from the [dashboard](https://www.mellowtel.com/mellowtel-auth/). Each desktop app gets its own unique Integration ID.
+- .NET 10 SDK
+- Windows 10 or Windows 11
+- A .NET desktop application (Console, WPF, or Windows Forms)
+
+<Note>
+  Want to see a complete, real-world integration before wiring this into your own app? The [mellowtel-pomodoro-windows](https://github.com/mellowtel-inc/mellowtel-pomodoro-windows) WPF sample shows the full flow end-to-end: consent dialog, settings toggle, and background lifecycle.
+</Note>
 
 ---
 
 ## Installation
 
-### 1. Configure NuGet Authentication
+Mellowtel for Windows ships on NuGet as [`Mellowtel.Win`](https://www.nuget.org/packages/Mellowtel.Win).
 
-Create a file named `nuget.config` in your project's root directory (the same folder as your `.csproj` or `.sln` file):
+### 1. Install the Package
+
+From your project directory:
+
+```bash
+dotnet add package Mellowtel.Win
+```
+
+Or add a `PackageReference` to your `.csproj`:
 
 ```xml
-<?xml version="1.0" encoding="utf-8"?>
-<configuration>
-  <packageSources>
-    <clear />
-    <add key="nuget.org" value="https://api.nuget.org/v3/index.json" protocolVersion="3" />
-    <add key="github-mellowtel" value="https://nuget.pkg.github.com/mellowtel-inc/index.json" />
-  </packageSources>
-  <packageSourceCredentials>
-    <github-mellowtel>
-      <add key="Username" value="mellowtel-packages" />
-      <add key="ClearTextPassword" value="YOUR_PROVIDED_TOKEN" />
-    </github-mellowtel>
-  </packageSourceCredentials>
-</configuration>
+<PackageReference Include="Mellowtel.Win" Version="1.0.0" />
 ```
 
-Replace `YOUR_PROVIDED_TOKEN` with the install token below. Click to reveal, then use the copy icon on the code block to copy it to your clipboard.
-
-<Accordion title="Reveal install token">
-  ```
-  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
-  ```
-</Accordion>
-
-### 2. Install the Package
-
-Open your terminal in the project directory and run:
-
-```bash
-dotnet add package Mellowtel.Windows
-```
-
-Then restore packages:
-
-```bash
-dotnet restore
-```
-
-### 3. Add to Your Code
+### 2. Add to Your Code
 
 ```csharp
 using MellowtelWin;
 
 // Initialize Mellowtel with your Integration ID
-var mellowtel = new Mellowtel("YOUR_INTEGRATION_ID");
-
-// Check if user has already opted in
-if (!mellowtel.GetOptInStatus())
+var mellowtel = new Mellowtel("YOUR_INTEGRATION_ID", new MellowtelOptions
 {
-    // Show your consent dialog first, and ONLY call OptIn() if the user agrees
-    if (ShowConsentDialog())
-    {
-        mellowtel.OptIn();
-    }
-}
+    PluginId = "your-app-id"
+});
 
-// Start the service (throws InvalidOperationException if not opted in)
-try
+// If the user has already opted in, resume silently.
+// If not, this is a no-op and returns false.
+await mellowtel.StartIfOptedInAsync();
+
+// First-time flow: show your consent UI, then opt in and start.
+if (!mellowtel.GetOptInStatus() && ShowConsentDialog())
 {
+    mellowtel.OptIn();
     await mellowtel.StartAsync();
 }
-catch (InvalidOperationException ex)
-{
-    Console.WriteLine($"Error: {ex.Message}");
-}
 
-// Stop when your app closes
+// On app shutdown
 await mellowtel.StopAsync();
+mellowtel.Dispose();
 ```
 
 <Note>
-  Replace `YOUR_INTEGRATION_ID` with the Integration ID from your Mellowtel dashboard. `ShowConsentDialog()` is your own UI that returns `true` only when the user explicitly agrees (see [User Consent](#user-consent) below).
+  Replace `YOUR_INTEGRATION_ID` with the Integration ID from your Mellowtel dashboard, and set `PluginId` to a stable identifier for your app. `ShowConsentDialog()` is your own UI that returns `true` only when the user explicitly agrees. See [User Consent](#user-consent) below.
 </Note>
+
+### Configuration options
+
+`MellowtelOptions` lets you tune a few things:
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `PluginId` | `string` | `"mellowtel-win"` | Stable identifier for your app. Set this to something unique. |
+| `MaxDailyRate` | `int` | Built-in default | Max requests the SDK will handle per day. |
+| `DisableLogs` | `bool` | `true` | Set to `false` to enable SDK logs during development. |
 
 ---
 
@@ -114,7 +97,10 @@ await mellowtel.StopAsync();
     {
         static async Task Main(string[] args)
         {
-            using var mellowtel = new Mellowtel("YOUR_INTEGRATION_ID");
+            using var mellowtel = new Mellowtel("YOUR_INTEGRATION_ID", new MellowtelOptions
+            {
+                PluginId = "your-app-id"
+            });
 
             if (!mellowtel.GetOptInStatus())
             {
@@ -166,7 +152,10 @@ await mellowtel.StopAsync();
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            _mellowtel = new Mellowtel("YOUR_INTEGRATION_ID");
+            _mellowtel = new Mellowtel("YOUR_INTEGRATION_ID", new MellowtelOptions
+            {
+                PluginId = "your-app-id"
+            });
 
             _mellowtel.ConnectionStateChanged += (s, connected) =>
             {
@@ -176,18 +165,9 @@ await mellowtel.StopAsync();
                 });
             };
 
-            if (_mellowtel.GetOptInStatus())
-            {
-                try
-                {
-                    await _mellowtel.StartAsync();
-                }
-                catch (InvalidOperationException ex)
-                {
-                    Dispatcher.Invoke(() => MessageBox.Show($"Error: {ex.Message}", "Error"));
-                }
-            }
-            else
+            // Silently resume if already opted in. Otherwise show your consent UI.
+            var started = await _mellowtel.StartIfOptedInAsync();
+            if (!started)
             {
                 // Show your consent dialog here
             }
@@ -224,7 +204,10 @@ await mellowtel.StopAsync();
 
         private async void MainForm_Load(object sender, EventArgs e)
         {
-            _mellowtel = new Mellowtel("YOUR_INTEGRATION_ID");
+            _mellowtel = new Mellowtel("YOUR_INTEGRATION_ID", new MellowtelOptions
+            {
+                PluginId = "your-app-id"
+            });
 
             _mellowtel.ConnectionStateChanged += (s, connected) =>
             {
@@ -234,18 +217,9 @@ await mellowtel.StopAsync();
                     statusLabel.Text = connected ? "Connected" : "Disconnected";
             };
 
-            if (_mellowtel.GetOptInStatus())
-            {
-                try
-                {
-                    await _mellowtel.StartAsync();
-                }
-                catch (InvalidOperationException ex)
-                {
-                    Invoke(() => MessageBox.Show($"Error: {ex.Message}", "Error"));
-                }
-            }
-            else
+            // Silently resume if already opted in. Otherwise show your consent UI.
+            var started = await _mellowtel.StartIfOptedInAsync();
+            if (!started)
             {
                 // Show your consent dialog here
             }
@@ -283,7 +257,10 @@ The event fires on a background thread, so UI frameworks that enforce thread aff
 </Warning>
 
 ```csharp
-var mellowtel = new Mellowtel("YOUR_INTEGRATION_ID");
+var mellowtel = new Mellowtel("YOUR_INTEGRATION_ID", new MellowtelOptions
+{
+    PluginId = "your-app-id"
+});
 
 if (!mellowtel.GetOptInStatus())
 {
@@ -292,7 +269,7 @@ if (!mellowtel.GetOptInStatus())
     if (userAgreed)
         mellowtel.OptIn();
     else
-        return; // user declined — do not start
+        return; // user declined, do not start
 }
 
 try
@@ -340,24 +317,28 @@ if (userWantsToOptIn)
 }
 ```
 
+For richer UI (for example, showing when the user first opted in), `GetOptInDetails()` returns the opt-in status alongside the opt-in and opt-out timestamps:
+
+```csharp
+var (isOptedIn, optInDate, optOutDate) = mellowtel.GetOptInDetails();
+```
+
 ---
 
 ## Troubleshooting
 
 <AccordionGroup>
   <Accordion title='"Package not found" error'>
-    1. Verify `nuget.config` is in the correct location (the project root, next to `.csproj` or `.sln`)
-    2. Check that the token has no extra spaces
-    3. Clear the NuGet cache and retry:
+    1. Make sure your project targets **.NET 10** or later. `Mellowtel.Win` requires `net10.0`.
+    2. Clear the NuGet cache and restore:
 
     ```bash
     dotnet nuget locals all --clear
     dotnet restore
     ```
   </Accordion>
-  <Accordion title='"Unauthorized" or "Authentication failed"'>
-    1. Verify the token in `nuget.config` is correct
-    2. Make sure there are no extra spaces around the token value
+  <Accordion title='"InvalidOperationException: User has not opted in"'>
+    `StartAsync()` requires explicit consent. Call `OptIn()` after your consent dialog returns a positive result, then call `StartAsync()`. For silent resume on subsequent launches, use `StartIfOptedInAsync()` instead, which is a no-op when the user has not opted in.
   </Accordion>
 </AccordionGroup>
 
