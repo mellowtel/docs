@@ -1,0 +1,273 @@
+name: Translate and Deploy Docs
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '**.mdx'
+      - 'docs.json'
+      - 'images/**'
+      - 'openapi/**'
+      - 'scripts/**'
+      - '.github/workflows/**'
+  workflow_dispatch:
+    inputs:
+      force_full_translation:
+        description: 'Force full re-translation of all files'
+        required: false
+        default: 'false'
+        type: boolean
+
+env:
+  DEPLOY_BRANCH: prod
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+concurrency:
+  group: translate-deploy
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  # ============================================
+  # JOB 1: Setup and detect what needs translation
+  # ============================================
+  setup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      changed_files: ${{ steps.changed.outputs.files }}
+      force_full: ${{ steps.changed.outputs.force_full }}
+
+    steps:
+      - name: Checkout main branch
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 2
+
+      - name: Get changed files
+        id: changed
+        run: |
+          if [ "${{ github.event.inputs.force_full_translation }}" = "true" ]; then
+            echo "files=" >> $GITHUB_OUTPUT
+            echo "force_full=true" >> $GITHUB_OUTPUT
+          else
+            if git rev-parse HEAD~1 >/dev/null 2>&1; then
+              # Get changed English MDX files (exclude language directories)
+              files=$(git diff --name-only HEAD~1 HEAD -- '*.mdx' | grep -v '^de/' | grep -v '^fr/' | grep -v '^es/' | grep -v '^nl/' | grep -v '^zh/' | grep -v '^it/' | grep -v '^ja/' | tr '\n' ',' | sed 's/,$//')
+              echo "files=$files" >> $GITHUB_OUTPUT
+            else
+              echo "files=" >> $GITHUB_OUTPUT
+            fi
+            echo "force_full=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Fetch existing translations from prod
+        run: |
+          git fetch origin prod:prod 2>/dev/null || true
+          if git rev-parse prod >/dev/null 2>&1; then
+            echo "Copying existing translations from prod branch..."
+            for lang in de fr es nl zh it ja; do
+              git checkout prod -- "$lang/" 2>/dev/null || echo "No existing $lang translations"
+            done
+          fi
+
+  # ============================================
+  # JOB 2: Catch-up translation (all missing)
+  # ============================================
+  translate-catchup:
+    needs: setup
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+
+    steps:
+      - name: Checkout main branch
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Fetch existing translations from prod
+        run: |
+          git fetch origin prod:prod 2>/dev/null || true
+          if git rev-parse prod >/dev/null 2>&1; then
+            echo "Copying existing translations from prod..."
+            for lang in de fr es nl zh it ja; do
+              git checkout prod -- "$lang/" 2>/dev/null || echo "No $lang yet"
+            done
+          fi
+
+      - name: Run catch-up translation
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: npx ts-node scripts/translate-docs.ts --phase=catchup
+
+      - name: Upload translated files
+        uses: actions/upload-artifact@v4
+        with:
+          name: translations-catchup
+          path: |
+            de/
+            fr/
+            es/
+            nl/
+            zh/
+            it/
+            ja/
+          if-no-files-found: ignore
+
+  # ============================================
+  # JOB 3: Incremental translation (changed files only)
+  # ============================================
+  translate-incremental:
+    needs: [setup, translate-catchup]
+    if: needs.setup.outputs.changed_files != ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout main branch
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Download catch-up translations
+        uses: actions/download-artifact@v4
+        with:
+          name: translations-catchup
+          path: .
+        continue-on-error: true
+
+      - name: Run incremental translation
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          npx ts-node scripts/translate-docs.ts --phase=incremental --files="${{ needs.setup.outputs.changed_files }}"
+
+      - name: Upload translated files
+        uses: actions/upload-artifact@v4
+        with:
+          name: translations-incremental
+          path: |
+            de/
+            fr/
+            es/
+            nl/
+            zh/
+            it/
+            ja/
+          if-no-files-found: ignore
+
+  # ============================================
+  # JOB 4: Deploy to prod
+  # ============================================
+  deploy:
+    needs: [setup, translate-catchup, translate-incremental]
+    if: always() && needs.translate-catchup.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+
+    steps:
+      - name: Checkout main branch
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Download catch-up translations
+        uses: actions/download-artifact@v4
+        with:
+          name: translations-catchup
+          path: .
+        continue-on-error: true
+
+      - name: Download incremental translations
+        uses: actions/download-artifact@v4
+        with:
+          name: translations-incremental
+          path: .
+        continue-on-error: true
+
+      - name: Verify translations exist
+        run: |
+          echo "Checking for translations..."
+          for lang in de fr es nl zh it ja; do
+            if [ -d "$lang" ]; then
+              count=$(find "$lang" -name "*.mdx" | wc -l)
+              echo "  $lang: $count files"
+            fi
+          done
+
+      - name: Sanitize MDX frontmatter (YAML-safe quoting, all locales)
+        run: npx ts-node scripts/sanitize-locale-frontmatter.ts
+
+      - name: Translate OpenAPI specs (all locales)
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: npx ts-node scripts/translate-openapi.ts
+
+      - name: Update docs.json with i18n config
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: npx ts-node scripts/update-docs-config.ts
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Deploy to prod branch
+        run: |
+          # Force-add locale dirs first — they are in .gitignore (to prevent
+          # accidental commits on main) but must be committed on prod.
+          git add -f de/ fr/ es/ nl/ zh/ it/ ja/ 2>/dev/null || true
+
+          # Stage everything else
+          git add -A
+
+          # Check if there are changes to commit
+          if git diff --staged --quiet; then
+            echo "No changes to deploy"
+            exit 0
+          fi
+
+          # Commit
+          git commit -m "chore: auto-translate docs to $(date +%Y-%m-%d)"
+
+          # Force push to prod (this triggers Mintlify deployment)
+          git push origin HEAD:${{ env.DEPLOY_BRANCH }} --force
