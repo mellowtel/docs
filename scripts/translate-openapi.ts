@@ -241,6 +241,11 @@ async function main(): Promise<void> {
   console.log("OpenAPI Translation");
   console.log("===================\n");
 
+  if (!fs.existsSync(OPENAPI_DIR)) {
+    console.log(`No ${OPENAPI_DIR}/ directory found, skipping OpenAPI translation.`);
+    return;
+  }
+
   if (!process.env.OPENAI_API_KEY) {
     console.error("ERROR: OPENAI_API_KEY environment variable not set");
     process.exit(1);
