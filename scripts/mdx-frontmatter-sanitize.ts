@@ -38,7 +38,9 @@ export function serializeFrontmatterSafe(data: Record<string, unknown>): string 
     } else if (typeof v === "boolean" || typeof v === "number") {
       lines.push(`${k}: ${String(v)}`);
     } else if (typeof v === "object") {
-      lines.push(`${k}: ${YAML.stringify(v).trim()}`);
+      // Stringify the {k: v} pair as a unit so YAML places block sequences/mappings
+      // on subsequent indented lines instead of inlining "k: - item" (invalid).
+      lines.push(YAML.stringify({ [k]: v }).trimEnd());
     } else {
       lines.push(`${k}: ${JSON.stringify(String(v))}`);
     }
