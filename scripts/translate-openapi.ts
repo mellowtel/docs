@@ -24,6 +24,7 @@ const LANGUAGES: Record<string, LanguageInfo> = {
   zh: { name: "Chinese (Simplified)", nativeName: "简体中文" },
   it: { name: "Italian", nativeName: "Italiano" },
   ja: { name: "Japanese", nativeName: "日本語" },
+  ru: { name: "Russian", nativeName: "Русский" },
 };
 
 const DOCS_ROOT = path.resolve(__dirname, "..");
