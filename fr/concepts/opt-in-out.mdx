@@ -1,0 +1,89 @@
+---
+title: "Participation / Désinscription"
+description: "Les utilisateurs doivent consentir explicitement avant que toute bande passante ne soit partagée, et peuvent révoquer leur consentement à tout moment"
+icon: "signature"
+---
+
+## Ce que c'est
+
+Mellowtel ne partagera pas un seul octet de bande passante tant que l'utilisateur n'aura pas explicitement choisi de participer, et l'utilisateur doit toujours avoir un moyen évident de se désinscrire. C'est une exigence stricte du SDK et une exigence stricte de chaque politique de magasin de navigateur qui permet les extensions basées sur Mellowtel.
+
+## Pourquoi c'est important
+
+C'est la bande passante de l'utilisateur. Tout consentement qui n'est pas explicite et révocable est à la fois contraire à l'éthique et un motif de retrait du magasin. Le SDK est conçu de sorte que le chemin *facile* soit également le chemin *conforme*. Si tu suis la mise en œuvre recommandée, tu ne peux pas accidentellement livrer une version qui s'active sans consentement.
+
+## Comment ça fonctionne
+
+Lors de la première installation (et lors de toute mise à jour qui introduit Mellowtel), tu dois montrer à l'utilisateur un avertissement non rejetable qui explique ce que fait Mellowtel, puis capturer son choix. Par la suite, un lien vers les paramètres doit être accessible depuis un endroit évident dans ton interface utilisateur afin qu'il puisse changer d'avis.
+
+<Frame caption="Exemple d'avertissement">
+    <img src="/images/mellowtel_disclaimer.png" />
+</Frame>
+
+Tu as deux options de mise en œuvre :
+
+1. **Recommandé :** ouvre la page de participation préconstruite de Mellowtel avec `generateAndOpenOptInLink()`. Un appel de méthode, entièrement conforme, maximise la conversion de participation.
+2. **UI personnalisée :** construis ta propre interface de consentement et appelle `optIn()` / `optOut()` toi-même.
+
+## Surface de l'API
+
+| Méthode | Renvoie | Utilise-la pour |
+|---|---|---|
+| `generateAndOpenOptInLink()` | `Promise<void>` | Ouvre la page de participation hébergée (chemin recommandé). |
+| `getOptInStatus()` | `Promise<boolean>` | Vérifie si l'utilisateur a déjà choisi de participer. |
+| `optIn()` | `Promise<void>` | Enregistre le consentement depuis ton propre UI. |
+| `optOut()` | `Promise<void>` | Révoque le consentement depuis ton propre UI. |
+| `start()` | `Promise<void>` | Commence à servir les requêtes après la participation. |
+| `generateSettingsLink()` | `Promise<string>` | URL vers la page de paramètres hébergée pour que les utilisateurs puissent changer leur choix plus tard. |
+
+Toutes les méthodes sont accessibles depuis n'importe quelle partie de ton extension : popup, script de contenu ou script d'arrière-plan.
+
+## Mise en œuvre recommandée
+
+Le guide d'intégration complet se trouve dans les démarrages rapides de la plateforme. Ils montrent où placer le SDK, comment le connecter au cycle de vie d'installation/mise à jour, et comment le tester :
+
+- [Démarrage rapide des plugins de navigateur](/browser-plugins/quickstart)
+- [Démarrage rapide des applications de bureau](/desktop-app/quickstart)
+- [Démarrage rapide des sites web](/website/quickstart)
+- [Démarrage rapide des applications mobiles](/mobile-app/quickstart)
+
+En bref, après `new Mellowtel(...)` et `initBackground()`, appelle `generateAndOpenOptInLink()` depuis ton gestionnaire d'installation/mise à jour. C'est tout.
+
+## UI personnalisée
+
+Si tu veux un contrôle total sur l'interface de consentement, capture le choix de l'utilisateur dans ton propre UI et transmets-le au SDK :
+
+```javascript
+// L'utilisateur a accepté
+await mellowtel.optIn();
+await mellowtel.start();
+
+// L'utilisateur a refusé ou a révoqué plus tard
+await mellowtel.optOut();
+
+// Vérifie le statut (par exemple pour afficher un interrupteur)
+const hasOptedIn = await mellowtel.getOptInStatus();
+```
+
+Quelle que soit l'interface que tu construis, elle doit :
+
+1. Être non rejetable lors de la première installation.
+2. Par défaut, être désinscrite jusqu'à ce que l'utilisateur accepte activement.
+3. Être ré-ouvrable depuis un endroit évident dans ton produit afin que les utilisateurs puissent changer leur choix.
+
+## Lien vers les paramètres
+
+Les utilisateurs doivent toujours avoir un moyen facile de changer leurs paramètres. Utilise `generateSettingsLink()` pour obtenir une URL vers la page de paramètres hébergée et place-la quelque part de persistant : ton popup, une page d'options, un écran de compte.
+
+```javascript
+const settingsUrl = await mellowtel.generateSettingsLink();
+```
+
+## Annoncer Mellowtel aux utilisateurs existants
+
+Si tu ajoutes Mellowtel à une extension qui a déjà des utilisateurs, tu dois leur dire ce qui a changé avant de demander leur consentement. Nous fournissons un [modèle d'annonce prêt à copier-coller](/concepts/update-announcement) que tu peux adapter.
+
+## Liens connexes
+
+- [Confidentialité](/concepts/privacy) : ce à quoi les utilisateurs acceptent réellement de partager.
+- [Limitation de débit](/concepts/rate-limiting) : comment le SDK protège les utilisateurs qui choisissent de participer.

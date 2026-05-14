@@ -1,0 +1,154 @@
+---
+sidebarTitle: "无需打包工具的 Mellowtel"
+title: "集成 Mellowtel 而不使用打包工具"
+icon: "box"
+---
+
+本指南解释了如何在不使用 Webpack 或 Vite 等打包工具的情况下，将 Mellowtel 集成到你的浏览器扩展中。相反，你将使用一个单独的预打包文件，该文件可在内容脚本和服务工作者中使用。
+
+## 项目设置
+
+从一个基本的浏览器扩展结构开始：
+
+```
+your-extension/
+├── icons/
+├── popup/
+│   ├── popup.html
+│   └── popup.js
+├── background.js           # 你的服务工作者
+├── content_script.js
+├── manifest.json
+└── mellowtel.js           # 将在下一步中添加
+```
+
+## 获取 Mellowtel 包
+
+你有两种选择来获取扩展所需的 `mellowtel.js` 文件：
+
+### 选项 1：使用预打包文件
+
+最简单的开始方式是使用来自 [mellowtel-bundled 仓库](https://github.com/mellowtel-inc/mellowtel-bundled) 的预打包 `mellowtel.js` 文件。
+
+1. 前往 [mellowtel-bundled 仓库](https://github.com/mellowtel-inc/mellowtel-bundled)
+2. 下载 `mellowtel.js` 文件
+3. 将其复制到你的扩展目录
+
+### 选项 2：生成你自己的包
+
+如果你更喜欢自己生成包，请按照以下步骤操作：
+
+#### 创建一个临时打包目录
+
+创建一个临时目录来安装 Mellowtel 并生成包：
+
+```bash
+mkdir mellowtel-bundling
+cd mellowtel-bundling
+npm init -y
+npm install mellowtel
+```
+
+这将创建一个包含 Mellowtel 包的单独文件夹，你将仅用于打包。
+
+#### 使用 esbuild 打包 Mellowtel
+
+在 `mellowtel-bundling` 目录内，创建一个在服务工作者和内容脚本中都能使用的单一包：
+
+```bash
+npx esbuild node_modules/mellowtel/dist/index.js --bundle --format=iife --global-name=Mellowtel --footer:js="globalThis.Mellowtel = Mellowtel.default" --platform=browser --outfile=mellowtel.js --minify --legal-comments=none
+```
+
+此命令：
+- 从 `node_modules/mellowtel/dist/index.js` 获取 Mellowtel 源文件
+- 将所有依赖项打包成一个文件
+- 使用 IIFE 格式和全局名称以实现通用兼容性
+- 添加页脚以使默认导出在全局可用
+- 针对浏览器环境进行优化并压缩输出
+- 在打包目录中创建 `mellowtel.js`
+
+#### 将包复制到你的扩展中
+
+运行 esbuild 命令后，将生成的文件复制到你的扩展目录：
+
+```bash
+cp mellowtel.js ../your-extension/
+```
+
+现在你可以删除临时打包目录，因为你只需要输出文件：
+
+```bash
+cd ..
+rm -rf mellowtel-bundling
+```
+
+你的扩展文件夹现在包含了准备使用的 Mellowtel 包文件。
+
+## 配置你的清单（两种选项）
+
+无论你选择了上述哪种选项，都要配置你的 `manifest.json` 以在内容脚本中包含 Mellowtel 包：
+
+```json
+{
+  "manifest_version": 3,
+  "name": "Your Extension Name",
+  "version": "1.0",
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["mellowtel.js", "content_script.js"]
+    }
+  ],
+  "permissions": [
+    "storage",
+    "declarativeNetRequestWithHostAccess"
+  ],
+  "host_permissions": [
+    "\u003Call_urls\u003E"
+  ]
+}
+```
+
+**重要**：
+- `"type": "module"` 字段启用了服务工作者中的 ES 模块导入。
+- 在内容脚本数组中，`mellowtel.js` 必须在 `content_script.js` **之前**加载，以便在你的内容脚本运行时 Mellowtel 全局变量可用。
+
+## 在你的扩展中使用 Mellowtel
+
+对于你的服务工作者（background.js），导入打包文件：
+
+```javascript
+// background.js
+import './mellowtel.js';
+
+(async () => {
+    const mellowtel = new Mellowtel("<configuration_key>"); // 替换为你的配置密钥
+    await mellowtel.initBackground();
+})();
+```
+
+对于内容脚本，Mellowtel 作为全局变量可用（无需导入，因为它是通过清单加载的）：
+
+```javascript
+// content_script.js
+// Mellowtel 作为 mellowtel.js 提供的全局变量可用
+
+(async () => {
+  const mellowtel = new Mellowtel("<configuration_key>"); // 替换为你的配置密钥
+  await mellowtel.initContentScript();
+})();
+```
+
+## 测试你的扩展
+
+要测试你的扩展：
+
+1. 在 Chrome 中访问 `chrome://extensions/`（或其他浏览器中的等效页面）
+2. 启用“开发者模式”
+3. 点击“加载未打包”并选择你的扩展文件夹
+
+这种方法让你在使用 Mellowtel 的同时，避免了设置像 Webpack 或 Vite 这样的完整构建系统的复杂性。

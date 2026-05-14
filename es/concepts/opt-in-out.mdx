@@ -1,0 +1,89 @@
+---
+title: "Optar por Participar / Optar por No Participar"
+description: "Los usuarios deben dar su consentimiento explícito antes de compartir cualquier ancho de banda, y pueden revocar el consentimiento en cualquier momento"
+icon: "signature"
+---
+
+## Qué es
+
+Mellowtel no compartirá ni un solo byte de ancho de banda hasta que el usuario haya optado explícitamente por participar, y el usuario siempre debe tener una forma obvia de optar por no participar nuevamente. Este es un requisito estricto del SDK y un requisito estricto de cada política de tienda de navegadores que permite extensiones basadas en Mellowtel.
+
+## Por qué es importante
+
+Es el ancho de banda del usuario. Cualquier cosa menos que un consentimiento explícito y revocable es tanto poco ético como motivo para la eliminación de la tienda. El SDK está diseñado para que el camino *fácil* también sea el camino *cumplido*. Si sigues la implementación recomendada, no puedes accidentalmente enviar una versión que se active sin consentimiento.
+
+## Cómo funciona
+
+En la primera instalación (y en cualquier actualización que introduzca Mellowtel por primera vez) debes mostrar al usuario un aviso no descartable que explique lo que hace Mellowtel, y luego capturar su elección. A partir de entonces, un enlace a la configuración debe ser accesible desde algún lugar obvio en tu interfaz de usuario para que puedan cambiar de opinión.
+
+<Frame caption="Ejemplo de aviso">
+    <img src="/images/mellowtel_disclaimer.png" />
+</Frame>
+
+Tienes dos opciones de implementación:
+
+1. **Recomendado:** abre la página de opt-in preconstruida de Mellowtel con `generateAndOpenOptInLink()`. Una llamada de método, totalmente cumplida, maximiza la conversión de opt-in.
+2. **Interfaz personalizada:** construye tu propia superficie de consentimiento y llama a `optIn()` / `optOut()` tú mismo.
+
+## Superficie de la API
+
+| Método | Devuelve | Úsalo para |
+|---|---|---|
+| `generateAndOpenOptInLink()` | `Promise<void>` | Abrir la página de opt-in alojada (camino recomendado). |
+| `getOptInStatus()` | `Promise<boolean>` | Verificar si el usuario ya ha optado por participar. |
+| `optIn()` | `Promise<void>` | Registrar el consentimiento desde tu propia interfaz de usuario. |
+| `optOut()` | `Promise<void>` | Revocar el consentimiento desde tu propia interfaz de usuario. |
+| `start()` | `Promise<void>` | Comenzar a servir solicitudes después del opt-in. |
+| `generateSettingsLink()` | `Promise<string>` | URL a la página de configuración alojada para que los usuarios puedan cambiar su elección más tarde. |
+
+Todos los métodos son accesibles desde cualquier parte de tu extensión: popup, script de contenido o script de fondo.
+
+## Implementación recomendada
+
+El recorrido completo de integración se encuentra en los inicios rápidos de la plataforma. Muestran dónde colocar el SDK, cómo integrarlo en el ciclo de vida de instalación/actualización y cómo probarlo:
+
+- [Inicio rápido de complementos del navegador](/browser-plugins/quickstart)
+- [Inicio rápido de aplicaciones de escritorio](/desktop-app/quickstart)
+- [Inicio rápido de sitios web](/website/quickstart)
+- [Inicio rápido de aplicaciones móviles](/mobile-app/quickstart)
+
+En resumen, después de `new Mellowtel(...)` e `initBackground()`, llama a `generateAndOpenOptInLink()` desde tu manejador de instalación/actualización. Eso es todo.
+
+## Interfaz personalizada
+
+Si deseas tener control total sobre la superficie de consentimiento, captura la elección del usuario en tu propia interfaz de usuario y reenvíala al SDK:
+
+```javascript
+// El usuario aceptó
+await mellowtel.optIn();
+await mellowtel.start();
+
+// El usuario rechazó o revocó más tarde
+await mellowtel.optOut();
+
+// Verificar estado (por ejemplo, para renderizar un interruptor)
+const hasOptedIn = await mellowtel.getOptInStatus();
+```
+
+Cualquiera que sea la interfaz de usuario que construyas, debe:
+
+1. No ser descartable en la primera instalación.
+2. Predeterminar a no participar hasta que el usuario acepte activamente.
+3. Ser reabrible desde algún lugar obvio en tu producto para que los usuarios puedan cambiar su elección.
+
+## Enlace de configuración
+
+Los usuarios siempre deben tener una manera fácil de cambiar su configuración. Usa `generateSettingsLink()` para obtener una URL a la página de configuración alojada y colócala en algún lugar persistente: tu popup, una página de opciones, una pantalla de cuenta.
+
+```javascript
+const settingsUrl = await mellowtel.generateSettingsLink();
+```
+
+## Anunciando Mellowtel a usuarios existentes
+
+Si estás agregando Mellowtel a una extensión que ya tiene usuarios, necesitas decirles qué cambió antes de pedir su consentimiento. Proporcionamos una [plantilla de anuncio para copiar y pegar](/concepts/update-announcement) que puedes adaptar.
+
+## Relacionado
+
+- [Privacidad](/concepts/privacy): lo que los usuarios realmente están aceptando compartir.
+- [Limitación de velocidad](/concepts/rate-limiting): cómo el SDK protege a los usuarios que optan por participar.

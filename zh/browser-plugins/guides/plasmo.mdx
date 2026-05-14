@@ -1,0 +1,161 @@
+---
+sidebarTitle: "Plasmo"
+title: "在你的 Plasmo 扩展中集成 Mellowtel"
+description: "关于如何在你的 Plasmo 浏览器扩展中集成 Mellowtel 的快速指南"
+icon: "puzzle"
+---
+
+在这里，你将学习如何通过集成 Mellowtel 来实现 Plasmo 浏览器扩展的货币化。预计完成时间：5-15 分钟。
+
+# 手动安装
+
+如果你有一个现有的 Plasmo 项目，请按照以下步骤添加 Mellowtel 集成。
+
+### 安装依赖
+
+首先，将 Mellowtel 包添加到你的项目中：
+
+```bash
+pnpm add mellowtel
+```
+
+### 配置 package.json
+
+更新你的 `package.json` 以包含所需的权限：
+
+```json
+{
+  "manifest": {
+    "permissions": [
+      "storage",
+      "declarativeNetRequest"
+    ],
+    "host_permissions": ["<all_urls>"]
+  }
+}
+```
+
+### 设置环境变量
+
+创建或更新你的 `.env` 文件：
+
+```plaintext
+PLASMO_PUBLIC_MELLOWTEL=your_mellowtel_api_key_here
+```
+
+<Warning>
+    确保将 `your_mellowtel_api_key_here` 替换为你从仪表板获取的实际 Mellowtel API 密钥。
+</Warning>
+
+# 实现
+
+### 后台脚本设置
+
+创建或修改你的后台脚本 (`background.ts`)：
+
+```typescript
+import Mellowtel from "mellowtel"
+
+let mellowtel;
+
+(async () => {
+  mellowtel = new Mellowtel(process.env.PLASMO_PUBLIC_MELLOWTEL)
+  await mellowtel.initBackground()
+})()
+
+// 处理安装和更新
+chrome.runtime.onInstalled.addListener(async function (details) {
+  console.log("扩展已安装或更新", details)
+  await mellowtel.generateAndOpenOptInLink()
+})
+```
+
+### 内容脚本设置
+
+创建或修改你的内容脚本 (`content.ts`)：
+
+```typescript
+import Mellowtel from "mellowtel"
+import type { PlasmoCSConfig } from "plasmo"
+
+let mellowtel;
+
+// 配置内容脚本行为
+export const config: PlasmoCSConfig = {
+  matches: ["<all_urls>"],
+  all_frames: true,
+  run_at: "document_start"
+}
+
+const start = async () => {
+  mellowtel = new Mellowtel(process.env.PLASMO_PUBLIC_MELLOWTEL)
+  const resp = await mellowtel.initContentScript()
+}
+
+start()
+```
+
+### 弹出窗口实现
+
+创建或修改你的弹出组件 (`popup.tsx`)：
+
+```typescript
+import Mellowtel from "mellowtel"
+
+const Popup: React.FC = () => {
+  const handleMellowtelSettings = async () => {
+    const mellowtel = new Mellowtel(process.env.PLASMO_PUBLIC_MELLOWTEL)
+    const link = await mellowtel.generateSettingsLink()
+    chrome.tabs.create({ url: link })
+  }
+
+  return (
+    <div>
+      <button onClick={handleMellowtelSettings}>
+        更改 Mellowtel 设置
+      </button>
+    </div>
+  )
+}
+
+export default Popup
+```
+
+# 开发命令
+
+在开发过程中使用这些命令：
+
+```bash
+# 启动开发服务器
+pnpm dev
+
+# 为生产环境构建
+pnpm build
+
+# 打包扩展
+pnpm package
+```
+
+<Accordion title="开发最佳实践">
+    1. 始终在开发和生产环境中彻底测试你的扩展
+    2. 监控控制台中任何与 Mellowtel 相关的警告或错误
+    3. 从用户的角度测试选择加入流程
+    4. 验证设置链接是否正常工作
+    5. 确保所有权限配置正确
+</Accordion>
+
+# 测试
+
+在提交你的扩展之前：
+
+1. 测试安装流程
+2. 验证选择加入过程是否有效
+3. 检查设置页面是否可访问
+4. 确认所有权限是否正常工作
+5. 如果目标是多个平台，请在不同的浏览器上进行测试
+
+<Note>
+    有关 Mellowtel 功能和 API 的更多信息，请访问 [快速入门](https://docs.mellowtel.com/browser-plugins/quickstart)。
+</Note>
+
+需要帮助？加入我们的 [Discord 社区](https://discord.com/invite/txAZp4MSDe) 获取支持。

@@ -1,0 +1,45 @@
+---
+title: "Datenschutz"
+description: "Was Mellowtel über deine Nutzer sehen kann und was nicht"
+icon: "lock"
+---
+
+## Was es ist
+
+Jede Mellowtel-Anfrage läuft in einem isolierten, kredenzlosen Fenster, das bei Bedarf erstellt und sofort danach zerstört wird. Das Fenster hat keinen Zugriff auf die Sitzung des Nutzers, dessen Identität oder auf irgendwelche Daten, die dein Produkt auf dem Gerät speichert.
+
+## Warum es wichtig ist
+
+Du bittest deine Nutzer, ihre Bandbreite zu teilen. Sie werden nur zustimmen, und du wirst nur mit den Richtlinien der Browser-Stores konform bleiben, wenn du die Frage "Was sieht Mellowtel tatsächlich?" mit einer klaren, spezifischen Liste beantworten kannst. Diese Seite ist diese Liste.
+
+## Worauf Mellowtel *keinen* Zugriff hat
+
+Wenn eine Anfrage läuft, kann das isolierte Fenster nicht lesen:
+
+- Cookies (sowohl First-Party als auch Third-Party)
+- `localStorage`, `sessionStorage` oder IndexedDB
+- Den Authentifizierungsstatus des Nutzers auf irgendeiner Seite
+- Jegliche Daten, die deine Erweiterung oder App speichert
+- Den Browserverlauf des Nutzers oder offene Tabs
+- Persönlich identifizierbare Informationen jeglicher Art
+
+Betrachte jede Anfrage als ob sie in einem neuen Inkognito-Fenster läuft, das nicht mit der normalen Browserinstanz des Nutzers verbunden ist.
+
+## Was Mellowtel *sehen* kann
+
+- Eine zufällig generierte Knotenkennung, die einmal pro Installation zugewiesen wird. Sie ist nicht mit persönlichen Informationen verknüpft und kann nicht zur Identifizierung des Nutzers verwendet werden.
+- Die URL, die der vertrauenswürdige Partner zum Abrufen angefordert hat (was per Definition öffentlicher Webinhalt ist).
+- Die HTTP-Antwort von dieser öffentlichen URL.
+
+## Überprüfe es selbst
+
+Die Logik der Isolierung ist Open Source. Wenn du oder dein Sicherheitsteam das Isolationsmodell vor dem Versand prüfen möchtet, lies den Quellcode auf [GitHub](https://github.com/mellowtel-inc/).
+
+<Note>
+**TODO:** Ersetze den obigen Organisationslink durch einen Deep-Link zu der spezifischen Datei, die das kredenzlose Fenster erstellt, damit Prüfer direkt zum relevanten Code springen können.
+</Note>
+
+## Verwandte Themen
+
+- [Opt-in / Opt-out](/concepts/opt-in-out): wie die Zustimmung der Nutzer erfasst wird, bevor irgendetwas von oben passiert.
+- [Rate Limiting](/concepts/rate-limiting): wie das Anfragesvolumen für den Nutzer unsichtbar gehalten wird.

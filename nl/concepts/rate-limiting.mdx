@@ -1,0 +1,36 @@
+---
+title: "Rate Limiting"
+description: "Hoe Mellowtel zichzelf onzichtbaar houdt voor de eindgebruiker"
+icon: "stopwatch"
+---
+
+## Wat het is
+
+Mellowtel beperkt automatisch hoeveel verzoeken een enkel apparaat (een "node") zal accepteren en verwerken. De limiet wordt afgedwongen binnen de SDK. Je configureert het niet, en een slecht functionerende partner kan het niet van buitenaf verhogen.
+
+## Waarom het belangrijk is
+
+Het hele product hangt ervan af dat gebruikers niet merken dat Mellowtel draait. Als een node onbeperkte verzoeken zou bedienen, zou een gebruiker met een trage verbinding dat in hun browser voelen. Rate limiting is het mechanisme dat die belofte beschermt, en het is de reden waarom je Mellowtel naar echte gebruikers kunt verzenden zonder je zorgen te maken over supporttickets over "de browser voelt traag aan."
+
+## Hoe het werkt
+
+Elk verzoek wordt uitgevoerd binnen een gesandboxed venster dat voor het verzoek wordt aangemaakt en direct daarna wordt afgebroken. Dit is hetzelfde isolatiemodel dat wordt gebruikt door advertentienetwerken zoals Google AdSense, met de extra garantie dat het venster *credentialless* is (zie [Privacy](/concepts/privacy)). Omdat elk verzoek van korte duur en geïsoleerd is, is de enige knop die van belang is voor de gebruikerservaring *hoeveel* er worden uitgevoerd, en dat is wat rate limiting regelt.
+
+De huidige limiet varieert op basis van:
+
+- **Bandbreedtesnelheid**: langzamere verbindingen ontvangen minder verzoeken.
+- **Geolocatie**: capaciteit wordt regionaal gebalanceerd.
+- **Algemene netwerkinbeschikbaarheid**: de SDK trekt zich terug wanneer de wereldwijde vraag laag is.
+
+<Note>
+**TODO:** Documenteer concrete cijfers (req/min plafonds, geo-niveaus, bandbreedtedrempels) zodra deze zijn afgerond. Voor nu zijn de limieten opzettelijk adaptief en niet openbaar gemaakt via de publieke API.
+</Note>
+
+## API-oppervlak
+
+Er is geen rate-limiting API om aan te roepen. De beperking is intern en altijd actief. Je kunt het niet uitschakelen, en je zou het niet hoeven te inspecteren. Als je denkt dat rate limiting een probleem veroorzaakt in je integratie, [open een issue op GitHub](https://github.com/mellowtel-inc/) of stuur ons een bericht op [Discord](https://discord.com/invite/txAZp4MSDe).
+
+## Gerelateerd
+
+- [Privacy](/concepts/privacy): wat het gesandboxed venster wel en niet kan benaderen.
+- [Opt-in / Opt-out](/concepts/opt-in-out): de toestemmingslaag die voor dit alles zit.

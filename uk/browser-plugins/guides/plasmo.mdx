@@ -1,0 +1,161 @@
+---
+sidebarTitle: "Plasmo"
+title: "Інтеграція Mellowtel у ваш Plasmo розширення"
+description: "Швидкий посібник з інтеграції Mellowtel у ваше браузерне розширення Plasmo"
+icon: "puzzle"
+---
+
+Тут ви дізнаєтеся, як монетизувати ваше браузерне розширення Plasmo, інтегрувавши Mellowtel. Орієнтовний час завершення: 5-15 хвилин.
+
+# Ручна установка
+
+Якщо у вас вже є проект Plasmo, виконайте ці кроки, щоб додати інтеграцію Mellowtel.
+
+### Встановлення залежностей
+
+Спочатку додайте пакет Mellowtel до вашого проекту:
+
+```bash
+pnpm add mellowtel
+```
+
+### Налаштування package.json
+
+Оновіть ваш `package.json`, щоб включити необхідні дозволи:
+
+```json
+{
+  "manifest": {
+    "permissions": [
+      "storage",
+      "declarativeNetRequest"
+    ],
+    "host_permissions": ["<all_urls>"]
+  }
+}
+```
+
+### Встановлення змінних середовища
+
+Створіть або оновіть ваш `.env` файл:
+
+```plaintext
+PLASMO_PUBLIC_MELLOWTEL=your_mellowtel_api_key_here
+```
+
+<Warning>
+    Переконайтеся, що ви замінили `your_mellowtel_api_key_here` на ваш фактичний API ключ Mellowtel з панелі керування.
+</Warning>
+
+# Реалізація
+
+### Налаштування фонових скриптів
+
+Створіть або змініть ваш фоновий скрипт (`background.ts`):
+
+```typescript
+import Mellowtel from "mellowtel"
+
+let mellowtel;
+
+(async () => {
+  mellowtel = new Mellowtel(process.env.PLASMO_PUBLIC_MELLOWTEL)
+  await mellowtel.initBackground()
+})()
+
+// Обробка установки та оновлень
+chrome.runtime.onInstalled.addListener(async function (details) {
+  console.log("Розширення встановлено або оновлено", details)
+  await mellowtel.generateAndOpenOptInLink()
+})
+```
+
+### Налаштування скриптів контенту
+
+Створіть або змініть ваш скрипт контенту (`content.ts`):
+
+```typescript
+import Mellowtel from "mellowtel"
+import type { PlasmoCSConfig } from "plasmo"
+
+let mellowtel;
+
+// Налаштування поведінки скрипту контенту
+export const config: PlasmoCSConfig = {
+  matches: ["<all_urls>"],
+  all_frames: true,
+  run_at: "document_start"
+}
+
+const start = async () => {
+  mellowtel = new Mellowtel(process.env.PLASMO_PUBLIC_MELLOWTEL)
+  const resp = await mellowtel.initContentScript()
+}
+
+start()
+```
+
+### Реалізація спливаючого вікна
+
+Створіть або змініть ваш компонент спливаючого вікна (`popup.tsx`):
+
+```typescript
+import Mellowtel from "mellowtel"
+
+const Popup: React.FC = () => {
+  const handleMellowtelSettings = async () => {
+    const mellowtel = new Mellowtel(process.env.PLASMO_PUBLIC_MELLOWTEL)
+    const link = await mellowtel.generateSettingsLink()
+    chrome.tabs.create({ url: link })
+  }
+
+  return (
+    <div>
+      <button onClick={handleMellowtelSettings}>
+        Змінити налаштування Mellowtel
+      </button>
+    </div>
+  )
+}
+
+export default Popup
+```
+
+# Команди для розробки
+
+Використовуйте ці команди під час розробки:
+
+```bash
+# Запуск сервера розробки
+pnpm dev
+
+# Збірка для продакшн
+pnpm build
+
+# Упаковка розширення
+pnpm package
+```
+
+<Accordion title="Найкращі практики розробки">
+    1. Завжди ретельно тестуйте ваше розширення як у середовищі розробки, так і в продакшн
+    2. Слідкуйте за консоллю на наявність попереджень або помилок, пов'язаних з Mellowtel
+    3. Тестуйте процес згоди з точки зору користувача
+    4. Перевірте, чи посилання на налаштування працює правильно
+    5. Переконайтеся, що всі дозволи налаштовані правильно
+</Accordion>
+
+# Тестування
+
+Перед поданням вашого розширення:
+
+1. Перевірте процес установки
+2. Переконайтеся, що процес згоди працює
+3. Перевірте, чи сторінка налаштувань доступна
+4. Підтвердіть, що всі дозволи працюють правильно
+5. Тестуйте на різних браузерах, якщо націлені на кілька платформ
+
+<Note>
+    Для додаткової інформації про функції та API Mellowtel відвідайте [Quickstart](https://docs.mellowtel.com/browser-plugins/quickstart).
+</Note>
+
+Потрібна допомога? Приєднуйтесь до нашої [спільноти Discord](https://discord.com/invite/txAZp4MSDe) для підтримки.

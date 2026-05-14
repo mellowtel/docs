@@ -1,0 +1,61 @@
+---
+sidebarTitle: "欢迎"
+title: "欢迎 👋"
+icon: "hand-wave"
+---
+
+**Mellowtel 是面向 AI 世界的开发者和创作者的开源变现平台。** 将 SDK 集成到你的浏览器扩展、桌面应用、网站或移动应用中，你的用户可以选择与可信赖的合作伙伴共享他们未使用的部分互联网带宽。你将获得收入分成。
+
+## 集成是什么样子的
+
+```bash
+npm install mellowtel
+```
+
+```javascript
+import Mellowtel from "mellowtel";
+
+const mellowtel = new Mellowtel("<YOUR_CONFIGURATION_KEY>");
+await mellowtel.initBackground();
+await mellowtel.generateAndOpenOptInLink();
+```
+
+这就是浏览器扩展的完整集成。其他平台类似。请参阅下面的快速入门。
+
+## 选择你的平台
+
+<CardGroup cols={2}>
+    <Card title="浏览器插件" icon="puzzle-piece" href="/browser-plugins/quickstart">
+        在大约 5 分钟内将 Mellowtel 集成到 Chrome、Edge、Firefox 或 Safari 扩展中。
+    </Card>
+    <Card title="桌面应用" icon="desktop" href="/desktop-app/quickstart">
+        变现 Electron、Windows 或 macOS 桌面应用。
+    </Card>
+    <Card title="网站" icon="atom" href="/website/quickstart">
+        通过一个脚本将 Mellowtel 添加到任何网站。
+    </Card>
+    <Card title="移动应用" icon="mobile" href="/mobile-app/quickstart">
+        变现 iOS 或 Android 移动应用。
+    </Card>
+</CardGroup>
+
+## 在发布之前，阅读这些概念
+
+这四个页面解释了每个 Mellowtel 集成必须遵循的原则：同意、隐私和速率限制。快速浏览一下，其他文档就会变得更容易理解。
+
+<CardGroup cols={2}>
+    <Card title="概念概览" icon="compass" href="/concepts/overview">
+        一页了解 Mellowtel 背后的四个理念。
+    </Card>
+    <Card title="选择加入 / 选择退出" icon="signature" href="/concepts/opt-in-out">
+        如何正确获取（和撤销）用户同意。
+    </Card>
+</CardGroup>
+
+## 收入如何运作
+
+分成比例是 **开发者 55%，Mellowtel 45%**。随着我们的规模扩大，我们将能够提供更多服务并增加开发者的分成。将来可能会有功能让你直接与用户分享部分收入；同时，你可以通过独特的功能或内容奖励选择加入的用户。
+
+## 需要帮助？
+
+这个网站是所有技术相关信息的权威来源。对于其他任何事情（问题、反馈，或只是与其他 Mellowtel 开发者交流），请加入我们的 [Discord](https://discord.com/invite/txAZp4MSDe)。

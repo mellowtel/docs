@@ -1,0 +1,199 @@
+---
+sidebarTitle: "赚更多 - Pascoli"
+title: "通过启用附加功能 Pascoli 赚取更多"
+icon: "dove"
+---
+
+<Warning>
+    此功能需要 Mellowtel 版本 1.6.2 或更高版本。与之前的版本相比，这是一个重大更改。
+</Warning>
+
+Mellowtel 提供了一项可选功能，可以让你处理更多请求，从而赚取更多。这项功能称为 "Pascoli"。
+
+## 安装
+
+首先，使用你喜欢的包管理器安装所需的 npm 包：
+
+### 使用 npm
+```bash
+npm install @mellowtel/module-pascoli
+```
+
+### 使用 yarn
+```bash
+yarn add @mellowtel/module-pascoli
+```
+
+### 使用 pnpm
+```bash
+pnpm add @mellowtel/module-pascoli
+```
+
+以下是如何在你的浏览器插件中启用 Pascoli 功能的说明，提供了标准和 Plasmo 框架实现的选项。
+
+## 标准实现
+
+### 1. 创建一个名为 `pascoli.html` 的 HTML 文件
+创建一个名为 `pascoli.html` 的文件，并添加以下代码。确保此文件包含在你的最终构建 (/dist) 目录中。
+
+如果你遵循了初始的 [webpack 配置设置](/browser-plugins/static-to-webpack)，你可以简单地将此文件添加到 `public` 目录中作为 `pascoli.html`
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" />
+    <style>
+        html,
+        body {
+            padding: 0;
+            margin: 0;
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            background-color: transparent;
+        }
+    </style>
+    <script type="module" crossorigin src="/pascoli.js"></script>
+</head>
+<body>
+</body>
+</html>
+```
+
+<Warning>
+    确保修改 script 标签的 `src` 属性以指向最终构建中 `pascoli.js` 文件的正确位置
+</Warning>
+
+### 2. 创建一个名为 `pascoli.js` 的 JavaScript 文件
+
+在 src 目录中，或你放置 js 文件的任何地方，创建一个名为 `pascoli.js` 的文件，并添加以下代码。确保此文件包含在你的最终构建 (/dist) 目录中。
+
+如果你遵循了初始的 [webpack 配置设置](/browser-plugins/static-to-webpack)，你可以简单地将此文件添加到 webpack 配置的 `entry` 对象中。
+
+```javascript
+import ModulePascoli from "@mellowtel/module-pascoli";
+
+let modulePascoli;
+
+(async () => {
+    modulePascoli = new ModulePascoli();
+    await modulePascoli.init();
+})();
+```
+
+### 3. 更新你的 webpack 配置
+
+确保你的最终构建目录包含 `pascoli.html` 和 `pascoli.js` 文件。
+
+在你的 webpack 配置中添加以下内容以确保 `pascoli.js` 包含在构建中：
+
+```javascript
+module.exports = {
+    mode: 'development', // 生产构建中使用 'production'
+    entry: {
+        // background: path.join(__dirname, 'src', 'background.js'),
+        // popup: path.join(__dirname, 'src', 'popup.js'),
+        // content_script: path.join(__dirname, 'src', 'content_script.js'), ...
+        pascoli: path.join(__dirname, 'src', 'pascoli.js'),
+    },
+    // ...
+}
+```
+
+如果你遵循了初始的 [webpack 配置设置](/browser-plugins/static-to-webpack) 并将其添加到 `public` 目录中，`pascoli.html` 也应该自动包含在你的构建目录中。
+
+### 4. 更新 manifest.json
+
+将 `pascoli.html` 文件添加到你的 `manifest.json` 中作为 web_accessible_resources：
+
+```json
+{
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "pascoli.html"
+      ],
+      "matches": [ "<all_urls>" ]
+    }
+  ]
+}
+```
+
+## Plasmo 框架实现
+
+如果你使用 Plasmo 框架，请按照以下替代步骤操作：
+
+### 1. 创建 PascoliPage 组件
+
+在你的 `tabs` 目录中创建一个名为 `pascoli.tsx` 的文件。如果你没有 `tabs` 目录，请创建一个。关于 Plasmo 框架中 `tabs` 的更多信息可以在 [这里](https://docs.plasmo.com/framework/tab-pages) 找到。将以下代码添加到 `pascoli.tsx` 文件中：
+
+```typescript
+import { useEffect } from "react"
+import ModulePascoli from "@mellowtel/module-pascoli"
+
+function PascoliPage() {
+    useEffect(() => {
+        const initPascoli = async () => {
+            const modulePascoli = new ModulePascoli();
+            await modulePascoli.init();
+        }
+
+        initPascoli().catch(console.error)
+    }, [])
+
+    return (
+        <div
+            style={{
+                padding: 0,
+                margin: 0,
+                height: "100vh",
+                width: "100vw",
+                overflow: "hidden",
+                backgroundColor: "transparent"
+            }}>
+        </div>
+    )
+}
+
+export default PascoliPage
+```
+
+### 2. 更新 Plasmo 的 package.json
+
+在你的 `package.json` 文件中添加以下内容：
+
+```json
+{
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "tabs/pascoli.html"
+      ],
+      "matches": [ "<all_urls>" ]
+    }
+  ]
+}
+```
+
+## 更新 initContentScript
+
+对于两种实现，修改你的内容脚本中的 `initContentScript` 方法以包含 Pascoli 文件的正确路径：
+
+```typescript
+// 对于标准实现
+await initContentScript({
+    pascoliFilePath: "pascoli.html"
+});
+```
+
+对于 Plasmo 框架，你可以使用以下内容：
+
+```typescript
+// 对于 Plasmo 框架
+await initContentScript({
+    pascoliFilePath: "tabs/pascoli.html"
+});
+```

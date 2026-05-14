@@ -1,0 +1,22 @@
+---
+title: "概要"
+description: "Mellowtelを統合する前に理解しておくべき4つの考え方"
+icon: "compass"
+---
+
+Mellowtelは4つの原則に基づいて構築されています。これらを一度読めば、残りのドキュメントでのすべての動作、デフォルト、APIの選択を理解できるでしょう。
+
+<CardGroup cols={2}>
+  <Card title="オプトイン / オプトアウト" icon="signature" href="/concepts/opt-in-out">
+    ユーザーは帯域幅を共有する前に明示的な同意を与える必要があり、いつでもそれを撤回することができます。
+  </Card>
+  <Card title="プライバシー" icon="lock" href="/concepts/privacy">
+    リクエストはサンドボックス化された、資格情報のない環境で実行されます。クッキー、ストレージ、個人データはデバイスを離れることはありません。
+  </Card>
+  <Card title="レート制限" icon="stopwatch" href="/concepts/rate-limiting">
+    SDKは自動的にスロットルをかけるため、ユーザーのブラウジング体験が影響を受けることはありません。
+  </Card>
+  <Card title="オープンソース" icon="github" href="https://github.com/mellowtel-inc/">
+    すべての行がGitHubにあります。ドキュメントが不明瞭な場合、ソースが真実の基盤です。
+  </Card>
+</CardGroup>

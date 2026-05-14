@@ -1,0 +1,349 @@
+---
+sidebarTitle: "Windows (.NET)"
+title: "Integra Mellowtel nella tua app desktop Windows"
+icon: "windows"
+platforms:
+  - desktop app
+---
+
+Integra Mellowtel nella tua applicazione desktop Windows per consentire agli utenti di condividere la loro larghezza di banda internet inutilizzata in cambio di ricompense o funzionalità premium.
+
+<Warning>
+  **Il consenso dell'utente è obbligatorio.** L'SDK genera un'eccezione `InvalidOperationException` se chiami `StartAsync()` senza che l'utente abbia dato il consenso.
+</Warning>
+
+## Prerequisiti
+
+- Un account Mellowtel e un **ID di Integrazione** dal [dashboard](https://www.mellowtel.com/mellowtel-auth/). Ogni app desktop riceve un proprio ID di Integrazione unico.
+- .NET 10 SDK
+- Windows 10 o Windows 11
+- Un'applicazione desktop .NET (Console, WPF o Windows Forms)
+
+<Note>
+  Vuoi vedere un'integrazione completa e reale prima di integrarla nella tua app? Il campione WPF [mellowtel-pomodoro-windows](https://github.com/mellowtel-inc/mellowtel-pomodoro-windows) mostra l'intero flusso dall'inizio alla fine: dialogo di consenso, interruttore nelle impostazioni e ciclo di vita in background.
+</Note>
+
+---
+
+## Installazione
+
+Mellowtel per Windows è disponibile su NuGet come [`Mellowtel.Win`](https://www.nuget.org/packages/Mellowtel.Win).
+
+### 1. Installa il Pacchetto
+
+Dal tuo directory di progetto:
+
+```bash
+dotnet add package Mellowtel.Win
+```
+
+Oppure aggiungi un `PackageReference` al tuo `.csproj`:
+
+```xml
+<PackageReference Include="Mellowtel.Win" Version="1.0.0" />
+```
+
+### 2. Aggiungi al Tuo Codice
+
+```csharp
+using MellowtelWin;
+
+// Inizializza Mellowtel con il tuo ID di Integrazione
+var mellowtel = new Mellowtel("YOUR_INTEGRATION_ID", new MellowtelOptions
+{
+    PluginId = "your-app-id"
+});
+
+// Se l'utente ha già dato il consenso, riprendi silenziosamente.
+// Altrimenti, non fa nulla e restituisce false.
+await mellowtel.StartIfOptedInAsync();
+
+// Flusso per la prima volta: mostra la tua UI di consenso, poi dai il consenso e avvia.
+if (!mellowtel.GetOptInStatus() && ShowConsentDialog())
+{
+    mellowtel.OptIn();
+    await mellowtel.StartAsync();
+}
+
+// Alla chiusura dell'app
+await mellowtel.StopAsync();
+mellowtel.Dispose();
+```
+
+<Note>
+  Sostituisci `YOUR_INTEGRATION_ID` con l'ID di Integrazione dal tuo dashboard Mellowtel e imposta `PluginId` su un identificatore stabile per la tua app. `ShowConsentDialog()` è la tua UI personalizzata che restituisce `true` solo quando l'utente accetta esplicitamente. Vedi [Consenso dell'Utente](#user-consent) qui sotto.
+</Note>
+
+### Opzioni di configurazione
+
+`MellowtelOptions` ti permette di regolare alcune cose:
+
+| Proprietà | Tipo | Predefinito | Descrizione |
+| --- | --- | --- | --- |
+| `PluginId` | `string` | `"mellowtel-win"` | Identificatore stabile per la tua app. Impostalo su qualcosa di unico. |
+| `MaxDailyRate` | `int` | Predefinito integrato | Numero massimo di richieste che l'SDK gestirà al giorno. |
+| `DisableLogs` | `bool` | `true` | Imposta su `false` per abilitare i log dell'SDK durante lo sviluppo. |
+
+---
+
+## Esempi per Tipo di Applicazione
+
+<Tabs>
+  <Tab title="App Console">
+    ```csharp
+    using MellowtelWin;
+
+    class Program
+    {
+        static async Task Main(string[] args)
+        {
+            using var mellowtel = new Mellowtel("YOUR_INTEGRATION_ID", new MellowtelOptions
+            {
+                PluginId = "your-app-id"
+            });
+
+            if (!mellowtel.GetOptInStatus())
+            {
+                Console.WriteLine("L'utente deve dare il consenso prima di utilizzare questo servizio.");
+                return;
+            }
+
+            using var cts = new CancellationTokenSource();
+            Console.CancelKeyPress += (s, e) => { e.Cancel = true; cts.Cancel(); };
+
+            try
+            {
+                await mellowtel.StartAsync(cts.Token);
+                Console.WriteLine("Mellowtel in esecuzione. Premi Ctrl+C per fermare.");
+                await Task.Delay(Timeout.Infinite, cts.Token);
+            }
+            catch (InvalidOperationException ex)
+            {
+                Console.WriteLine($"Impossibile avviare: {ex.Message}");
+            }
+            catch (OperationCanceledException)
+            {
+                Console.WriteLine("Arresto in corso...");
+            }
+            finally
+            {
+                await mellowtel.StopAsync();
+            }
+        }
+    }
+    ```
+  </Tab>
+  <Tab title="App WPF">
+    Aggiungi al tuo `MainWindow.xaml.cs`:
+
+    ```csharp
+    using MellowtelWin;
+    using System.Windows;
+
+    public partial class MainWindow : Window
+    {
+        private Mellowtel? _mellowtel;
+
+        public MainWindow()
+        {
+            InitializeComponent();
+            Loaded += Window_Loaded;
+        }
+
+        private async void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            _mellowtel = new Mellowtel("YOUR_INTEGRATION_ID", new MellowtelOptions
+            {
+                PluginId = "your-app-id"
+            });
+
+            _mellowtel.ConnectionStateChanged += (s, connected) =>
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    StatusTextBlock.Text = connected ? "Connesso" : "Disconnesso";
+                });
+            };
+
+            // Riprendi silenziosamente se già dato il consenso. Altrimenti mostra la tua UI di consenso.
+            var started = await _mellowtel.StartIfOptedInAsync();
+            if (!started)
+            {
+                // Mostra qui il tuo dialogo di consenso
+            }
+        }
+
+        protected override async void OnClosing(CancelEventArgs e)
+        {
+            if (_mellowtel != null)
+            {
+                await _mellowtel.StopAsync();
+                _mellowtel.Dispose();
+            }
+            base.OnClosing(e);
+        }
+    }
+    ```
+  </Tab>
+  <Tab title="Windows Forms">
+    Aggiungi al tuo `MainForm.cs`:
+
+    ```csharp
+    using MellowtelWin;
+
+    public partial class MainForm : Form
+    {
+        private Mellowtel? _mellowtel;
+
+        public MainForm()
+        {
+            InitializeComponent();
+            Load += MainForm_Load;
+            FormClosing += MainForm_FormClosing;
+        }
+
+        private async void MainForm_Load(object sender, EventArgs e)
+        {
+            _mellowtel = new Mellowtel("YOUR_INTEGRATION_ID", new MellowtelOptions
+            {
+                PluginId = "your-app-id"
+            });
+
+            _mellowtel.ConnectionStateChanged += (s, connected) =>
+            {
+                if (InvokeRequired)
+                    Invoke(() => statusLabel.Text = connected ? "Connesso" : "Disconnesso");
+                else
+                    statusLabel.Text = connected ? "Connesso" : "Disconnesso";
+            };
+
+            // Riprendi silenziosamente se già dato il consenso. Altrimenti mostra la tua UI di consenso.
+            var started = await _mellowtel.StartIfOptedInAsync();
+            if (!started)
+            {
+                // Mostra qui il tuo dialogo di consenso
+            }
+        }
+
+        private async void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (_mellowtel != null)
+            {
+                await _mellowtel.StopAsync();
+                _mellowtel.Dispose();
+            }
+        }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+### Osservare lo stato della connessione
+
+L'istanza `Mellowtel` espone un evento `ConnectionStateChanged` che viene attivato ogni volta che il WebSocket sottostante al backend di Mellowtel si connette o disconnette. Gli esempi WPF e Windows Forms sopra si iscrivono a questo evento per gestire un indicatore di stato. Il payload è un `bool` dove `true` significa connesso e `false` significa disconnesso.
+
+L'evento viene attivato su un thread in background, quindi i framework UI che applicano l'affinità dei thread devono trasferire gli aggiornamenti sul thread UI. In WPF usa `Dispatcher.Invoke`, e in Windows Forms usa `Control.Invoke` (entrambi mostrati negli esempi sopra).
+
+<Note>
+  **A proposito del pattern WPF `async void OnClosing`.** L'esempio WPF sopra utilizza `protected override async void OnClosing`, che è la forma più semplice ma ha un problema sottile: `base.OnClosing(e)` viene chiamato in modo sincrono mentre `StopAsync()` è ancora in attesa, quindi la finestra può chiudersi prima che la pulizia sia terminata. Per la maggior parte delle app va bene perché il processo termina immediatamente dopo. Se hai bisogno di una chiusura garantita e ordinata (ad esempio, per inviare telemetria), segui il [pattern di differimento documentato da Microsoft](https://learn.microsoft.com/en-us/dotnet/api/system.windows.window.closing) dove imposti `e.Cancel = true`, `await` il tuo lavoro asincrono, e poi chiudi esplicitamente la finestra.
+</Note>
+
+---
+
+## Consenso dell'Utente
+
+<Warning>
+  Mostrare un dialogo di consenso è **obbligatorio**. L'SDK lo impone: `StartAsync()` genera un'eccezione `InvalidOperationException` se l'utente non ha dato il consenso.
+</Warning>
+
+```csharp
+var mellowtel = new Mellowtel("YOUR_INTEGRATION_ID", new MellowtelOptions
+{
+    PluginId = "your-app-id"
+});
+
+if (!mellowtel.GetOptInStatus())
+{
+    var userAgreed = ShowConsentDialog(); // il tuo dialogo personalizzato
+
+    if (userAgreed)
+        mellowtel.OptIn();
+    else
+        return; // l'utente ha rifiutato, non avviare
+}
+
+try
+{
+    await mellowtel.StartAsync();
+}
+catch (InvalidOperationException ex)
+{
+    Console.WriteLine($"Errore: {ex.Message}");
+}
+```
+
+### Cosa deve includere il tuo dialogo di consenso
+
+<Steps>
+  <Step title="Spiega cosa fa Mellowtel">
+    Usa un linguaggio semplice. Esempio: *"Questa app utilizza Mellowtel per condividere la tua larghezza di banda internet inutilizzata. Questo ti permette di [beneficio/funzionalità]. Puoi annullare in qualsiasi momento nelle impostazioni."*
+  </Step>
+  <Step title="Dai agli utenti una scelta chiara">
+    Includi opzioni distinte di Accetta e Rifiuta.
+  </Step>
+  <Step title="Collega alle politiche">
+    Includi link ai [Termini di Servizio](https://www.mellowtel.com/terms-and-conditions) e alla [Politica sulla Privacy](https://www.mellowtel.com/privacy-policy).
+  </Step>
+</Steps>
+
+### Permetti agli utenti di cambiare il loro consenso nelle impostazioni
+
+```csharp
+// Controlla lo stato attuale
+bool isOptedIn = mellowtel.GetOptInStatus();
+
+// Annulla il consenso
+if (userWantsToOptOut)
+{
+    mellowtel.OptOut();
+    await mellowtel.StopAsync();
+}
+
+// Riconferma il consenso
+if (userWantsToOptIn)
+{
+    mellowtel.OptIn();
+    await mellowtel.StartAsync();
+}
+```
+
+Per un'interfaccia utente più ricca (ad esempio, mostrando quando l'utente ha dato il consenso per la prima volta), `GetOptInDetails()` restituisce lo stato del consenso insieme ai timestamp di consenso e revoca:
+
+```csharp
+var (isOptedIn, optInDate, optOutDate) = mellowtel.GetOptInDetails();
+```
+
+---
+
+## Risoluzione dei Problemi
+
+<AccordionGroup>
+  <Accordion title='Errore "Pacchetto non trovato"'>
+    1. Assicurati che il tuo progetto sia destinato a **.NET 10** o successivo. `Mellowtel.Win` richiede `net10.0`.
+    2. Pulisci la cache di NuGet e ripristina:
+
+    ```bash
+    dotnet nuget locals all --clear
+    dotnet restore
+    ```
+  </Accordion>
+  <Accordion title='Errore "InvalidOperationException: User has not opted in"'>
+    `StartAsync()` richiede un consenso esplicito. Chiama `OptIn()` dopo che il tuo dialogo di consenso restituisce un risultato positivo, quindi chiama `StartAsync()`. Per una ripresa silenziosa nei lanci successivi, usa `StartIfOptedInAsync()` invece, che non fa nulla quando l'utente non ha dato il consenso.
+  </Accordion>
+</AccordionGroup>
+
+---
+
+Tempo stimato per il completamento: 10-15 minuti.
+
+Se hai bisogno di aiuto o vuoi lasciare un feedback, contattaci a [info@mellowtel.com](mailto:info@mellowtel.com) o unisciti alla nostra [comunità Discord](https://discord.com/invite/txAZp4MSDe).

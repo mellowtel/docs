@@ -1,0 +1,55 @@
+---
+sidebarTitle: "Benutzerfeedback"
+title: "Sammle Feedback von deinen Benutzern"
+icon: "comment"
+---
+
+Mellowtel bietet eine vorgefertigte Feedback-Seite, die du nutzen kannst, um Feedback von deinen Benutzern zu sammeln, damit du schneller iterieren und dein Produkt verbessern kannst. Derzeit ist die Seite nur für Browser-Plugins verfügbar. Die Feedback-Seite ist ähnlich wie [diese](https://www.mellowtel.com/uninstall-feedback/?extension_id=testId&configuration_key=testConfiguration), indem du das Plugin-Icon und den Namen dynamisch übergibst.
+
+Du kannst das Feedback dann vom Mellowtel-Dashboard auslesen und es nutzen, um dein Browser-Plugin zu verbessern.
+
+WICHTIG: Du kannst das Feedback nur vom Mellowtel-Dashboard auslesen, wenn du ein Plugin hast, das im Webstore veröffentlicht ist und nicht im Entwicklermodus. Wenn du noch in der Entwicklung bist und die Feedback-Seite testen möchtest, kontaktiere uns bitte über den Chat.
+
+So kannst du die Feedback-Seite zu deinem Browser-Plugin hinzufügen:
+
+
+## Füge die Feedback-Seite zu deinem Plugin hinzu
+
+Die Feedback-Seite wird von Mellowtel gehostet und ist über eine URL zugänglich, die du mit der `generateFeedbackLink()`-Methode aus dem Mellowtel JS-Paket generieren kannst.
+
+Wenn du die Feedback-Seite direkt in einem neuen Tab öffnen möchtest, kannst du die `generateAndOpenFeedbackLink()`-Methode verwenden, und es wird eine Seite ähnlich wie [diese](https://www.mellowtel.com/uninstall-feedback/?extension_id=testId&configuration_key=testConfiguration) geöffnet, indem dein Plugin-Icon und Name dynamisch übergeben werden.
+
+Du kannst die Feedback-Seite öffnen, indem du die `generateFeedbackLink()`-Methode aus dem Hintergrundskript oder dem Inhaltsskript deiner Erweiterung aufrufst, wenn ein Benutzer dein Browser-Plugin deinstalliert.
+
+So kannst du es machen.
+
+Öffne deine `service worker`-Datei (auch bekannt als Hintergrundskript) und füge den folgenden Code hinzu:
+
+Denke daran, `<YOUR_CONFIGURATION_KEY>` durch deinen tatsächlichen Mellowtel-Konfigurationsschlüssel zu ersetzen. Wenn du noch keinen Konfigurationsschlüssel hast, kannst du einen erhalten, indem du dich bei [Mellowtel](https://www.mellowtel.com/mellowtel-auth/) anmeldest.
+
+```javascript
+import Mellowtel from "mellowtel";
+
+let mellowtel;
+
+(async () => {
+    mellowtel = new Mellowtel("<YOUR_CONFIGURATION_KEY>");
+    await mellowtel.initBackground();
+})();
+
+// Öffne die Feedback-Seite, wenn der Benutzer die Erweiterung deinstalliert
+chrome.runtime.onInstalled.addListener(async function(details) {
+    console.log("Erweiterung installiert oder aktualisiert");
+    // Wenn du Installation und Updates unterschiedlich behandeln möchtest
+    /**
+    if(details.reason === "install"){
+        // rufe eine Funktion auf, um eine Erstinstallation zu behandeln
+    } else if(details.reason === "update") {
+        // rufe eine Funktion auf, um ein Update zu behandeln
+    }
+    **/
+    // await mellowtel.generateAndOpenOptInLink(); um Benutzereinstellungen zu verwalten. Für mehr Details: opt-in-out docs
+    const uninstallURl = await mellowtel.generateFeedbackLink();
+    chrome.runtime.setUninstallURL(uninstallURl);
+});
+```

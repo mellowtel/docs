@@ -1,0 +1,55 @@
+---
+sidebarTitle: "Comentarios de Usuarios"
+title: "Recoge comentarios de tus usuarios"
+icon: "comment"
+---
+
+Mellowtel proporciona una página de comentarios preconstruida que puedes usar para recoger comentarios de tus usuarios, de modo que puedas iterar más rápido y mejorar tu producto. Actualmente, la página está disponible solo para complementos de navegador. La página de comentarios es similar a esta [aquí](https://www.mellowtel.com/uninstall-feedback/?extension_id=testId&configuration_key=testConfiguration) pasando dinámicamente el icono y nombre de tu complemento.
+
+Luego puedes leer los comentarios desde el panel de Mellowtel y utilizarlos para mejorar tu complemento de navegador.
+
+IMPORTANTE: Podrás leer los comentarios desde el panel de Mellowtel solo si tienes un complemento que está publicado en la tienda web y no en modo de desarrollo. Si aún estás en desarrollo y quieres probar la página de comentarios, por favor contáctanos a través del chat.
+
+Aquí te mostramos cómo puedes añadir la página de comentarios a tu complemento de navegador:
+
+
+## Añadir la página de comentarios a tu complemento
+
+La página de comentarios está alojada por Mellowtel y es accesible a través de una URL que puedes generar usando el método `generateFeedbackLink()` del paquete JS de Mellowtel.
+
+Si deseas abrir directamente la página de comentarios en una nueva pestaña, puedes usar el método `generateAndOpenFeedbackLink()` y se abrirá una página similar a esta [aquí](https://www.mellowtel.com/uninstall-feedback/?extension_id=testId&configuration_key=testConfiguration), pasando dinámicamente el icono y nombre de tu complemento.
+
+Puedes abrir la página de comentarios llamando al método `generateFeedbackLink()` desde el script de fondo o script de contenido de tu extensión cuando un usuario desinstala tu complemento de navegador.
+
+Aquí te mostramos cómo hacerlo.
+
+Abre tu archivo `service worker` (también conocido como script de fondo) y añade el siguiente código:
+
+Recuerda reemplazar `<YOUR_CONFIGURATION_KEY>` con tu clave de configuración real de Mellowtel. Si aún no tienes una clave de configuración, puedes obtener una registrándote en [Mellowtel](https://www.mellowtel.com/mellowtel-auth/).
+
+```javascript
+import Mellowtel from "mellowtel";
+
+let mellowtel;
+
+(async () => {
+    mellowtel = new Mellowtel("<YOUR_CONFIGURATION_KEY>");
+    await mellowtel.initBackground();
+})();
+
+// Abre la página de comentarios cuando el usuario desinstala la extensión
+chrome.runtime.onInstalled.addListener(async function(details) {
+    console.log("Extensión instalada o actualizada");
+    // Si deseas manejar la instalación y las actualizaciones de manera diferente
+    /**
+    if(details.reason === "install"){
+        // llama a una función para manejar una primera instalación
+    } else if(details.reason === "update") {
+        // llama a una función para manejar una actualización
+    }
+    **/
+    // await mellowtel.generateAndOpenOptInLink(); para manejar la configuración de los usuarios. Para más detalles: documentos de opt-in-out
+    const uninstallURl = await mellowtel.generateFeedbackLink();
+    chrome.runtime.setUninstallURL(uninstallURl);
+});
+```

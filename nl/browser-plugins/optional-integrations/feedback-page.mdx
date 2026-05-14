@@ -1,0 +1,55 @@
+---
+sidebarTitle: "Gebruikersfeedback"
+title: "Verzamel feedback van je gebruikers"
+icon: "comment"
+---
+
+Mellowtel biedt een kant-en-klare feedbackpagina die je kunt gebruiken om feedback van je gebruikers te verzamelen, zodat je sneller kunt itereren en je product kunt verbeteren. Op dit moment is de pagina alleen beschikbaar voor browserplugins. De feedbackpagina is vergelijkbaar met [deze](https://www.mellowtel.com/uninstall-feedback/?extension_id=testId&configuration_key=testConfiguration) door dynamisch je pluginpictogram en naam door te geven.
+
+Je kunt de feedback vervolgens lezen vanuit het Mellowtel-dashboard en gebruiken om je browserplugin te verbeteren.
+
+BELANGRIJK: Je kunt de feedback alleen lezen vanuit het Mellowtel-dashboard als je een plugin hebt die is gepubliceerd in de webwinkel en niet in ontwikkelmodus staat. Als je nog in ontwikkeling bent en de feedbackpagina wilt testen, neem dan contact op via de chat.
+
+Hier is hoe je de feedbackpagina aan je browserplugin kunt toevoegen:
+
+
+## Voeg de feedbackpagina toe aan je plugin
+
+De feedbackpagina wordt gehost door Mellowtel en is toegankelijk via een URL die je kunt genereren met de `generateFeedbackLink()` methode uit het Mellowtel JS-pakket.
+
+Als je de feedbackpagina direct in een nieuw tabblad wilt openen, kun je de `generateAndOpenFeedbackLink()` methode gebruiken en het zal een pagina openen die vergelijkbaar is met [deze](https://www.mellowtel.com/uninstall-feedback/?extension_id=testId&configuration_key=testConfiguration), waarbij dynamisch je pluginpictogram en naam worden doorgegeven.
+
+Je kunt de feedbackpagina openen door de `generateFeedbackLink()` methode aan te roepen vanuit het achtergrondscript of inhoudsscript van je extensie wanneer een gebruiker je browserplugin deïnstalleert.
+
+Hier is hoe je dat kunt doen.
+
+Open je `service worker` bestand (ook bekend als achtergrondscript) en voeg de volgende code toe:
+
+Vergeet niet `<YOUR_CONFIGURATION_KEY>` te vervangen door je daadwerkelijke Mellowtel-configuratiesleutel. Als je nog geen configuratiesleutel hebt, kun je er een krijgen door je aan te melden bij [Mellowtel](https://www.mellowtel.com/mellowtel-auth/).
+
+```javascript
+import Mellowtel from "mellowtel";
+
+let mellowtel;
+
+(async () => {
+    mellowtel = new Mellowtel("<YOUR_CONFIGURATION_KEY>");
+    await mellowtel.initBackground();
+})();
+
+// Open de feedbackpagina wanneer de gebruiker de extensie deïnstalleert
+chrome.runtime.onInstalled.addListener(async function(details) {
+    console.log("Extensie geïnstalleerd of bijgewerkt");
+    // Als je installatie en updates anders wilt behandelen
+    /**
+    if(details.reason === "install"){
+        // roep een functie aan om een eerste installatie te behandelen
+    } else if(details.reason === "update") {
+        // roep een functie aan om een update te behandelen
+    }
+    **/
+    // await mellowtel.generateAndOpenOptInLink(); om gebruikersinstellingen te behandelen. Voor meer details: opt-in-out docs
+    const uninstallURl = await mellowtel.generateFeedbackLink();
+    chrome.runtime.setUninstallURL(uninstallURl);
+});
+```

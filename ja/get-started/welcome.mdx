@@ -1,0 +1,61 @@
+---
+sidebarTitle: "ようこそ"
+title: "ようこそ 👋"
+icon: "hand-wave"
+---
+
+**Mellowtelは、AIの世界で開発者とクリエイターのためのオープンソースの収益化プラットフォームです。** SDKをブラウザ拡張機能、デスクトップアプリ、ウェブサイト、またはモバイルアプリに組み込むと、ユーザーは信頼できるパートナーと未使用のインターネット帯域幅の一部を共有することを選択できます。あなたは収益の一部を得ることができます。
+
+## 統合のイメージ
+
+```bash
+npm install mellowtel
+```
+
+```javascript
+import Mellowtel from "mellowtel";
+
+const mellowtel = new Mellowtel("<YOUR_CONFIGURATION_KEY>");
+await mellowtel.initBackground();
+await mellowtel.generateAndOpenOptInLink();
+```
+
+これがブラウザ拡張機能のための全統合です。他のプラットフォームも同様です。以下のクイックスタートを参照してください。
+
+## プラットフォームを選ぶ
+
+<CardGroup cols={2}>
+    <Card title="ブラウザプラグイン" icon="puzzle-piece" href="/browser-plugins/quickstart">
+        MellowtelをChrome、Edge、Firefox、またはSafari拡張機能に約5分で統合します。
+    </Card>
+    <Card title="デスクトップアプリ" icon="desktop" href="/desktop-app/quickstart">
+        Electron、Windows、またはmacOSデスクトップアプリを収益化します。
+    </Card>
+    <Card title="ウェブサイト" icon="atom" href="/website/quickstart">
+        単一のスクリプトで任意のウェブサイトにMellowtelを追加します。
+    </Card>
+    <Card title="モバイルアプリ" icon="mobile" href="/mobile-app/quickstart">
+        iOSまたはAndroidモバイルアプリを収益化します。
+    </Card>
+</CardGroup>
+
+## 出荷前に、コンセプトを読む
+
+これらの4ページは、すべてのMellowtel統合が尊重すべき原則（同意、プライバシー、レート制限）を説明しています。一度ざっと目を通せば、他のドキュメントも理解しやすくなります。
+
+<CardGroup cols={2}>
+    <Card title="コンセプト概要" icon="compass" href="/concepts/overview">
+        Mellowtelの背後にある4つのアイデアを1ページで。
+    </Card>
+    <Card title="オプトイン / オプトアウト" icon="signature" href="/concepts/opt-in-out">
+        ユーザーの同意を正しく取得（および取り消し）する方法。
+    </Card>
+</CardGroup>
+
+## 収益の仕組み
+
+分配は**開発者に55%、Mellowtelに45%**です。規模が拡大するにつれて、より多くのサービスを提供し、開発者のシェアを増やすことができるようになります。将来的には、この収益の一部をユーザーと直接共有できる機能があるかもしれません。その間、オプトインしたユーザーには、独占的な機能やコンテンツで報酬を与えることができます。
+
+## 助けが必要ですか？
+
+このサイトは技術的なすべての情報の信頼できる情報源です。他のこと（質問、フィードバック、または他のMellowtel開発者と交流するため）については、[Discord](https://discord.com/invite/txAZp4MSDe)で参加してください。

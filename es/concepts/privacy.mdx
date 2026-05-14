@@ -1,0 +1,45 @@
+---
+title: "Privacidad"
+description: "Lo que Mellowtel puede y no puede ver sobre tus usuarios"
+icon: "lock"
+---
+
+## Qué es
+
+Cada solicitud de Mellowtel se ejecuta dentro de una ventana aislada y sin credenciales que se crea bajo demanda y se destruye inmediatamente después. La ventana no tiene acceso a la sesión del usuario, su identidad ni a ningún dato que tu producto almacene en el dispositivo.
+
+## Por qué es importante
+
+Estás pidiendo a tus usuarios que compartan su ancho de banda. Solo dirán que sí, y solo cumplirás con las políticas de las tiendas de navegadores, si puedes responder "¿qué ve realmente Mellowtel?" con una lista clara y específica. Esta página es esa lista.
+
+## A qué *no* tiene acceso Mellowtel
+
+Cuando se ejecuta una solicitud, la ventana aislada no puede leer:
+
+- Cookies (de primera o tercera parte)
+- `localStorage`, `sessionStorage` o IndexedDB
+- El estado de autenticación del usuario en cualquier sitio
+- Cualquier dato que tu extensión o aplicación almacene
+- El historial de navegación del usuario o las pestañas abiertas
+- Información personal identificable de cualquier tipo
+
+Piensa en cada solicitud como si se ejecutara en una ventana de incógnito nueva que no está relacionada con la instancia normal del navegador del usuario.
+
+## Qué *sí* ve Mellowtel
+
+- Un identificador de nodo generado aleatoriamente, asignado una vez por instalación. No está vinculado a ninguna información personal y no se puede usar para identificar al usuario.
+- La URL que el socio de confianza solicitó obtener (que por definición es contenido web público).
+- La respuesta HTTP de esa URL pública.
+
+## Verifícalo tú mismo
+
+La lógica de aislamiento es de código abierto. Si tú o tu equipo de seguridad quieren auditar el modelo de aislamiento antes de implementarlo, lee el código fuente en [GitHub](https://github.com/mellowtel-inc/).
+
+<Note>
+**TODO:** Reemplaza el enlace de la organización arriba con un enlace directo al archivo específico que crea la ventana sin credenciales, para que los revisores puedan ir directamente al código relevante.
+</Note>
+
+## Relacionado
+
+- [Opt-in / Opt-out](/concepts/opt-in-out): cómo se captura el consentimiento del usuario antes de que ocurra cualquiera de lo anterior.
+- [Limitación de Tasa](/concepts/rate-limiting): cómo se mantiene invisible el volumen de solicitudes para el usuario.

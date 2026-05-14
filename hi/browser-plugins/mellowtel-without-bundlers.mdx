@@ -1,0 +1,154 @@
+---
+sidebarTitle: "बंडलर के बिना Mellowtel"
+title: "बंडलर के बिना Mellowtel को एकीकृत करना"
+icon: "box"
+---
+
+यह गाइड बताता है कि कैसे Mellowtel को अपने ब्राउज़र एक्सटेंशन में बिना Webpack या Vite जैसे बंडलरों का उपयोग किए एकीकृत करें। इसके बजाय, आप एकल प्री-बंडल फ़ाइल का उपयोग करेंगे जो कंटेंट स्क्रिप्ट्स और सर्विस वर्कर्स दोनों में काम करती है।
+
+## प्रोजेक्ट सेटअप
+
+एक बुनियादी ब्राउज़र एक्सटेंशन संरचना के साथ शुरू करें:
+
+```
+your-extension/
+├── icons/
+├── popup/
+│   ├── popup.html
+│   └── popup.js
+├── background.js           # आपका सर्विस वर्कर
+├── content_script.js
+├── manifest.json
+└── mellowtel.js           # अगले चरण में जोड़ा जाएगा
+```
+
+## Mellowtel बंडल प्राप्त करना
+
+आपके एक्सटेंशन के लिए `mellowtel.js` फ़ाइल प्राप्त करने के दो विकल्प हैं:
+
+### विकल्प 1: प्री-बंडल फ़ाइल का उपयोग करें
+
+शुरू करने का सबसे आसान तरीका है [mellowtel-bundled repository](https://github.com/mellowtel-inc/mellowtel-bundled) से प्री-बंडल `mellowtel.js` फ़ाइल का उपयोग करना।
+
+1. [mellowtel-bundled repository](https://github.com/mellowtel-inc/mellowtel-bundled) पर जाएं
+2. `mellowtel.js` फ़ाइल डाउनलोड करें
+3. इसे अपने एक्सटेंशन डायरेक्टरी में कॉपी करें
+
+### विकल्प 2: अपना खुद का बंडल जनरेट करें
+
+यदि आप स्वयं बंडल जनरेट करना पसंद करते हैं, तो इन चरणों का पालन करें:
+
+#### एक अस्थायी बंडलिंग डायरेक्टरी बनाएं
+
+Mellowtel को इंस्टॉल करने और बंडल जनरेट करने के लिए एक अस्थायी डायरेक्टरी बनाएं:
+
+```bash
+mkdir mellowtel-bundling
+cd mellowtel-bundling
+npm init -y
+npm install mellowtel
+```
+
+यह एक अलग फ़ोल्डर बनाता है जिसमें Mellowtel पैकेज होता है जिसे आप केवल बंडलिंग के लिए उपयोग करेंगे।
+
+#### Mellowtel को esbuild के साथ बंडल करें
+
+`mellowtel-bundling` डायरेक्टरी के अंदर से, एकल बंडल बनाएं जो सर्विस वर्कर्स और कंटेंट स्क्रिप्ट्स दोनों में काम करता है:
+
+```bash
+npx esbuild node_modules/mellowtel/dist/index.js --bundle --format=iife --global-name=Mellowtel --footer:js="globalThis.Mellowtel = Mellowtel.default" --platform=browser --outfile=mellowtel.js --minify --legal-comments=none
+```
+
+इस कमांड से:
+- `node_modules/mellowtel/dist/index.js` से Mellowtel स्रोत लेता है
+- सभी निर्भरताओं को एकल फ़ाइल में बंडल करता है
+- सार्वभौमिक संगतता के लिए IIFE फॉर्मेट का उपयोग करता है
+- डिफ़ॉल्ट एक्सपोर्ट को वैश्विक रूप से उपलब्ध कराने के लिए एक फुटर जोड़ता है
+- ब्राउज़र वातावरण के लिए ऑप्टिमाइज़ करता है और आउटपुट को मिनिफाई करता है
+- बंडलिंग डायरेक्टरी में `mellowtel.js` बनाता है
+
+#### अपने एक्सटेंशन में बंडल कॉपी करें
+
+esbuild कमांड चलाने के बाद, जनरेट की गई फ़ाइल को अपने एक्सटेंशन डायरेक्टरी में कॉपी करें:
+
+```bash
+cp mellowtel.js ../your-extension/
+```
+
+अब आप अस्थायी बंडलिंग डायरेक्टरी को हटा सकते हैं क्योंकि आपको केवल आउटपुट फ़ाइल की आवश्यकता थी:
+
+```bash
+cd ..
+rm -rf mellowtel-bundling
+```
+
+आपके एक्सटेंशन फ़ोल्डर में अब बंडल की गई Mellowtel फ़ाइल तैयार है।
+
+## अपने मैनिफेस्ट को कॉन्फ़िगर करें (दोनों विकल्प)
+
+ऊपर दिए गए किसी भी विकल्प को चुनने के बावजूद, अपने `manifest.json` को Mellowtel बंडल को कंटेंट स्क्रिप्ट्स में शामिल करने के लिए कॉन्फ़िगर करें:
+
+```json
+{
+  "manifest_version": 3,
+  "name": "Your Extension Name",
+  "version": "1.0",
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["mellowtel.js", "content_script.js"]
+    }
+  ],
+  "permissions": [
+    "storage",
+    "declarativeNetRequestWithHostAccess"
+  ],
+  "host_permissions": [
+    "\u003Call_urls\u003E"
+  ]
+}
+```
+
+**महत्वपूर्ण**: 
+- `"type": "module"` फ़ील्ड आपके सर्विस वर्कर में ES मॉड्यूल इम्पोर्ट्स को सक्षम करता है।
+- कंटेंट स्क्रिप्ट्स एरे में, `mellowtel.js` को **पहले** लोड किया जाना चाहिए ताकि जब आपका कंटेंट स्क्रिप्ट चले तो Mellowtel वैश्विक वेरिएबल उपलब्ध हो।
+
+## अपने एक्सटेंशन में Mellowtel का उपयोग करें
+
+अपने सर्विस वर्कर (background.js) के लिए, बंडल की गई फ़ाइल इम्पोर्ट करें:
+
+```javascript
+// background.js
+import './mellowtel.js';
+
+(async () => {
+    const mellowtel = new Mellowtel("<configuration_key>"); // अपने कॉन्फ़िगरेशन की को बदलें
+    await mellowtel.initBackground();
+})();
+```
+
+कंटेंट स्क्रिप्ट्स के लिए, Mellowtel एक वैश्विक वेरिएबल के रूप में उपलब्ध है (कोई इम्पोर्ट की आवश्यकता नहीं है, क्योंकि यह मैनिफेस्ट के माध्यम से लोड किया गया है):
+
+```javascript
+// content_script.js
+// Mellowtel एक वैश्विक वेरिएबल के रूप में उपलब्ध है mellowtel.js से
+
+(async () => {
+  const mellowtel = new Mellowtel("<configuration_key>"); // अपने कॉन्फ़िगरेशन की को बदलें
+  await mellowtel.initContentScript();
+})();
+```
+
+## अपने एक्सटेंशन का परीक्षण करें
+
+अपने एक्सटेंशन का परीक्षण करने के लिए:
+
+1. Chrome में `chrome://extensions/` पर जाएं (या अन्य ब्राउज़रों में समकक्ष)
+2. "डेवलपर मोड" सक्षम करें
+3. "लोड अनपैक्ड" पर क्लिक करें और अपने एक्सटेंशन फ़ोल्डर का चयन करें
+
+यह दृष्टिकोण आपको Mellowtel का उपयोग करने के लाभ देता है बिना Webpack या Vite जैसे पूर्ण बिल्ड सिस्टम को सेटअप करने की जटिलता के।

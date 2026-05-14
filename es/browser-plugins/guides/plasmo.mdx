@@ -1,0 +1,161 @@
+---
+sidebarTitle: "Plasmo"
+title: "Integra Mellowtel en tu extensión de Plasmo"
+description: "Una guía rápida sobre cómo integrar Mellowtel en tu extensión de navegador Plasmo"
+icon: "puzzle"
+---
+
+Aquí aprenderás cómo monetizar tu extensión de navegador Plasmo integrando Mellowtel. Tiempo estimado para completar: 5-15 minutos.
+
+# Instalación Manual
+
+Si tienes un proyecto Plasmo existente, sigue estos pasos para agregar la integración de Mellowtel.
+
+### Instalar Dependencias
+
+Primero, añade el paquete de Mellowtel a tu proyecto:
+
+```bash
+pnpm add mellowtel
+```
+
+### Configurar package.json
+
+Actualiza tu `package.json` para incluir los permisos requeridos:
+
+```json
+{
+  "manifest": {
+    "permissions": [
+      "storage",
+      "declarativeNetRequest"
+    ],
+    "host_permissions": ["<all_urls>"]
+  }
+}
+```
+
+### Establecer Variables de Entorno
+
+Crea o actualiza tu archivo `.env`:
+
+```plaintext
+PLASMO_PUBLIC_MELLOWTEL=your_mellowtel_api_key_here
+```
+
+<Warning>
+    Asegúrate de reemplazar `your_mellowtel_api_key_here` con tu clave API real de Mellowtel desde el panel de control.
+</Warning>
+
+# Implementación
+
+### Configuración del Script de Fondo
+
+Crea o modifica tu script de fondo (`background.ts`):
+
+```typescript
+import Mellowtel from "mellowtel"
+
+let mellowtel;
+
+(async () => {
+  mellowtel = new Mellowtel(process.env.PLASMO_PUBLIC_MELLOWTEL)
+  await mellowtel.initBackground()
+})()
+
+// Manejar instalación y actualizaciones
+chrome.runtime.onInstalled.addListener(async function (details) {
+  console.log("Extensión instalada o actualizada", details)
+  await mellowtel.generateAndOpenOptInLink()
+})
+```
+
+### Configuración del Script de Contenido
+
+Crea o modifica tu script de contenido (`content.ts`):
+
+```typescript
+import Mellowtel from "mellowtel"
+import type { PlasmoCSConfig } from "plasmo"
+
+let mellowtel;
+
+// Configurar el comportamiento del script de contenido
+export const config: PlasmoCSConfig = {
+  matches: ["<all_urls>"],
+  all_frames: true,
+  run_at: "document_start"
+}
+
+const start = async () => {
+  mellowtel = new Mellowtel(process.env.PLASMO_PUBLIC_MELLOWTEL)
+  const resp = await mellowtel.initContentScript()
+}
+
+start()
+```
+
+### Implementación del Popup
+
+Crea o modifica tu componente popup (`popup.tsx`):
+
+```typescript
+import Mellowtel from "mellowtel"
+
+const Popup: React.FC = () => {
+  const handleMellowtelSettings = async () => {
+    const mellowtel = new Mellowtel(process.env.PLASMO_PUBLIC_MELLOWTEL)
+    const link = await mellowtel.generateSettingsLink()
+    chrome.tabs.create({ url: link })
+  }
+
+  return (
+    <div>
+      <button onClick={handleMellowtelSettings}>
+        Cambiar Configuración de Mellowtel
+      </button>
+    </div>
+  )
+}
+
+export default Popup
+```
+
+# Comandos de Desarrollo
+
+Usa estos comandos durante el desarrollo:
+
+```bash
+# Iniciar servidor de desarrollo
+pnpm dev
+
+# Construir para producción
+pnpm build
+
+# Empaquetar la extensión
+pnpm package
+```
+
+<Accordion title="Mejores Prácticas de Desarrollo">
+    1. Siempre prueba tu extensión a fondo en entornos de desarrollo y producción
+    2. Monitorea la consola para cualquier advertencia o error relacionado con Mellowtel
+    3. Prueba el flujo de opt-in desde la perspectiva de un usuario
+    4. Verifica que el enlace de configuración funcione correctamente
+    5. Asegúrate de que todos los permisos estén configurados correctamente
+</Accordion>
+
+# Pruebas
+
+Antes de enviar tu extensión:
+
+1. Prueba el flujo de instalación
+2. Verifica que el proceso de opt-in funcione
+3. Comprueba que la página de configuración sea accesible
+4. Confirma que todos los permisos funcionen correctamente
+5. Prueba en diferentes navegadores si apuntas a múltiples plataformas
+
+<Note>
+    Para obtener información adicional sobre las características y API de Mellowtel, visita el [Inicio Rápido](https://docs.mellowtel.com/browser-plugins/quickstart).
+</Note>
+
+¿Necesitas ayuda? Únete a nuestra [comunidad en Discord](https://discord.com/invite/txAZp4MSDe) para obtener soporte.

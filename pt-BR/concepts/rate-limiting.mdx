@@ -1,0 +1,36 @@
+---
+title: "Limitação de Taxa"
+description: "Como a Mellowtel se mantém invisível para o usuário final"
+icon: "stopwatch"
+---
+
+## O que é
+
+A Mellowtel limita automaticamente quantas solicitações um único dispositivo (um "nó") aceitará e processará. O limite é aplicado dentro do SDK. Você não o configura, e um parceiro mal-intencionado não pode aumentá-lo de fora.
+
+## Por que é importante
+
+Todo o produto depende de os usuários não perceberem que a Mellowtel está em execução. Se um nó atendesse a solicitações ilimitadas, um usuário com uma conexão lenta sentiria isso em seu navegador. A limitação de taxa é o mecanismo que protege essa promessa, e é por isso que você pode enviar a Mellowtel para usuários reais sem se preocupar com tickets de suporte sobre "o navegador parece lento."
+
+## Como funciona
+
+Cada solicitação é realizada dentro de uma janela isolada que é criada para a solicitação e desmontada imediatamente após. Este é o mesmo modelo de isolamento usado por redes de anúncios como o Google AdSense, com a garantia adicional de que a janela é *sem credenciais* (veja [Privacidade](/concepts/privacy)). Como cada solicitação é de curta duração e isolada, o único fator que importa para a experiência do usuário é *quantas* são executadas, e é isso que a limitação de taxa controla.
+
+O limite atual varia com base em:
+
+- **Velocidade da banda larga**: conexões mais lentas recebem menos solicitações.
+- **Geolocalização**: a capacidade é balanceada regionalmente.
+- **Disponibilidade geral da rede**: o SDK reduz a atividade quando a demanda global é baixa.
+
+<Note>
+**TODO:** Documentar números concretos (limites de req/min, níveis geográficos, limiares de banda larga) assim que finalizados. Por enquanto, os limites são intencionalmente adaptativos e não expostos via a API pública.
+</Note>
+
+## Superfície da API
+
+Não há uma API de limitação de taxa para chamar. O controle é interno e sempre ativo. Você não pode desativá-lo, e não deve precisar inspecioná-lo. Se você acredita que a limitação de taxa está causando um problema em sua integração, [abra uma issue no GitHub](https://github.com/mellowtel-inc/) ou nos contate no [Discord](https://discord.com/invite/txAZp4MSDe).
+
+## Relacionados
+
+- [Privacidade](/concepts/privacy): o que a janela isolada pode e não pode acessar.
+- [Opt-in / Opt-out](/concepts/opt-in-out): a camada de consentimento que está à frente de tudo isso.

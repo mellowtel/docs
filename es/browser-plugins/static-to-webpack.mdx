@@ -1,0 +1,151 @@
+---
+sidebarTitle: "De estático a Webpack"
+title: "Configuración de Webpack para un plugin de navegador"
+icon: "cube"
+---
+
+Esta guía describe cómo configurar tu proyecto de extensión de navegador con Webpack, centrándose en una configuración que soporte múltiples puntos de entrada de JavaScript y gestión de activos estáticos.
+
+### Paso 1: Configuración Inicial del Proyecto
+
+Comienza estructurando tu proyecto para acomodar archivos fuente, activos estáticos y la eventual salida empaquetada. Tu directorio de proyecto debería verse algo así:
+
+```
+tu-extension/
+├── public/            # Contiene archivos estáticos como HTML, CSS y el manifiesto
+│   ├── images/
+│   ├── icons/
+│   ├── manifest.json
+│   └── popup.html
+├── src/               # Contiene tu código fuente JavaScript
+│   ├── background.js
+│   ├── popup.js
+│   ├── content_script.js
+│   └── ... (cualquier otro archivo JS)
+└── package.json       # Archivo de paquete NPM
+```
+
+### Paso 2: Configuración de Node.js y NPM
+
+Asegúrate de que Node.js y NPM estén instalados en tu sistema. Node.js es esencial para ejecutar el ecosistema de paquetes, y NPM se utiliza para gestionar las dependencias de tu proyecto.
+
+### Paso 3: Instalación de Webpack y Otras Dependencias
+
+Navega al directorio raíz de tu proyecto en la terminal e inicializa un nuevo proyecto NPM si aún no lo has hecho:
+
+```bash
+npm init -y
+```
+
+Luego, instala Webpack y los cargadores y plugins necesarios:
+
+```bash
+npm install --save-dev webpack webpack-cli babel-loader @babel/core @babel/preset-env copy-webpack-plugin file-loader
+```
+
+- **Webpack** empaqueta tu JavaScript y activos.
+- **Babel** te permite usar características modernas de JavaScript.
+- **CopyPlugin** copia archivos y directorios en tu directorio de compilación.
+- **File Loader** resuelve import/require() en un archivo en una URL y emite el archivo en el directorio de salida.
+
+### Paso 4: Configuración de Webpack
+
+Crea un archivo `webpack.config.js` en la raíz de tu proyecto. Este archivo debe definir tus puntos de entrada, configuración de salida, reglas de módulo para cargar diferentes tipos de archivos y plugins para funcionalidad adicional. Así es como debería verse tu `webpack.config.js` con la configuración dada:
+
+```javascript
+const path = require('path');
+const CopyPlugin = require('copy-webpack-plugin');
+
+module.exports = {
+    mode: 'development', // Usa 'production' para compilaciones de producción
+    entry: {
+        background: path.join(__dirname, 'src', 'background.js'),
+        popup: path.join(__dirname, 'src', 'popup.js'),
+        content_script: path.join(__dirname, 'src', 'content_script.js'),
+    },
+    output: {
+        path: path.join(__dirname, 'dist'),
+        filename: '[name].js',
+        publicPath: ""
+    },
+    module: {
+        rules: [
+            {
+                test: /\.js$/,
+                exclude: /node_modules/,
+                use: {
+                    loader: 'babel-loader',
+                    options: {
+                        presets: ['@babel/preset-env']
+                    }
+                }
+            },
+            {
+                test: /\.js$/,
+                exclude: /node_modules/
+            },
+            {
+                test: /\.(png|svg|jpg|gif)$/,
+                use: [
+                    'file-loader',
+                ],
+            },
+        ]
+    },
+    plugins: [
+        new CopyPlugin({
+            patterns: [
+                { from: 'public', to: '' } // Copia todos los activos y el manifest.json de 'public' a 'dist'
+            ],
+        }),
+    ]
+};
+```
+
+### Paso 5: Ajuste del Manifiesto y Archivos HTML
+
+Asegúrate de que tu `manifest.json` y cualquier archivo HTML hagan referencia correctamente a los scripts y activos. Por ejemplo, los scripts se generarán en la carpeta `dist`, así que actualiza las rutas en consecuencia.
+
+### Paso 6: Integración de Scripts de Compilación en `package.json`
+
+Después de configurar tu proyecto con Webpack y configurarlo como se describe en los pasos anteriores, querrás automatizar los procesos de compilación y vigilancia usando scripts de `npm`. Abre tu archivo `package.json` y agrega los siguientes scripts dentro del objeto `scripts`:
+
+```json
+"scripts": {
+  "test": "echo \"Error: no test specified\" && exit 1",
+  "build": "webpack --mode production",
+  "watch": "webpack --mode development --watch"
+},
+```
+
+Aquí está lo que hace cada script:
+- `"build"`: Empaqueta tu extensión en modo producción, optimizando la salida para el despliegue. Este modo habilita optimizaciones como la minificación y eliminación de código muerto.
+- `"watch"`: Ejecuta Webpack en modo desarrollo y observa tus archivos para cambios, recompilando automáticamente el proyecto cuando un archivo es modificado. Esto es útil durante el desarrollo para obtener retroalimentación inmediata sobre los cambios.
+
+### Paso 7: Prueba y Compilación de la Extensión
+
+Para compilar tu extensión para producción, usa:
+
+```bash
+npm run build
+```
+
+Este comando invoca Webpack con el flag `--mode production`, optimizando tu proyecto para el despliegue.
+
+Para el desarrollo, puedes hacer que Webpack observe tus archivos y recompilar cada vez que se detecten cambios:
+
+```bash
+npm run watch
+```
+
+Esto hace que el proceso de desarrollo sea más fluido, ya que no tienes que reconstruir manualmente el proyecto después de cada cambio.
+
+### Paso 7: Prueba de la Extensión
+
+Para probar tu extensión en Chrome:
+
+1. Ve a `chrome://extensions/` en el navegador Chrome.
+2. Habilita el "Modo de desarrollador" en la parte superior derecha.
+3. Haz clic en "Cargar sin empaquetar" y selecciona tu carpeta `dist`.
+
+Esto instalará la extensión localmente para propósitos de prueba y desarrollo.

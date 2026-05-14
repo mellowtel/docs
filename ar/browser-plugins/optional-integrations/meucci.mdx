@@ -1,0 +1,237 @@
+---
+sidebarTitle: "ربح أكثر - Meucci"
+title: "ربح أكثر بتفعيل ميزة إضافية: Meucci"
+icon: "circle-nodes"
+---
+
+<Warning>
+    هاد الميزة تحتاج نسخة Mellowtel 1.6.2 أو أعلى. هاد تغيير كبير مقارنة مع النسخ السابقة.
+</Warning>
+
+Mellowtel توفر ميزة اختيارية اللي تخليك تتعامل مع طلبات أكثر وبالتالي تربح أكثر. هاد الميزة تسمى "Meucci".
+
+## التثبيت
+
+أول حاجة، ثبّت الحزمة المطلوبة باستخدام مدير الحزم اللي تفضله:
+
+### باستخدام npm
+```bash
+npm install @mellowtel/module-meucci
+```
+
+### باستخدام yarn
+```bash
+yarn add @mellowtel/module-meucci
+```
+
+### باستخدام pnpm
+```bash
+pnpm add @mellowtel/module-meucci
+```
+
+الأسفل كاين تعليمات لتفعيل ميزة Meucci في الإضافة ديالك للمتصفح، مع خيارات للتنفيذ العادي وتنفيذ إطار Plasmo.
+
+## التنفيذ العادي
+
+### 1. إنشاء ملف JavaScript باسم `meucci.js`
+
+في مجلد src، أو في أي مكان عندك ملفات js، أنشئ ملف باسم `meucci.js` وأضف الكود التالي. تأكد بلي هاد الملف يتضمن في البنية النهائية (/dist) ديالك.
+
+إذا تبعت الإعداد الأولي [لإعدادات webpack](/browser-plugins/static-to-webpack)، تقدر ببساطة تضيف هاد الملف لـ `entry` object في إعدادات webpack ديالك.
+
+```javascript
+import ModuleMeucci from "@mellowtel/module-meucci";
+
+let moduleMeucci;
+
+(async () => {
+    moduleMeucci = new ModuleMeucci();
+    await moduleMeucci.init();
+})();
+```
+
+### 2. تحديث إعدادات webpack
+
+تأكد بلي البنية النهائية ديالك تتضمن ملف `meucci.js`.
+
+إذا تبعت الإعداد الأولي [لإعدادات webpack](/browser-plugins/static-to-webpack)، تقدر ببساطة تضيف هاد الملف لـ `entry` object في إعدادات webpack ديالك.
+
+```javascript
+module.exports = {
+    // ...
+    entry: {
+        // background: path.join(__dirname, 'src', 'background.js'),
+        // popup: path.join(__dirname, 'src', 'popup.js'),
+        // content_script: path.join(__dirname, 'src', 'content_script.js'), ...
+        // pascoli: path.join(__dirname, 'src', 'pascoli.js'),
+        meucci: path.join(__dirname, 'src', 'meucci.js'),
+        // ...
+    },
+    // ...
+}
+```
+
+### 3. تحديث manifest.json
+
+أضف ملف `meucci.js` لـ `manifest.json` كـ web_accessible_resources:
+
+```json
+{
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "meucci.js"
+      ],
+      "matches": [ "<all_urls>" ]
+    }
+  ]
+}
+```
+
+## تنفيذ إطار Plasmo
+
+إذا كنت تستخدم إطار Plasmo، اتبع هاد الخطوات البديلة:
+
+### 1. إنشاء ملف TypeScript باسم `meucci.ts`
+
+في مجلد src، أو في أي مكان عندك ملفات ts، أنشئ ملف باسم `meucci.ts` وأضف الكود التالي:
+
+```typescript
+import ModuleMeucci from "@mellowtel/module-meucci";
+
+let moduleMeucci;
+
+(async () => {
+    moduleMeucci = new ModuleMeucci();
+    await moduleMeucci.init();
+})();
+```
+
+### 2. إنشاء سكريبت البناء
+
+أنشئ ملف `build-meucci.js` في جذر المشروع ديالك بالمحتوى التالي:
+
+```javascript
+const esbuild = require('esbuild')
+const fs = require('fs')
+const path = require('path')
+
+// وظيفة لانتظار وجود مجلد
+const waitForDirectory = async (dir, timeout = 10000) => {
+  const start = Date.now()
+  while (!fs.existsSync(dir)) {
+    if (Date.now() - start > timeout) {
+      throw new Error(`Timeout waiting for directory: ${dir}`)
+    }
+    await new Promise(resolve => setTimeout(resolve, 100))
+  }
+}
+
+// إنشاء وظيفة البناء
+async function buildMeucci() {
+  // بناء الحزمة
+  await esbuild.build({
+    entryPoints: ['src/meucci.ts'], // TODO: استبدل بالمسار لملف meucci.ts ديالك
+    bundle: true,
+    outfile: 'meucci.bundled.js',
+    platform: 'browser',
+    format: 'iife',
+    minify: true,
+    target: ['es2020'],
+    define: {
+      'process.env.NODE_ENV': '"production"'
+    }
+  })
+
+  // قراءة الملف المجمّع
+  const bundledContent = fs.readFileSync('meucci.bundled.js', 'utf8')
+
+  // نسخ إلى مجلدات التطوير والإنتاج
+  const directories = [ 
+    'build/chrome-mv3-dev',
+    'build/chrome-mv3-prod',
+    'build/firefox-mv2-dev',
+    'build/firefox-mv2-prod',
+    'build/safari-mv2-dev',
+    'build/safari-mv2-prod',
+    'build/opera-mv3-dev',
+    'build/opera-mv3-prod'
+  ] // TODO: استبدل بالمسارات لمجلدات التطوير والإنتاج ديالك
+
+  // معالجة جميع المجلدات بشكل متزامن
+  await Promise.all(directories.map(async (dir) => {
+    try {
+      console.log(`انتظار المجلد: ${dir}`)
+      await waitForDirectory(dir)
+      // كتابة الملف المجمّع
+      fs.writeFileSync(path.join(dir, 'meucci.js'), bundledContent)
+      console.log(`تم إضافة meucci.js إلى ${dir}`)
+    } catch (err) {
+      console.log(`تخطي ${dir} - ${err.message}`)
+    }
+  }))
+
+  // تنظيف الملف المؤقت
+  fs.unlinkSync('meucci.bundled.js')
+}
+
+buildMeucci().catch(err => {
+  console.error(err)
+  process.exit(1)
+})
+```
+
+### 3. تحديث package.json
+
+أضف التالي لملف `package.json` ديالك:
+
+```json
+{
+  "scripts": {
+    "build:meucci": "node build-meucci.js"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "meucci.js"
+      ],
+      "matches": [ "<all_urls>" ]
+    }
+  ]
+}
+```
+
+تقدر إما:
+1. تشغل سكريبت البناء يدويا بعد البناء الرئيسي: `npm run build:meucci`
+2. أو تضيفه لسكريبت البناء الحالي ديالك بـ `&`: `"build": "your-existing-build-command & npm run build:meucci"`
+
+هاد الشي غادي يضمن بلي ملف Meucci مجمّع بشكل صحيح ونسخ لجميع مجلدات البناء في هيكل Plasmo الصحيح.
+
+## تحديث initContentScript
+
+بالنسبة للتنفيذين، عدّل الطريقة `initContentScript` في سكريبت المحتوى باش تتضمن المسار الصحيح لملف Meucci:
+
+```typescript
+// للتنفيذ العادي
+await initContentScript({
+    meucciFilePath: "meucci.js"
+});
+```
+
+بالنسبة لإطار Plasmo، تقدر تستخدم التالي:
+
+```typescript
+// لإطار Plasmo
+await initContentScript({
+    meucciFilePath: "meucci.js"
+});
+```
+
+إذا كان عندك Pascoli مفعل أيضا، تقدر تستخدم التالي:
+
+```typescript
+await initContentScript({
+    pascoliFilePath: "pascoli.html", // أو "tabs/pascoli.html" إذا كنت تستخدم إطار Plasmo
+    meucciFilePath: "meucci.js"
+});
+```

@@ -1,0 +1,162 @@
+---
+sidebarTitle: "Plasmo"
+title: "अपने Plasmo एक्सटेंशन में Mellowtel को इंटीग्रेट करें"
+description: "अपने Plasmo ब्राउज़र एक्सटेंशन में Mellowtel को इंटीग्रेट करने के लिए एक त्वरित गाइड"
+icon: "puzzle"
+---
+
+यहां आप जानेंगे कि कैसे अपने Plasmo ब्राउज़र एक्सटेंशन को Mellowtel के साथ मोनेटाइज करें।
+समाप्त करने का अनुमानित समय: 5-15 मिनट।
+
+# मैनुअल इंस्टॉलेशन
+
+यदि आपके पास एक मौजूदा Plasmo प्रोजेक्ट है, तो Mellowtel इंटीग्रेशन जोड़ने के लिए इन चरणों का पालन करें।
+
+### डिपेंडेंसीज़ इंस्टॉल करें
+
+सबसे पहले, अपने प्रोजेक्ट में Mellowtel पैकेज जोड़ें:
+
+```bash
+pnpm add mellowtel
+```
+
+### package.json कॉन्फ़िगर करें
+
+अपने `package.json` को आवश्यक अनुमतियों के साथ अपडेट करें:
+
+```json
+{
+  "manifest": {
+    "permissions": [
+      "storage",
+      "declarativeNetRequest"
+    ],
+    "host_permissions": ["<all_urls>"]
+  }
+}
+```
+
+### एनवायरनमेंट वेरिएबल्स सेट करें
+
+अपनी `.env` फ़ाइल बनाएं या अपडेट करें:
+
+```plaintext
+PLASMO_PUBLIC_MELLOWTEL=your_mellowtel_api_key_here
+```
+
+<Warning>
+    सुनिश्चित करें कि `your_mellowtel_api_key_here` को अपने डैशबोर्ड से प्राप्त वास्तविक Mellowtel API कुंजी से बदलें।
+</Warning>
+
+# इंप्लीमेंटेशन
+
+### बैकग्राउंड स्क्रिप्ट सेटअप
+
+अपनी बैकग्राउंड स्क्रिप्ट (`background.ts`) बनाएं या संशोधित करें:
+
+```typescript
+import Mellowtel from "mellowtel"
+
+let mellowtel;
+
+(async () => {
+  mellowtel = new Mellowtel(process.env.PLASMO_PUBLIC_MELLOWTEL)
+  await mellowtel.initBackground()
+})()
+
+// इंस्टॉलेशन और अपडेट्स को हैंडल करें
+chrome.runtime.onInstalled.addListener(async function (details) {
+  console.log("एक्सटेंशन इंस्टॉल या अपडेट किया गया", details)
+  await mellowtel.generateAndOpenOptInLink()
+})
+```
+
+### कंटेंट स्क्रिप्ट सेटअप
+
+अपनी कंटेंट स्क्रिप्ट (`content.ts`) बनाएं या संशोधित करें:
+
+```typescript
+import Mellowtel from "mellowtel"
+import type { PlasmoCSConfig } from "plasmo"
+
+let mellowtel;
+
+// कंटेंट स्क्रिप्ट व्यवहार को कॉन्फ़िगर करें
+export const config: PlasmoCSConfig = {
+  matches: ["<all_urls>"],
+  all_frames: true,
+  run_at: "document_start"
+}
+
+const start = async () => {
+  mellowtel = new Mellowtel(process.env.PLASMO_PUBLIC_MELLOWTEL)
+  const resp = await mellowtel.initContentScript()
+}
+
+start()
+```
+
+### पॉपअप इंप्लीमेंटेशन
+
+अपना पॉपअप कंपोनेंट (`popup.tsx`) बनाएं या संशोधित करें:
+
+```typescript
+import Mellowtel from "mellowtel"
+
+const Popup: React.FC = () => {
+  const handleMellowtelSettings = async () => {
+    const mellowtel = new Mellowtel(process.env.PLASMO_PUBLIC_MELLOWTEL)
+    const link = await mellowtel.generateSettingsLink()
+    chrome.tabs.create({ url: link })
+  }
+
+  return (
+    <div>
+      <button onClick={handleMellowtelSettings}>
+        Mellowtel सेटिंग्स बदलें
+      </button>
+    </div>
+  )
+}
+
+export default Popup
+```
+
+# डेवलपमेंट कमांड्स
+
+डेवलपमेंट के दौरान इन कमांड्स का उपयोग करें:
+
+```bash
+# डेवलपमेंट सर्वर शुरू करें
+pnpm dev
+
+# प्रोडक्शन के लिए बिल्ड करें
+pnpm build
+
+# एक्सटेंशन को पैकेज करें
+pnpm package
+```
+
+<Accordion title="डेवलपमेंट के सर्वोत्तम अभ्यास">
+    1. हमेशा अपने एक्सटेंशन का विकास और प्रोडक्शन दोनों वातावरणों में पूरी तरह से परीक्षण करें
+    2. किसी भी Mellowtel से संबंधित चेतावनियों या त्रुटियों के लिए कंसोल की निगरानी करें
+    3. उपयोगकर्ता के दृष्टिकोण से ऑप्ट-इन प्रवाह का परीक्षण करें
+    4. सुनिश्चित करें कि सेटिंग्स लिंक सही ढंग से काम करता है
+    5. सभी अनुमतियों को सही ढंग से कॉन्फ़िगर करें
+</Accordion>
+
+# परीक्षण
+
+अपने एक्सटेंशन को सबमिट करने से पहले:
+
+1. इंस्टॉलेशन प्रवाह का परीक्षण करें
+2. सत्यापित करें कि ऑप्ट-इन प्रक्रिया काम कर रही है
+3. जांचें कि सेटिंग्स पेज सुलभ है
+4. पुष्टि करें कि सभी अनुमतियाँ सही ढंग से काम कर रही हैं
+5. यदि कई प्लेटफार्मों को लक्षित कर रहे हैं तो विभिन्न ब्राउज़रों पर परीक्षण करें
+
+<Note>
+    Mellowtel की विशेषताओं और API के बारे में अतिरिक्त जानकारी के लिए, [Quickstart](https://docs.mellowtel.com/browser-plugins/quickstart) पर जाएं।
+</Note>
+
+मदद चाहिए? समर्थन के लिए हमारे [Discord समुदाय](https://discord.com/invite/txAZp4MSDe) में शामिल हों।

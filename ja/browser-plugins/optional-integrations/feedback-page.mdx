@@ -1,0 +1,57 @@
+---
+sidebarTitle: "ユーザーフィードバック"
+title: "ユーザーからフィードバックを収集する"
+icon: "comment"
+---
+
+Mellowtelは、ユーザーからフィードバックを収集するために使用できる事前構築されたフィードバックページを提供しており、これにより迅速に反復し、製品を改善することができます。
+現在、このページはブラウザプラグイン専用で利用可能です。フィードバックページは、プラグインのアイコンと名前を動的に渡すことで、この[ページ](https://www.mellowtel.com/uninstall-feedback/?extension_id=testId&configuration_key=testConfiguration)に似ています。
+
+その後、Mellowtelダッシュボードからフィードバックを読み取り、ブラウザプラグインを改善するために使用できます。
+
+重要: フィードバックをMellowtelダッシュボードから読み取ることができるのは、プラグインがウェブストアに公開されている場合のみで、開発モードではありません。
+開発中でフィードバックページをテストしたい場合は、チャットを通じてお問い合わせください。
+
+以下は、ブラウザプラグインにフィードバックページを追加する方法です。
+
+
+## プラグインにフィードバックページを追加する
+
+フィードバックページはMellowtelによってホストされており、Mellowtel JSパッケージの`generateFeedbackLink()`メソッドを使用して生成できるURLを介してアクセス可能です。
+
+新しいタブでフィードバックページを直接開きたい場合は、`generateAndOpenFeedbackLink()`メソッドを使用すると、この[ページ](https://www.mellowtel.com/uninstall-feedback/?extension_id=testId&configuration_key=testConfiguration)に似たページが開き、プラグインのアイコンと名前を動的に渡します。
+
+ユーザーがブラウザプラグインをアンインストールしたときに、拡張機能のバックグラウンドスクリプトまたはコンテンツスクリプトから`generateFeedbackLink()`メソッドを呼び出してフィードバックページを開くことができます。
+
+以下はその方法です。
+
+`service worker`ファイル（バックグラウンドスクリプトとも呼ばれる）を開き、次のコードを追加します：
+
+`<YOUR_CONFIGURATION_KEY>`を実際のMellowtel設定キーに置き換えることを忘れないでください。まだ設定キーを持っていない場合は、[Mellowtel](https://www.mellowtel.com/mellowtel-auth/)にサインアップすることで取得できます。
+
+```javascript
+import Mellowtel from "mellowtel";
+
+let mellowtel;
+
+(async () => {
+    mellowtel = new Mellowtel("<YOUR_CONFIGURATION_KEY>");
+    await mellowtel.initBackground();
+})();
+
+// ユーザーが拡張機能をアンインストールしたときにフィードバックページを開く
+chrome.runtime.onInstalled.addListener(async function(details) {
+    console.log("Extension Installed or Updated");
+    // インストールと更新を異なる方法で処理したい場合
+    /**
+    if(details.reason === "install"){
+        // 初回インストールを処理する関数を呼び出す
+    } else if(details.reason === "update") {
+        // 更新を処理する関数を呼び出す
+    }
+    **/
+    // ユーザー設定を処理するためにmellowtel.generateAndOpenOptInLink();を待つ。詳細については、opt-in-outドキュメントを参照
+    const uninstallURl = await mellowtel.generateFeedbackLink();
+    chrome.runtime.setUninstallURL(uninstallURl);
+});
+```

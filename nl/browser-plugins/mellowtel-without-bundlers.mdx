@@ -1,0 +1,154 @@
+---
+sidebarTitle: "Mellowtel zonder Bundlers"
+title: "Mellowtel integreren zonder Bundlers"
+icon: "box"
+---
+
+Deze gids legt uit hoe je Mellowtel in je browserextensie kunt integreren zonder gebruik te maken van bundlers zoals Webpack of Vite. In plaats daarvan gebruik je een enkel vooraf gebundeld bestand dat werkt in zowel content scripts als service workers.
+
+## Projectopzet
+
+Begin met een basisstructuur voor je browserextensie:
+
+```
+your-extension/
+├── icons/
+├── popup/
+│   ├── popup.html
+│   └── popup.js
+├── background.js           # Je service worker
+├── content_script.js
+├── manifest.json
+└── mellowtel.js           # Wordt in de volgende stap toegevoegd
+```
+
+## Het verkrijgen van de Mellowtel Bundle
+
+Je hebt twee opties om het `mellowtel.js` bestand voor je extensie te verkrijgen:
+
+### Optie 1: Gebruik Vooraf Gebundeld Bestand
+
+De eenvoudigste manier om te beginnen is door het vooraf gebundelde `mellowtel.js` bestand uit de [mellowtel-bundled repository](https://github.com/mellowtel-inc/mellowtel-bundled) te gebruiken.
+
+1. Ga naar de [mellowtel-bundled repository](https://github.com/mellowtel-inc/mellowtel-bundled)
+2. Download het `mellowtel.js` bestand
+3. Kopieer het naar je extensiemap
+
+### Optie 2: Genereer Je Eigen Bundle
+
+Als je liever zelf de bundle genereert, volg dan deze stappen:
+
+#### Maak een Tijdelijke Bundling Directory
+
+Maak een tijdelijke map aan om Mellowtel te installeren en de bundle te genereren:
+
+```bash
+mkdir mellowtel-bundling
+cd mellowtel-bundling
+npm init -y
+npm install mellowtel
+```
+
+Dit creëert een aparte map met het Mellowtel-pakket dat je alleen voor bundling zult gebruiken.
+
+#### Bundle Mellowtel met esbuild
+
+Maak vanuit de `mellowtel-bundling` directory een enkele bundle die werkt in zowel service workers als content scripts:
+
+```bash
+npx esbuild node_modules/mellowtel/dist/index.js --bundle --format=iife --global-name=Mellowtel --footer:js="globalThis.Mellowtel = Mellowtel.default" --platform=browser --outfile=mellowtel.js --minify --legal-comments=none
+```
+
+Dit commando:
+- Neemt de Mellowtel-bron uit `node_modules/mellowtel/dist/index.js`
+- Bundelt alle afhankelijkheden in een enkel bestand
+- Gebruikt IIFE-formaat met een globale naam voor universele compatibiliteit
+- Voegt een footer toe om de standaardexport wereldwijd beschikbaar te maken
+- Optimaliseert voor browseromgeving en minimaliseert de uitvoer
+- Creëert `mellowtel.js` in de bundling directory
+
+#### Kopieer de Bundle naar Je Extensie
+
+Na het uitvoeren van het esbuild-commando, kopieer je het gegenereerde bestand naar je extensiemap:
+
+```bash
+cp mellowtel.js ../your-extension/
+```
+
+Nu kun je de tijdelijke bundling directory verwijderen, aangezien je alleen het uitvoerbestand nodig had:
+
+```bash
+cd ..
+rm -rf mellowtel-bundling
+```
+
+Je extensiemap bevat nu het gebundelde Mellowtel-bestand dat klaar is voor gebruik.
+
+## Configureer Je Manifest (Beide Opties)
+
+Ongeacht welke optie je hierboven hebt gekozen, configureer je `manifest.json` om de Mellowtel bundle op te nemen in content scripts:
+
+```json
+{
+  "manifest_version": 3,
+  "name": "Je Extensienaam",
+  "version": "1.0",
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["mellowtel.js", "content_script.js"]
+    }
+  ],
+  "permissions": [
+    "storage",
+    "declarativeNetRequestWithHostAccess"
+  ],
+  "host_permissions": [
+    "\u003Call_urls\u003E"
+  ]
+}
+```
+
+**Belangrijk**: 
+- Het `"type": "module"` veld stelt ES module imports in je service worker in staat.
+- In de content scripts array moet `mellowtel.js` **voor** `content_script.js` worden geladen zodat de Mellowtel globale variabele beschikbaar is wanneer je content script wordt uitgevoerd.
+
+## Gebruik Mellowtel in Je Extensie
+
+Voor je service worker (background.js), importeer je het gebundelde bestand:
+
+```javascript
+// background.js
+import './mellowtel.js';
+
+(async () => {
+    const mellowtel = new Mellowtel("<configuration_key>"); // Vervang met je configuratiesleutel
+    await mellowtel.initBackground();
+})();
+```
+
+Voor content scripts is Mellowtel beschikbaar als een globale variabele (geen import nodig, aangezien het via het manifest wordt geladen):
+
+```javascript
+// content_script.js
+// Mellowtel is beschikbaar als een globale variabele vanuit mellowtel.js
+
+(async () => {
+  const mellowtel = new Mellowtel("<configuration_key>"); // Vervang met je configuratiesleutel
+  await mellowtel.initContentScript();
+})();
+```
+
+## Testen van Je Extensie
+
+Om je extensie te testen:
+
+1. Ga naar `chrome://extensions/` in Chrome (of het equivalent in andere browsers)
+2. Schakel "Ontwikkelaarsmodus" in
+3. Klik op "Pakket zonder laden" en selecteer je extensiemap
+
+Deze aanpak biedt je de voordelen van het gebruik van Mellowtel zonder de complexiteit van het opzetten van een volledig buildsysteem zoals Webpack of Vite.

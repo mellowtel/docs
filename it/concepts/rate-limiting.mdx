@@ -1,0 +1,36 @@
+---
+title: "Limitazione della velocità"
+description: "Come Mellowtel si mantiene invisibile per l’utente finale"
+icon: "stopwatch"
+---
+
+## Cos'è
+
+Mellowtel limita automaticamente quante richieste un singolo dispositivo (un "nodo") accetterà e processerà. Il limite è imposto all'interno dell'SDK. Non lo configuri tu, e un partner che si comporta male non può aumentarlo dall'esterno.
+
+## Perché è importante
+
+L'intero prodotto dipende dal fatto che gli utenti non si accorgano che Mellowtel è in esecuzione. Se un nodo servisse richieste illimitate, un utente con una connessione lenta lo percepirebbe nel suo browser. La limitazione della velocità è il meccanismo che protegge questa promessa, ed è il motivo per cui puoi distribuire Mellowtel agli utenti reali senza preoccuparti di ticket di supporto riguardanti "il browser sembra lento."
+
+## Come funziona
+
+Ogni richiesta viene eseguita all'interno di una finestra isolata che viene creata per la richiesta e chiusa immediatamente dopo. Questo è lo stesso modello di isolamento utilizzato dalle reti pubblicitarie come Google AdSense, con la garanzia aggiuntiva che la finestra è *senza credenziali* (vedi [Privacy](/concepts/privacy)). Poiché ogni richiesta è di breve durata e isolata, l'unico parametro che conta per l'esperienza utente è *quante* ne vengono eseguite, ed è ciò che la limitazione della velocità controlla.
+
+Il limite attuale varia in base a:
+
+- **Velocità di banda**: le connessioni più lente ricevono meno richieste.
+- **Geolocalizzazione**: la capacità è bilanciata a livello regionale.
+- **Disponibilità complessiva della rete**: l'SDK si ritira quando la domanda globale è bassa.
+
+<Note>
+**TODO:** Documentare numeri concreti (limiti req/min, livelli geografici, soglie di banda) una volta finalizzati. Per ora i limiti sono intenzionalmente adattivi e non esposti tramite l'API pubblica.
+</Note>
+
+## Superficie dell'API
+
+Non esiste un'API di limitazione della velocità da chiamare. Il limite è interno e sempre attivo. Non puoi disabilitarlo e non dovresti aver bisogno di ispezionarlo. Se credi che la limitazione della velocità stia causando un problema nella tua integrazione, [apri un problema su GitHub](https://github.com/mellowtel-inc/) o contattaci su [Discord](https://discord.com/invite/txAZp4MSDe).
+
+## Correlati
+
+- [Privacy](/concepts/privacy): cosa la finestra isolata può e non può accedere.
+- [Opt-in / Opt-out](/concepts/opt-in-out): il livello di consenso che si trova davanti a tutto questo.

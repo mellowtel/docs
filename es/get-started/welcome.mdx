@@ -1,0 +1,61 @@
+---
+sidebarTitle: "Bienvenido"
+title: "Bienvenido 👋"
+icon: "hand-wave"
+---
+
+**Mellowtel es la plataforma de monetización de código abierto para desarrolladores y creadores en el mundo de la IA.** Inserta el SDK en tu extensión de navegador, aplicación de escritorio, sitio web o aplicación móvil y tus usuarios pueden optar por compartir una fracción de su ancho de banda de internet no utilizado con socios de confianza. Tú ganas una parte de los ingresos.
+
+## Cómo se ve la integración
+
+```bash
+npm install mellowtel
+```
+
+```javascript
+import Mellowtel from "mellowtel";
+
+const mellowtel = new Mellowtel("<YOUR_CONFIGURATION_KEY>");
+await mellowtel.initBackground();
+await mellowtel.generateAndOpenOptInLink();
+```
+
+Esa es toda la integración para una extensión de navegador. Otras plataformas son similares. Consulta los inicios rápidos a continuación.
+
+## Elige tu plataforma
+
+<CardGroup cols={2}>
+    <Card title="Complementos de navegador" icon="puzzle-piece" href="/browser-plugins/quickstart">
+        Integra Mellowtel en una extensión de Chrome, Edge, Firefox o Safari en ~5 minutos.
+    </Card>
+    <Card title="Aplicaciones de escritorio" icon="desktop" href="/desktop-app/quickstart">
+        Monetiza una aplicación de escritorio de Electron, Windows o macOS.
+    </Card>
+    <Card title="Sitios web" icon="atom" href="/website/quickstart">
+        Añade Mellowtel a cualquier sitio web con un solo script.
+    </Card>
+    <Card title="Aplicaciones móviles" icon="mobile" href="/mobile-app/quickstart">
+        Monetiza una aplicación móvil de iOS o Android.
+    </Card>
+</CardGroup>
+
+## Antes de lanzar, lee los conceptos
+
+Estas cuatro páginas explican los principios que toda integración de Mellowtel debe respetar: consentimiento, privacidad y limitación de tasa. Léelas una vez y el resto de la documentación tendrá sentido.
+
+<CardGroup cols={2}>
+    <Card title="Resumen de conceptos" icon="compass" href="/concepts/overview">
+        Las cuatro ideas detrás de Mellowtel en una página.
+    </Card>
+    <Card title="Opt-in / Opt-out" icon="signature" href="/concepts/opt-in-out">
+        Cómo capturar (y revocar) el consentimiento del usuario de la manera correcta.
+    </Card>
+</CardGroup>
+
+## Cómo funcionan los ingresos
+
+La división es **55% para desarrolladores, 45% para Mellowtel**. A medida que escalamos, podremos ofrecer más servicios y aumentar la parte del desarrollador. En el futuro, puede haber funciones que te permitan compartir parte de estos ingresos directamente con tus usuarios; mientras tanto, puedes recompensar a los usuarios que opten por participar con funciones o contenido exclusivos.
+
+## ¿Necesitas ayuda?
+
+Este sitio es la fuente de verdad para todo lo técnico. Para cualquier otra cosa (preguntas, comentarios, o simplemente para pasar el rato con otros desarrolladores de Mellowtel), únete a nosotros en [Discord](https://discord.com/invite/txAZp4MSDe).

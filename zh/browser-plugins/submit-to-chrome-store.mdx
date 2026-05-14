@@ -1,0 +1,32 @@
+---
+sidebarTitle: "提交到 CWS"
+title: "将扩展程序提交到 Chrome 网上应用店"
+icon: "chrome"
+---
+
+在按照[快速开始](/browser-plugins/quickstart)中概述的说明将 Mellowtel 导入到你的扩展程序后，你就可以准备将扩展程序提交到网上应用店了。本指南将帮助你将扩展程序提交到 Chrome 网上应用店。
+
+预计完成时间：3-5 分钟。
+
+### 网上应用店的理由
+网上应用店要求你说明请求权限的理由。以下是一个模板（解释了 Mellowtel 如何使用这些权限）：
+
+**DeclarativeNetRequest**:
+```txt
+需要 declarativeNetRequest 权限来从某些响应的 sub_frame 级别中剥离某些头信息（例如 X-Frame 头信息）。这允许在 iframe 中显示网站，而不会遇到与跨域资源共享（CORS）相关的问题。这些头信息在响应处理后会立即恢复。
+```
+
+**主机权限**:
+```txt
+需要 all_urls 的主机权限以允许 declarativeNetRequest 修改所有 URL 的响应头信息。这是为了从某些响应的 sub_frame 级别中剥离某些头信息（例如 X-Frame 头信息）。这允许在 iframe 中显示网站，而不会遇到与跨域资源共享（CORS）相关的问题。这些头信息在响应处理后会立即恢复。
+```
+
+**存储**:
+```txt
+需要存储权限以持久化扩展程序特定的状态，并具有本地逻辑以促进扩展程序各部分之间的通信。
+```
+
+### 提交你的扩展程序
+你可以根据以下说明提交新扩展程序或更新现有扩展程序：
+- [提交新扩展程序](https://developer.chrome.com/docs/webstore/publish/)
+- [更新现有扩展程序](https://developer.chrome.com/docs/webstore/update)

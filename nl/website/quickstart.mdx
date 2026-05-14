@@ -1,0 +1,160 @@
+---
+sidebarTitle: "Snelle Start"
+title: "Monetiseer je website met Mellowtel"
+description: "Voeg een enkele script-tag toe zodat bezoekers je kunnen ondersteunen door ongebruikte bandbreedte te delen."
+icon: "rocket"
+---
+
+Mellowtel laat je bezoekers kiezen om ongebruikte bandbreedte te delen in ruil voor ondersteuning. Je voegt een kleine widget toe aan je site, bezoekers kiezen ervoor om de bijbehorende extensie te installeren, en je verdient op basis van de verzoeken die hun browser afhandelt.
+
+<Info>
+  **Geschatte tijd:** 5 tot 10 minuten. **Je hebt nodig:** een [Mellowtel-account](https://www.mellowtel.com/mellowtel-auth/) en toegang tot de HTML van je site (of een equivalent framework).
+</Info>
+
+## Hoe het werkt
+
+<Steps>
+  <Step title="Je integreert de widget">
+    Een script-tag toont een knop, pictogram of banner op je site.
+  </Step>
+  <Step title="Een bezoeker klikt erop">
+    Ze worden doorgestuurd om de Mellowtel-extensie te installeren.
+  </Step>
+  <Step title="Je krijgt krediet">
+    Je `invite_id` koppelt die bezoeker aan je account, zodat verzoeken die door hun browser worden afgehandeld aan jou worden toegeschreven.
+  </Step>
+</Steps>
+
+## Voordat je begint
+
+- Een Mellowtel-account. [Meld je hier aan](https://www.mellowtel.com/mellowtel-auth/) als je er nog geen hebt.
+- Je `invite_id`, te vinden op je [dashboard](https://www.mellowtel.com/mellowtel-auth/) na het aanmaken van een ondersteuningslink.
+- Toegang tot de HTML van je site, of de mogelijkheid om een `<script>`-tag toe te voegen via je framework of CMS.
+
+## Installeer de widget
+
+Plak dit op je site en vervang `INVITE_ID` door de waarde van je dashboard. Het wordt aanbevolen om het net voor `</body>` te plaatsen zodat het de paginarendering niet blokkeert.
+
+<CodeGroup>
+
+```html HTML
+<script
+  src="https://cdn.mellow.tel/widget.js?type=button&position=bottom-right&invite_id=INVITE_ID"
+  async>
+</script>
+```
+
+```jsx Next.js (App Router)
+import Script from 'next/script'
+
+export default function Layout({ children }) {
+  return (
+    <html>
+      <body>
+        {children}
+        <Script
+          src="https://cdn.mellow.tel/widget.js?type=button&position=bottom-right&invite_id=INVITE_ID"
+          strategy="afterInteractive"
+        />
+      </body>
+    </html>
+  )
+}
+```
+
+```jsx React (Vite / CRA)
+import { useEffect } from 'react'
+
+export function MellowtelWidget() {
+  useEffect(() => {
+    const s = document.createElement('script')
+    s.src = 'https://cdn.mellow.tel/widget.js?type=button&position=bottom-right&invite_id=INVITE_ID'
+    s.async = true
+    document.body.appendChild(s)
+    return () => { s.remove() }
+  }, [])
+  return null
+}
+```
+
+```html WordPress
+<!-- Voeg toe aan de footer.php van je thema net voor </body>, -->
+<!-- of gebruik een "Header & Footer Scripts" plugin en plak in het voettekstenveld. -->
+<script
+  src="https://cdn.mellow.tel/widget.js?type=button&position=bottom-right&invite_id=INVITE_ID"
+  async>
+</script>
+```
+
+```html Webflow / Shopify
+<!-- Webflow: Projectinstellingen > Aangepaste code > Voettekstcode -->
+<!-- Shopify: Online winkel > Thema's > Code bewerken > theme.liquid (voor </body>) -->
+<script
+  src="https://cdn.mellow.tel/widget.js?type=button&position=bottom-right&invite_id=INVITE_ID"
+  async>
+</script>
+```
+
+</CodeGroup>
+
+## Configuratie-opties
+
+Beheer het uiterlijk van de widget via queryparameters in de script-URL.
+
+| Parameter    | Vereist  | Waarden                                                             | Beschrijving                                         |
+| ------------ | -------- | ------------------------------------------------------------------- | ---------------------------------------------------- |
+| `invite_id`  | Ja       | Je ID van het dashboard                                             | Ken verdiensten toe aan je account.                  |
+| `type`       | Ja       | `button`, `icon`, `banner`                                          | Widgetstijl die op je site wordt getoond.            |
+| `position`   | Ja       | `bottom-right`, `bottom-left`, `top-right`, `top-left`              | Waar de widget op de pagina staat.                   |
+
+<Tip>
+  Bekijk elke combinatie live voordat je deze verzendt: [open de widgetvoorbeeld](https://cdn.mellow.tel/preview?position=bottom-right&type=button&invite_id=ijxf49s9h2f). Wissel de `type` en `position` parameters in de URL om elke variant te zien.
+</Tip>
+
+## Verifieer of het werkt
+
+<Steps>
+  <Step title="Laad je site">
+    Open de pagina in een nieuwe browsertab (of incognitovenster om de cache te omzeilen).
+  </Step>
+  <Step title="Bevestig dat de widget wordt weergegeven">
+    Je zou de knop, het pictogram of de banner op de door jou gekozen positie moeten zien. Als het ontbreekt, controleer dan de browserconsole op geblokkeerde verzoeken.
+  </Step>
+  <Step title="Klik door de flow">
+    Door op de widget te klikken, zou je naar de extensie-installatiepagina moeten worden geleid met je `invite_id` eraan gekoppeld.
+  </Step>
+  <Step title="Controleer je dashboard">
+    Zodra een bezoeker installeert en zich aanmeldt, verschijnt hun activiteit op je Mellowtel-dashboard.
+  </Step>
+</Steps>
+
+## Problemen oplossen
+
+<AccordionGroup>
+  <Accordion title="De widget wordt niet weergegeven">
+    - Bevestig dat de script-tag binnen `<body>` staat en je `invite_id` is ingevuld.
+    - Open DevTools en controleer het Netwerk-tabblad voor een verzoek naar `cdn.mellow.tel/widget.js`. Als het geblokkeerd is, is een adblocker of inhoudsfilter waarschijnlijk de oorzaak.
+    - Controleer je Content Security Policy. Je moet mogelijk `https://cdn.mellow.tel` toestaan onder `script-src`.
+  </Accordion>
+  <Accordion title="Ik zie een 'missing invite_id' waarschuwing">
+    De `invite_id` parameter is leeg of bevat nog steeds de letterlijke `INVITE_ID` placeholder. Kopieer de echte waarde van je dashboard en plak deze in de URL.
+  </Accordion>
+  <Accordion title="Het werkt lokaal maar niet in productie">
+    Meestal wordt een CSP- of CDN-regel het script gestript. Controleer de response headers op je productiehost en plaats `cdn.mellow.tel` op de witte lijst.
+  </Accordion>
+  <Accordion title="Hoe verwijder ik de widget?">
+    Verwijder de `<script>`-tag (of de frameworkcomponent die het omhult). Er is verder niets om op te ruimen.
+  </Accordion>
+</AccordionGroup>
+
+## Informeer je bezoekers
+
+We raden aan om een korte notitie toe te voegen aan je privacybeleid zodat bezoekers begrijpen wat het betekent om in te stemmen. Iets als:
+
+> Deze site werkt samen met Mellowtel. Als je ervoor kiest om hun extensie te installeren, kan je browser ongebruikte bandbreedte delen om deze site te ondersteunen. Installatie is optioneel en je kunt je op elk moment afmelden.
+
+Zie [Privacy](/concepts/privacy) en [Aanmelden / Afmelden](/concepts/opt-in-out) voor de volledige details waar je naar kunt linken.
+
+## Hulp nodig?
+
+Neem contact op via [info@mellowtel.com](mailto:info@mellowtel.com) of sluit je aan bij ons op [Discord](https://discord.gg/mellowtel).

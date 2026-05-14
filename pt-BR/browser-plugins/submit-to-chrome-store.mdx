@@ -1,0 +1,35 @@
+---
+sidebarTitle: "Enviar para o CWS"
+title: "Enviar extensão para a Chrome Web Store"
+icon: "chrome"
+---
+
+Depois de seguir as instruções para importar Mellowtel na sua extensão, conforme descrito em [Início Rápido](/browser-plugins/quickstart), você está pronto para enviar sua extensão para a Web Store.
+Este guia irá ajudá-lo a enviar sua extensão para a Chrome Web Store.
+
+Tempo estimado para conclusão: 3-5 minutos.
+
+
+### Justificativa para a Web Store
+A Web Store exige que você justifique as permissões que está solicitando. Aqui está um modelo que você pode usar (ele explica como o Mellowtel utiliza as permissões):
+
+**DeclarativeNetRequest**:
+```txt
+A permissão declarativeNetRequest é necessária para remover certos cabeçalhos (por exemplo, cabeçalhos X-Frame) de algumas respostas no nível sub_frame. Isso permite exibir sites em um iframe sem enfrentar problemas relacionados ao compartilhamento de recursos entre origens (CORS). Esses cabeçalhos são imediatamente restaurados após o processamento da resposta.
+```
+
+**Permissões de Host**:
+```txt
+As permissões de host em all_urls são necessárias para permitir que o declarativeNetRequest modifique cabeçalhos de resposta em todas as URLs. Isso é necessário para remover certos cabeçalhos (por exemplo, cabeçalhos X-Frame) de algumas respostas no nível sub_frame. Isso permite exibir sites em um iframe sem enfrentar problemas relacionados ao compartilhamento de recursos entre origens (CORS). Esses cabeçalhos são imediatamente restaurados após o processamento da resposta.
+```
+
+**Armazenamento**:
+```txt
+A permissão de armazenamento é necessária para persistir o estado específico da extensão e ter uma lógica local para facilitar a comunicação entre as várias partes da extensão.
+```
+
+
+### Enviar sua extensão
+Você pode seguir as instruções aqui, dependendo se está enviando uma nova extensão ou atualizando uma existente:
+- [Enviar uma nova extensão](https://developer.chrome.com/docs/webstore/publish/)
+- [Atualizar uma extensão existente](https://developer.chrome.com/docs/webstore/update)

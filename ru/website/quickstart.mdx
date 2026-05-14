@@ -1,0 +1,160 @@
+---
+sidebarTitle: "Быстрый старт"
+title: "Монетизируйте ваш сайт с Mellowtel"
+description: "Добавьте один тег скрипта, чтобы позволить посетителям поддерживать вас, делясь неиспользованной пропускной способностью."
+icon: "rocket"
+---
+
+Mellowtel позволяет вашим посетителям делиться неиспользованной пропускной способностью в обмен на поддержку вас. Вы добавляете небольшой виджет на ваш сайт, посетители выбирают установку сопутствующего расширения, и вы зарабатываете на основе запросов, которые обрабатывает их браузер.
+
+<Info>
+  **Оценочное время:** 5-10 минут. **Вам понадобится:** [аккаунт Mellowtel](https://www.mellowtel.com/mellowtel-auth/) и доступ к HTML вашего сайта (или эквивалент в вашем фреймворке).
+</Info>
+
+## Как это работает
+
+<Steps>
+  <Step title="Вы встраиваете виджет">
+    Тег скрипта отображает кнопку, иконку или баннер на вашем сайте.
+  </Step>
+  <Step title="Посетитель нажимает на него">
+    Его перенаправляют на установку сопутствующего расширения Mellowtel.
+  </Step>
+  <Step title="Вы получаете кредит">
+    Ваш `invite_id` связывает этого посетителя с вашим аккаунтом, поэтому запросы, обрабатываемые их браузером, приписываются вам.
+  </Step>
+</Steps>
+
+## Прежде чем начать
+
+- Аккаунт Mellowtel. [Зарегистрируйтесь здесь](https://www.mellowtel.com/mellowtel-auth/), если у вас его нет.
+- Ваш `invite_id`, который можно найти на вашей [панели управления](https://www.mellowtel.com/mellowtel-auth/) после создания ссылки поддержки.
+- Доступ к HTML вашего сайта или возможность добавить тег `<script>` через ваш фреймворк или CMS.
+
+## Установка виджета
+
+Вставьте это на ваш сайт, заменив `INVITE_ID` значением из вашей панели управления. Рекомендуется размещать его непосредственно перед `</body>`, чтобы он не блокировал рендеринг страницы.
+
+<CodeGroup>
+
+```html HTML
+<script
+  src="https://cdn.mellow.tel/widget.js?type=button&position=bottom-right&invite_id=INVITE_ID"
+  async>
+</script>
+```
+
+```jsx Next.js (App Router)
+import Script from 'next/script'
+
+export default function Layout({ children }) {
+  return (
+    <html>
+      <body>
+        {children}
+        <Script
+          src="https://cdn.mellow.tel/widget.js?type=button&position=bottom-right&invite_id=INVITE_ID"
+          strategy="afterInteractive"
+        />
+      </body>
+    </html>
+  )
+}
+```
+
+```jsx React (Vite / CRA)
+import { useEffect } from 'react'
+
+export function MellowtelWidget() {
+  useEffect(() => {
+    const s = document.createElement('script')
+    s.src = 'https://cdn.mellow.tel/widget.js?type=button&position=bottom-right&invite_id=INVITE_ID'
+    s.async = true
+    document.body.appendChild(s)
+    return () => { s.remove() }
+  }, [])
+  return null
+}
+```
+
+```html WordPress
+<!-- Добавьте в footer.php вашей темы непосредственно перед </body>, -->
+<!-- или используйте плагин "Header & Footer Scripts" и вставьте в поле footer. -->
+<script
+  src="https://cdn.mellow.tel/widget.js?type=button&position=bottom-right&invite_id=INVITE_ID"
+  async>
+</script>
+```
+
+```html Webflow / Shopify
+<!-- Webflow: Project Settings > Custom Code > Footer Code -->
+<!-- Shopify: Online Store > Themes > Edit Code > theme.liquid (перед </body>) -->
+<script
+  src="https://cdn.mellow.tel/widget.js?type=button&position=bottom-right&invite_id=INVITE_ID"
+  async>
+</script>
+```
+
+</CodeGroup>
+
+## Параметры конфигурации
+
+Управляйте внешним видом виджета с помощью параметров запроса в URL скрипта.
+
+| Параметр     | Обязательный | Значения                                                             | Описание                                             |
+| ------------ | ------------ | -------------------------------------------------------------------- | ---------------------------------------------------- |
+| `invite_id`  | Да           | Ваш ID из панели управления                                          | Приписывает заработок к вашему аккаунту.              |
+| `type`       | Да           | `button`, `icon`, `banner`                                           | Стиль виджета, отображаемый на вашем сайте.           |
+| `position`   | Да           | `bottom-right`, `bottom-left`, `top-right`, `top-left`               | Положение виджета на странице.                        |
+
+<Tip>
+  Предварительно просмотрите каждую комбинацию вживую перед публикацией: [откройте предпросмотр виджета](https://cdn.mellow.tel/preview?position=bottom-right&type=button&invite_id=ijxf49s9h2f). Меняйте параметры `type` и `position` в URL, чтобы увидеть каждый вариант.
+</Tip>
+
+## Проверьте, что все работает
+
+<Steps>
+  <Step title="Загрузите ваш сайт">
+    Откройте страницу в новой вкладке браузера (или в режиме инкогнито, чтобы обойти кэш).
+  </Step>
+  <Step title="Подтвердите, что виджет отображается">
+    Вы должны увидеть кнопку, иконку или баннер в выбранной вами позиции. Если его нет, проверьте консоль браузера на наличие заблокированных запросов.
+  </Step>
+  <Step title="Пройдите весь процесс">
+    Нажатие на виджет должно перенаправить вас на страницу установки расширения с вашим `invite_id`.
+  </Step>
+  <Step title="Проверьте вашу панель управления">
+    Как только посетитель установит и согласится, их активность появится на вашей панели управления Mellowtel.
+  </Step>
+</Steps>
+
+## Устранение неполадок
+
+<AccordionGroup>
+  <Accordion title="Виджет не отображается">
+    - Убедитесь, что тег скрипта находится внутри `<body>` и ваш `invite_id` заполнен.
+    - Откройте DevTools и проверьте вкладку Network на наличие запроса к `cdn.mellow.tel/widget.js`. Если он заблокирован, вероятно, причиной является блокировщик рекламы или фильтр контента.
+    - Проверьте вашу политику безопасности контента. Возможно, вам нужно разрешить `https://cdn.mellow.tel` в `script-src`.
+  </Accordion>
+  <Accordion title="Я вижу предупреждение 'missing invite_id'">
+    Параметр `invite_id` пуст или все еще содержит буквальный `INVITE_ID`. Скопируйте реальное значение из вашей панели управления и вставьте его в URL.
+  </Accordion>
+  <Accordion title="Работает локально, но не в продакшене">
+    Чаще всего правило CSP или CDN удаляет скрипт. Проверьте заголовки ответов на вашем продакшн-хосте и добавьте в белый список `cdn.mellow.tel`.
+  </Accordion>
+  <Accordion title="Как удалить виджет?">
+    Удалите тег `<script>` (или компонент фреймворка, оборачивающий его). Больше ничего не нужно очищать.
+  </Accordion>
+</AccordionGroup>
+
+## Сообщите вашим посетителям
+
+Мы рекомендуем добавить короткую заметку в вашу политику конфиденциальности, чтобы посетители понимали, что означает согласие. Что-то вроде:
+
+> Этот сайт сотрудничает с Mellowtel. Если вы решите установить их расширение, ваш браузер может делиться неиспользованной пропускной способностью для поддержки этого сайта. Установка является необязательной, и вы можете отказаться в любой момент.
+
+Смотрите [Конфиденциальность](/concepts/privacy) и [Согласие / Отказ](/concepts/opt-in-out) для получения полной информации, которую вы можете указать в ссылке.
+
+## Нужна помощь?
+
+Свяжитесь с нами по адресу [info@mellowtel.com](mailto:info@mellowtel.com) или присоединяйтесь к нам на [Discord](https://discord.gg/mellowtel).

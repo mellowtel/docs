@@ -1,0 +1,89 @@
+---
+title: "选择加入 / 选择退出"
+description: "用户必须明确同意后才会共享任何带宽，并且可以随时撤销同意"
+icon: "signature"
+---
+
+## 这是什么
+
+Mellowtel 不会在用户明确选择加入之前共享任何字节的带宽，并且用户必须始终有一个明显的方式选择退出。这是 SDK 的硬性要求，也是允许基于 Mellowtel 的扩展的每个浏览器商店政策的硬性要求。
+
+## 为什么重要
+
+这是用户的带宽。任何不明确且可撤销的同意都是不道德的，并且是商店移除的理由。SDK 的设计使得*简单*的路径也是*合规*的路径。如果你遵循推荐的实现方式，就不会意外发布未经同意就激活的版本。
+
+## 如何运作
+
+在首次安装（以及任何新引入 Mellowtel 的更新）时，你必须向用户展示一个不可关闭的免责声明，解释 Mellowtel 的作用，然后捕获他们的选择。从那时起，必须在你的 UI 中的某个明显位置提供一个设置链接，以便他们可以改变主意。
+
+<Frame caption="免责声明示例">
+    <img src="/images/mellowtel_disclaimer.png" />
+</Frame>
+
+你有两种实现选项：
+
+1. **推荐：** 使用 `generateAndOpenOptInLink()` 打开预构建的 Mellowtel 选择加入页面。一个方法调用，完全合规，最大化选择加入转换。
+2. **自定义 UI：** 构建你自己的同意界面，并自行调用 `optIn()` / `optOut()`。
+
+## API 接口
+
+| 方法 | 返回值 | 用途 |
+|---|---|---|
+| `generateAndOpenOptInLink()` | `Promise<void>` | 打开托管的选择加入页面（推荐路径）。 |
+| `getOptInStatus()` | `Promise<boolean>` | 检查用户是否已经选择加入。 |
+| `optIn()` | `Promise<void>` | 从你自己的 UI 记录同意。 |
+| `optOut()` | `Promise<void>` | 从你自己的 UI 撤销同意。 |
+| `start()` | `Promise<void>` | 在选择加入后开始服务请求。 |
+| `generateSettingsLink()` | `Promise<string>` | 获取托管设置页面的 URL，以便用户以后可以更改选择。 |
+
+所有方法都可以从扩展的任何部分访问：弹出窗口、内容脚本或后台脚本。
+
+## 推荐实现
+
+完整的集成演练在平台快速入门中。它们展示了如何放置 SDK，如何将其连接到安装/更新生命周期，以及如何测试：
+
+- [浏览器插件快速入门](/browser-plugins/quickstart)
+- [桌面应用快速入门](/desktop-app/quickstart)
+- [网站快速入门](/website/quickstart)
+- [移动应用快速入门](/mobile-app/quickstart)
+
+简而言之，在 `new Mellowtel(...)` 和 `initBackground()` 之后，从你的安装/更新处理程序调用 `generateAndOpenOptInLink()`。就是这样。
+
+## 自定义 UI
+
+如果你想完全控制同意界面，在你自己的 UI 中捕获用户的选择并将其转发给 SDK：
+
+```javascript
+// 用户同意
+await mellowtel.optIn();
+await mellowtel.start();
+
+// 用户拒绝或稍后撤销
+await mellowtel.optOut();
+
+// 检查状态（例如渲染一个切换）
+const hasOptedIn = await mellowtel.getOptInStatus();
+```
+
+无论你构建什么 UI，它必须：
+
+1. 在首次安装时不可关闭。
+2. 默认选择*退出*，直到用户主动同意。
+3. 在你的产品中某个明显位置可以重新打开，以便用户可以更改选择。
+
+## 设置链接
+
+用户必须始终有一个简单的方法来更改他们的设置。使用 `generateSettingsLink()` 获取托管设置页面的 URL，并将其放置在某个持久的位置：你的弹出窗口、选项页面、账户屏幕。
+
+```javascript
+const settingsUrl = await mellowtel.generateSettingsLink();
+```
+
+## 向现有用户宣布 Mellowtel
+
+如果你正在向已经有用户的扩展中添加 Mellowtel，你需要在请求同意之前告诉他们发生了什么变化。我们提供了一个[可复制粘贴的公告模板](/concepts/update-announcement)，你可以进行调整。
+
+## 相关内容
+
+- [隐私](/concepts/privacy)：用户实际上同意分享的内容。
+- [速率限制](/concepts/rate-limiting)：SDK 如何保护选择加入的用户。

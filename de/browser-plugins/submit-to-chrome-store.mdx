@@ -1,0 +1,34 @@
+---
+sidebarTitle: "Im CWS einreichen"
+title: "Erweiterung im Chrome Web Store einreichen"
+icon: "chrome"
+---
+
+Nachdem du die Anweisungen zum Import von Mellowtel in deine Erweiterung befolgt hast, die im [Schnellstart](/browser-plugins/quickstart) beschrieben sind, bist du bereit, deine Erweiterung im Web Store einzureichen. Diese Anleitung hilft dir, deine Erweiterung im Chrome Web Store einzureichen.
+
+Geschätzte Zeit zur Fertigstellung: 3-5 Minuten.
+
+
+### Begründung für den Web Store
+Der Web Store verlangt, dass du die Berechtigungen, die du anforderst, rechtfertigst. Hier ist eine Vorlage, die du verwenden kannst (sie erklärt, wie Mellowtel die Berechtigungen nutzt):
+
+**DeclarativeNetRequest**:
+```txt
+Die Berechtigung declarativeNetRequest ist erforderlich, um bestimmte Header (z. B. X-Frame-Header) von einigen Antworten auf der sub_frame-Ebene zu entfernen. Dies ermöglicht das Anzeigen von Websites in einem iframe, ohne auf Probleme im Zusammenhang mit Cross-Origin Resource Sharing (CORS) zu stoßen. Diese Header werden sofort nach der Verarbeitung der Antwort wiederhergestellt.
+```
+
+**Host Permissions**:
+```txt
+Die Host-Berechtigungen für all_urls sind erforderlich, damit declarativeNetRequest Antwort-Header auf allen URLs ändern kann. Dies ist notwendig, um bestimmte Header (z. B. X-Frame-Header) von einigen Antworten auf der sub_frame-Ebene zu entfernen. Dies ermöglicht das Anzeigen von Websites in einem iframe, ohne auf Probleme im Zusammenhang mit Cross-Origin Resource Sharing (CORS) zu stoßen. Diese Header werden sofort nach der Verarbeitung der Antwort wiederhergestellt.
+```
+
+**Storage**:
+```txt
+Die Speicherberechtigung ist erforderlich, um zustandsspezifische Daten der Erweiterung zu speichern und eine lokale Logik zu haben, die die Kommunikation zwischen den verschiedenen Teilen der Erweiterung erleichtert.
+```
+
+
+### Reiche deine Erweiterung ein
+Du kannst die Anweisungen hier befolgen, je nachdem, ob du eine neue Erweiterung einreichst oder eine bestehende aktualisierst:
+- [Eine neue Erweiterung einreichen](https://developer.chrome.com/docs/webstore/publish/)
+- [Eine bestehende Erweiterung aktualisieren](https://developer.chrome.com/docs/webstore/update)

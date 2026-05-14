@@ -1,0 +1,61 @@
+---
+sidebarTitle: "Soumettre aux modules complémentaires Firefox"
+title: "Soumettre l’extension aux modules complémentaires Firefox"
+icon: "firefox"
+---
+
+Après avoir importé Mellowtel dans ton extension comme décrit dans le guide [Démarrage rapide](/browser-plugin/quickstart), suis ces étapes pour soumettre ton extension aux modules complémentaires Firefox.
+
+### Étape 1 : Télécharge ton module complémentaire
+
+1. Va sur le [Hub des développeurs de modules complémentaires](https://addons.mozilla.org/developers/).
+2. Clique sur "Soumettre un nouveau module complémentaire".
+3. Tu verras cette page :
+
+![Page de soumission d'un nouveau module complémentaire](/images/firefox/submit_new.png)
+
+4. Clique sur "Sélectionner un fichier..." et choisis ton fichier de module complémentaire (.zip, .xpi, .crx, .jar, ou .xml).
+5. Clique sur "Continuer" et attends que la validation soit terminée.
+
+### Étape 2 : Soumets le code source
+
+Après la validation, on te demandera de soumettre le code source :
+
+![Page de soumission du code source](/images/firefox/source_code.png)
+
+1. Sélectionne "Oui" à la question "Dois-tu soumettre le code source ?".
+2. Prépare un fichier ZIP contenant :
+   - Des instructions de construction étape par étape (dans un fichier README ou des notes pour le réviseur)
+   - Un script de construction qui exécute toutes les étapes techniques nécessaires
+   - Les exigences du système d'exploitation et de l'environnement de construction
+   - La version requise et les instructions d'installation pour tous les programmes utilisés dans le processus de construction
+3. Clique sur "Parcourir..." et télécharge ton fichier ZIP de code source.
+4. Clique sur "Continuer".
+
+### Étape 3 : Décris ton module complémentaire
+
+Remplis les détails concernant ton module complémentaire :
+
+![Page de description du module complémentaire](/images/firefox/describe.png)
+
+1. Nom : Entre le nom de ton module complémentaire
+2. URL du module complémentaire : Elle sera générée automatiquement, mais tu peux la modifier
+3. Résumé : Fournis une explication claire et concise de ce que fait ton module complémentaire (179 caractères max)
+4. Description : Une explication plus longue des fonctionnalités (250 caractères recommandés)
+5. Sélectionne jusqu'à 2 catégories Firefox et 2 catégories Firefox pour Android
+6. Email de support et site web de support
+7. Choisis une licence
+8. Si ton module complémentaire a une politique de confidentialité, coche la case et fournis la politique
+9. Notes pour les réviseurs : Explique que ton module complémentaire utilise Mellowtel et fournis tout contexte nécessaire
+
+### Étape 4 : Soumets la version
+
+Après avoir rempli tous les champs requis, clique sur "Soumettre la version" en bas de la page.
+
+### Après la soumission
+
+- Tu recevras un email de confirmation.
+- Ton module complémentaire sera publié sur AMO mais peut être soumis à une révision supplémentaire.
+- Pour mettre à jour ton module complémentaire à l'avenir, visite sa page sur AMO et télécharge la nouvelle version là-bas.
+
+Note : Le processus de révision de Firefox peut prendre plusieurs jours. Réponds rapidement à toute question de l'équipe de révision.

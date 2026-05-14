@@ -1,0 +1,151 @@
+---
+sidebarTitle: "Van Statisch naar Webpack"
+title: "Webpack Instellen voor een Browser Plugin"
+icon: "cube"
+---
+
+Deze gids beschrijft hoe je je browserextensieproject kunt opzetten met Webpack, met de nadruk op een configuratie die meerdere JavaScript-invoerpunt en beheer van statische middelen ondersteunt.
+
+### Stap 1: Initiële Projectopzet
+
+Begin met het structureren van je project om bronbestanden, statische middelen en de uiteindelijke gebundelde output te accommoderen. Je projectdirectory zou er ongeveer zo uit moeten zien:
+
+```
+your-extension/
+├── public/            # Bevat statische bestanden zoals HTML, CSS en het manifest
+│   ├── images/
+│   ├── icons/
+│   ├── manifest.json
+│   └── popup.html
+├── src/               # Bevat je JavaScript-broncode
+│   ├── background.js
+│   ├── popup.js
+│   ├── content_script.js
+│   └── ... (eventuele andere JS-bestanden)
+└── package.json       # NPM-pakketbestand
+```
+
+### Stap 2: Node.js en NPM Instellen
+
+Zorg ervoor dat Node.js en NPM op je systeem zijn geïnstalleerd. Node.js is essentieel voor het uitvoeren van het pakketecosysteem, en NPM wordt gebruikt om de afhankelijkheden van je project te beheren.
+
+### Stap 3: Webpack en Andere Afhankelijkheden Installeren
+
+Navigeer naar de hoofdmap van je project in de terminal en initialiseer een nieuw NPM-project als je dat nog niet hebt gedaan:
+
+```bash
+npm init -y
+```
+
+Installeer vervolgens Webpack en de benodigde loaders en plugins:
+
+```bash
+npm install --save-dev webpack webpack-cli babel-loader @babel/core @babel/preset-env copy-webpack-plugin file-loader
+```
+
+- **Webpack** bundelt je JavaScript en middelen.
+- **Babel** stelt je in staat om moderne JavaScript-functies te gebruiken.
+- **CopyPlugin** kopieert bestanden en mappen naar je build-directory.
+- **File Loader** lost import/require() op een bestand op in een URL en plaatst het bestand in de outputdirectory.
+
+### Stap 4: Webpack Configureren
+
+Maak een `webpack.config.js` bestand in de hoofdmap van je project. Dit bestand moet je invoerpunten, outputconfiguratie, module-regels voor het laden van verschillende bestandstypen en plugins voor extra functionaliteit definiëren. Zo zou je `webpack.config.js` eruit moeten zien met de gegeven setup:
+
+```javascript
+const path = require('path');
+const CopyPlugin = require('copy-webpack-plugin');
+
+module.exports = {
+    mode: 'development', // Gebruik 'production' voor productie builds
+    entry: {
+        background: path.join(__dirname, 'src', 'background.js'),
+        popup: path.join(__dirname, 'src', 'popup.js'),
+        content_script: path.join(__dirname, 'src', 'content_script.js'),
+    },
+    output: {
+        path: path.join(__dirname, 'dist'),
+        filename: '[name].js',
+        publicPath: ""
+    },
+    module: {
+        rules: [
+            {
+                test: /\.js$/,
+                exclude: /node_modules/,
+                use: {
+                    loader: 'babel-loader',
+                    options: {
+                        presets: ['@babel/preset-env']
+                    }
+                }
+            },
+            {
+                test: /\.js$/,
+                exclude: /node_modules/
+            },
+            {
+                test: /\.(png|svg|jpg|gif)$/,
+                use: [
+                    'file-loader',
+                ],
+            },
+        ]
+    },
+    plugins: [
+        new CopyPlugin({
+            patterns: [
+                { from: 'public', to: '' } // Kopieer alle middelen en de manifest.json van 'public' naar 'dist'
+            ],
+        }),
+    ]
+};
+```
+
+### Stap 5: Het Manifest en HTML-bestanden Aanpassen
+
+Zorg ervoor dat je `manifest.json` en eventuele HTML-bestanden de scripts en middelen correct verwijzen. Bijvoorbeeld, scripts worden naar de `dist` map uitgevoerd, dus update de paden dienovereenkomstig.
+
+### Stap 6: Build Scripts Integreren in `package.json`
+
+Nadat je je project met Webpack hebt opgezet en geconfigureerd zoals beschreven in de vorige stappen, wil je de build- en watch-processen automatiseren met `npm` scripts. Open je `package.json` bestand en voeg de volgende scripts toe binnen het `scripts` object:
+
+```json
+"scripts": {
+  "test": "echo \"Error: no test specified\" && exit 1",
+  "build": "webpack --mode production",
+  "watch": "webpack --mode development --watch"
+},
+```
+
+Dit doet elk script:
+- `"build"`: Bundelt je extensie in productiemodus, optimaliseert de output voor implementatie. Deze modus maakt optimalisaties zoals minificatie en het verwijderen van dode code mogelijk.
+- `"watch"`: Voert Webpack uit in ontwikkelingsmodus en houdt je bestanden in de gaten voor wijzigingen, waarbij het project automatisch opnieuw wordt gecompileerd wanneer een bestand wordt gewijzigd. Dit is handig tijdens de ontwikkeling voor directe feedback op wijzigingen.
+
+### Stap 7: De Extensie Testen & Bouwen
+
+Om je extensie voor productie te bouwen, gebruik:
+
+```bash
+npm run build
+```
+
+Deze opdracht roept Webpack aan met de `--mode production` vlag, waardoor je project wordt geoptimaliseerd voor implementatie.
+
+Voor ontwikkeling kun je Webpack je bestanden laten bewaken en opnieuw compileren wanneer wijzigingen worden gedetecteerd:
+
+```bash
+npm run watch
+```
+
+Dit maakt het ontwikkelingsproces soepeler, omdat je het project niet handmatig opnieuw hoeft te bouwen na elke wijziging.
+
+### Stap 7: De Extensie Testen
+
+Om je extensie in Chrome te testen:
+
+1. Ga naar `chrome://extensions/` in de Chrome-browser.
+2. Schakel "Ontwikkelaarsmodus" in rechtsboven.
+3. Klik op "Pakket zonder verpakking laden" en selecteer je `dist` map.
+
+Dit zal de extensie lokaal installeren voor test- en ontwikkelingsdoeleinden.

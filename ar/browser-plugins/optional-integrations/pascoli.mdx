@@ -1,0 +1,199 @@
+---
+sidebarTitle: "ربح أكثر - Pascoli"
+title: "ربح أكثر بتفعيل خاصية إضافية: Pascoli"
+icon: "dove"
+---
+
+<Warning>
+    هاد الخاصية تحتاج نسخة Mellowtel 1.6.2 أو أعلى. هاد تغيير كبير مقارنة بالنسخ السابقة.
+</Warning>
+
+Mellowtel توفر خاصية اختيارية اللي تخليك تتعامل مع طلبات أكثر وبالتالي تربح أكثر. هاد الخاصية تسمى "Pascoli".
+
+## التثبيت
+
+أول حاجة، ثبّت الحزمة المطلوبة باستخدام مدير الحزم اللي تفضله:
+
+### باستخدام npm
+```bash
+npm install @mellowtel/module-pascoli
+```
+
+### باستخدام yarn
+```bash
+yarn add @mellowtel/module-pascoli
+```
+
+### باستخدام pnpm
+```bash
+pnpm add @mellowtel/module-pascoli
+```
+
+تحت هادي التعليمات لتفعيل خاصية Pascoli في الإضافة ديالك للمتصفح، مع خيارات للتنفيذ العادي وتنفيذ Plasmo framework.
+
+## التنفيذ العادي
+
+### 1. إنشاء ملف HTML باسم `pascoli.html`
+أنشئ ملف باسم `pascoli.html` وزيد الكود التالي. تأكد بلي هاد الملف يتضمن في البنية النهائية (/dist).
+
+إذا تبعت إعدادات [webpack config الأولية](/browser-plugins/static-to-webpack)، تقدر ببساطة تزيد هاد الملف في مجلد `public` كـ `pascoli.html`
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" />
+    <style>
+        html,
+        body {
+            padding: 0;
+            margin: 0;
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            background-color: transparent;
+        }
+    </style>
+    <script type="module" crossorigin src="/pascoli.js"></script>
+</head>
+<body>
+</body>
+</html>
+```
+
+<Warning>
+    تأكد بلي تعدل خاصية `src` في وسم السكريبت باش تشير للمكان الصحيح لملف `pascoli.js` في البنية النهائية
+</Warning>
+
+### 2. إنشاء ملف JavaScript باسم `pascoli.js`
+
+في مجلد src، أو فين عندك ملفات js، أنشئ ملف باسم `pascoli.js` وزيد الكود التالي. تأكد بلي هاد الملف يتضمن في البنية النهائية (/dist).
+
+إذا تبعت إعدادات [webpack config الأولية](/browser-plugins/static-to-webpack)، تقدر ببساطة تزيد هاد الملف في كائن `entry` في إعدادات webpack ديالك.
+
+```javascript
+import ModulePascoli from "@mellowtel/module-pascoli";
+
+let modulePascoli;
+
+(async () => {
+    modulePascoli = new ModulePascoli();
+    await modulePascoli.init();
+})();
+```
+
+### 3. تحديث إعدادات webpack
+
+تأكد بلي مجلد البنية النهائية يتضمن ملفات `pascoli.html` و `pascoli.js`.
+
+زيد التالي في إعدادات webpack ديالك باش تتأكد بلي `pascoli.js` يتضمن في البنية:
+
+```javascript
+module.exports = {
+    mode: 'development', // استخدم 'production' للبنيات الإنتاجية
+    entry: {
+        // background: path.join(__dirname, 'src', 'background.js'),
+        // popup: path.join(__dirname, 'src', 'popup.js'),
+        // content_script: path.join(__dirname, 'src', 'content_script.js'), ...
+        pascoli: path.join(__dirname, 'src', 'pascoli.js'),
+    },
+    // ...
+}
+```
+
+`pascoli.html` لازم يتضمن في مجلد البنية ديالك تلقائيا إذا تبعت إعدادات [webpack config الأولية](/browser-plugins/static-to-webpack) وزدته في مجلد `public`.
+
+### 4. تحديث manifest.json
+
+زيد ملف `pascoli.html` في `manifest.json` ديالك كـ web_accessible_resources:
+
+```json
+{
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "pascoli.html"
+      ],
+      "matches": [ "<all_urls>" ]
+    }
+  ]
+}
+```
+
+## تنفيذ Plasmo Framework
+
+إذا كنت تستخدم Plasmo framework، اتبع هاد الخطوات البديلة:
+
+### 1. إنشاء مكون PascoliPage
+
+أنشئ ملف باسم `pascoli.tsx` في مجلد `tabs` ديالك. إذا ما عندكش مجلد `tabs`، أنشئ واحد. مزيد من المعلومات على `tabs` في Plasmo framework تقدر تلقاها [هنا](https://docs.plasmo.com/framework/tab-pages). زيد الكود التالي في ملف `pascoli.tsx`:
+
+```typescript
+import { useEffect } from "react"
+import ModulePascoli from "@mellowtel/module-pascoli"
+
+function PascoliPage() {
+    useEffect(() => {
+        const initPascoli = async () => {
+            const modulePascoli = new ModulePascoli();
+            await modulePascoli.init();
+        }
+
+        initPascoli().catch(console.error)
+    }, [])
+
+    return (
+        <div
+            style={{
+                padding: 0,
+                margin: 0,
+                height: "100vh",
+                width: "100vw",
+                overflow: "hidden",
+                backgroundColor: "transparent"
+            }}>
+        </div>
+    )
+}
+
+export default PascoliPage
+```
+
+### 2. تحديث package.json لـ Plasmo
+
+زيد التالي في ملف `package.json` ديالك:
+
+```json
+{
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "tabs/pascoli.html"
+      ],
+      "matches": [ "<all_urls>" ]
+    }
+  ]
+}
+```
+
+## تحديث initContentScript
+
+بالنسبة للتنفيذين، عدل طريقة `initContentScript` في السكريبت ديالك باش تتضمن المسار الصحيح لملف Pascoli:
+
+```typescript
+// للتنفيذ العادي
+await initContentScript({
+    pascoliFilePath: "pascoli.html"
+});
+```
+
+بالنسبة لـ Plasmo framework، تقدر تستخدم التالي:
+
+```typescript
+// لـ Plasmo framework
+await initContentScript({
+    pascoliFilePath: "tabs/pascoli.html"
+});
+```

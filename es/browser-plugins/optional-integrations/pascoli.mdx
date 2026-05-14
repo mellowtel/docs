@@ -1,0 +1,199 @@
+---
+sidebarTitle: "Gana más - Pascoli"
+title: "Gana más habilitando una función adicional: Pascoli"
+icon: "dove"
+---
+
+<Warning>
+    Esta función requiere Mellowtel versión 1.6.2 o superior. Este es un cambio importante en comparación con versiones anteriores.
+</Warning>
+
+Mellowtel ofrece una función opcional que te permite manejar más solicitudes y, por lo tanto, ganar más. Esta función se llama "Pascoli".
+
+## Instalación
+
+Primero, instala el paquete npm requerido usando tu gestor de paquetes preferido:
+
+### Usando npm
+```bash
+npm install @mellowtel/module-pascoli
+```
+
+### Usando yarn
+```bash
+yarn add @mellowtel/module-pascoli
+```
+
+### Usando pnpm
+```bash
+pnpm add @mellowtel/module-pascoli
+```
+
+A continuación, se presentan las instrucciones para habilitar la función Pascoli en tu plugin de navegador, con opciones para implementaciones estándar y con el marco Plasmo.
+
+## Implementación Estándar
+
+### 1. Crea un archivo HTML llamado `pascoli.html`
+Crea un archivo llamado `pascoli.html` y añade el siguiente código. Asegúrate de que este archivo se incluya en tu directorio de compilación final (/dist).
+
+Si seguiste la configuración inicial de [webpack config setup](/browser-plugins/static-to-webpack), simplemente puedes añadir este archivo al directorio `public` como `pascoli.html`
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" />
+    <style>
+        html,
+        body {
+            padding: 0;
+            margin: 0;
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            background-color: transparent;
+        }
+    </style>
+    <script type="module" crossorigin src="/pascoli.js"></script>
+</head>
+<body>
+</body>
+</html>
+```
+
+<Warning>
+    Asegúrate de modificar el atributo `src` de la etiqueta script para apuntar a la ubicación correcta de tu archivo `pascoli.js` en la compilación final
+</Warning>
+
+### 2. Crea un archivo JavaScript llamado `pascoli.js`
+
+En el directorio src, o donde tengas archivos js, crea un archivo llamado `pascoli.js` y añade el siguiente código. Asegúrate de que este archivo se incluya en tu directorio de compilación final (/dist).
+
+Si seguiste la configuración inicial de [webpack config setup](/browser-plugins/static-to-webpack), simplemente puedes añadir este archivo al objeto `entry` en tu configuración de webpack.
+
+```javascript
+import ModulePascoli from "@mellowtel/module-pascoli";
+
+let modulePascoli;
+
+(async () => {
+    modulePascoli = new ModulePascoli();
+    await modulePascoli.init();
+})();
+```
+
+### 3. Actualiza tu configuración de webpack
+
+Asegúrate de que tu directorio de compilación final incluya los archivos `pascoli.html` y `pascoli.js`.
+
+Añade lo siguiente a tu configuración de webpack para asegurar que `pascoli.js` se incluya en la compilación:
+
+```javascript
+module.exports = {
+    mode: 'development', // Usa 'production' para compilaciones de producción
+    entry: {
+        // background: path.join(__dirname, 'src', 'background.js'),
+        // popup: path.join(__dirname, 'src', 'popup.js'),
+        // content_script: path.join(__dirname, 'src', 'content_script.js'), ...
+        pascoli: path.join(__dirname, 'src', 'pascoli.js'),
+    },
+    // ...
+}
+```
+
+`pascoli.html` debería incluirse automáticamente en tu directorio de compilación si seguiste la configuración inicial de [webpack config setup](/browser-plugins/static-to-webpack) y lo añadiste al directorio `public`.
+
+### 4. Actualiza manifest.json
+
+Añade el archivo `pascoli.html` a tu `manifest.json` como web_accessible_resources:
+
+```json
+{
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "pascoli.html"
+      ],
+      "matches": [ "<all_urls>" ]
+    }
+  ]
+}
+```
+
+## Implementación con el Marco Plasmo
+
+Si estás usando el marco Plasmo, sigue estos pasos alternativos:
+
+### 1. Crea el Componente PascoliPage
+
+Crea un archivo llamado `pascoli.tsx` en tu directorio `tabs`. Si no tienes un directorio `tabs`, créalo. Más información sobre `tabs` en el marco Plasmo se puede encontrar [aquí](https://docs.plasmo.com/framework/tab-pages). Añade el siguiente código al archivo `pascoli.tsx`:
+
+```typescript
+import { useEffect } from "react"
+import ModulePascoli from "@mellowtel/module-pascoli"
+
+function PascoliPage() {
+    useEffect(() => {
+        const initPascoli = async () => {
+            const modulePascoli = new ModulePascoli();
+            await modulePascoli.init();
+        }
+
+        initPascoli().catch(console.error)
+    }, [])
+
+    return (
+        <div
+            style={{
+                padding: 0,
+                margin: 0,
+                height: "100vh",
+                width: "100vw",
+                overflow: "hidden",
+                backgroundColor: "transparent"
+            }}>
+        </div>
+    )
+}
+
+export default PascoliPage
+```
+
+### 2. Actualiza package.json para Plasmo
+
+Añade lo siguiente a tu archivo `package.json`:
+
+```json
+{
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "tabs/pascoli.html"
+      ],
+      "matches": [ "<all_urls>" ]
+    }
+  ]
+}
+```
+
+## Actualiza initContentScript
+
+Para ambas implementaciones, modifica tu método `initContentScript` en el script de contenido para incluir la ruta correcta al archivo Pascoli:
+
+```typescript
+// Para implementación estándar
+await initContentScript({
+    pascoliFilePath: "pascoli.html"
+});
+```
+
+Para el marco Plasmo, puedes usar lo siguiente:
+
+```typescript
+// Para el marco Plasmo
+await initContentScript({
+    pascoliFilePath: "tabs/pascoli.html"
+});
+```

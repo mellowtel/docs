@@ -1,0 +1,54 @@
+---
+sidebarTitle: "用户反馈"
+title: "收集用户反馈"
+icon: "comment"
+---
+
+Mellowtel 提供了一个预构建的反馈页面，你可以用来收集用户的反馈，以便更快地迭代和改进你的产品。目前，该页面仅适用于浏览器插件。通过动态传递你的插件图标和名称，反馈页面类似于这个[示例](https://www.mellowtel.com/uninstall-feedback/?extension_id=testId&configuration_key=testConfiguration)。
+
+然后，你可以从 Mellowtel 仪表板读取反馈，并利用这些反馈来改进你的浏览器插件。
+
+重要提示：只有当你的插件已发布在网络商店而不是开发模式时，你才能从 Mellowtel 仪表板读取反馈。如果你仍在开发中并想测试反馈页面，请通过聊天联系我们。
+
+以下是如何将反馈页面添加到你的浏览器插件的方法：
+
+## 将反馈页面添加到你的插件
+
+反馈页面由 Mellowtel 托管，可以通过使用 Mellowtel JS 包中的 `generateFeedbackLink()` 方法生成的 URL 访问。
+
+如果你想直接在新标签页中打开反馈页面，可以使用 `generateAndOpenFeedbackLink()` 方法，它将打开一个类似于这个[示例](https://www.mellowtel.com/uninstall-feedback/?extension_id=testId&configuration_key=testConfiguration)的页面，动态传递你的插件图标和名称。
+
+当用户卸载你的浏览器插件时，你可以通过调用扩展的后台脚本或内容脚本中的 `generateFeedbackLink()` 方法来打开反馈页面。
+
+以下是你可以这样做的方法。
+
+打开你的 `service worker` 文件（也称为后台脚本）并添加以下代码：
+
+记得将 `<YOUR_CONFIGURATION_KEY>` 替换为你实际的 Mellowtel 配置密钥。如果你还没有配置密钥，可以通过在 [Mellowtel](https://www.mellowtel.com/mellowtel-auth/) 注册来获取。
+
+```javascript
+import Mellowtel from "mellowtel";
+
+let mellowtel;
+
+(async () => {
+    mellowtel = new Mellowtel("<YOUR_CONFIGURATION_KEY>");
+    await mellowtel.initBackground();
+})();
+
+// 当用户卸载扩展时打开反馈页面
+chrome.runtime.onInstalled.addListener(async function(details) {
+    console.log("扩展已安装或更新");
+    // 如果你想分别处理安装和更新
+    /**
+    if(details.reason === "install"){
+        // 调用一个函数来处理首次安装
+    } else if(details.reason === "update") {
+        // 调用一个函数来处理更新
+    }
+    **/
+    // await mellowtel.generateAndOpenOptInLink(); 处理用户设置。更多详情：opt-in-out 文档
+    const uninstallURl = await mellowtel.generateFeedbackLink();
+    chrome.runtime.setUninstallURL(uninstallURl);
+});
+```

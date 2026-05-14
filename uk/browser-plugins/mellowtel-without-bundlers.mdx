@@ -1,0 +1,154 @@
+---
+sidebarTitle: "Mellowtel без бандлерів"
+title: "Інтеграція Mellowtel без бандлерів"
+icon: "box"
+---
+
+Цей посібник пояснює, як інтегрувати Mellowtel у ваш браузерний розширення без використання бандлерів, таких як Webpack або Vite. Натомість ви будете використовувати один попередньо зібраний файл, який працює як у контент-скриптах, так і в сервісних працівниках.
+
+## Налаштування проекту
+
+Почніть з базової структури браузерного розширення:
+
+```
+your-extension/
+├── icons/
+├── popup/
+│   ├── popup.html
+│   └── popup.js
+├── background.js           # Ваш сервісний працівник
+├── content_script.js
+├── manifest.json
+└── mellowtel.js           # Буде додано на наступному кроці
+```
+
+## Отримання бандла Mellowtel
+
+У вас є два варіанти, як отримати файл `mellowtel.js` для вашого розширення:
+
+### Варіант 1: Використання попередньо зібраного файлу
+
+Найпростіший спосіб почати — це використовувати попередньо зібраний файл `mellowtel.js` з [репозиторію mellowtel-bundled](https://github.com/mellowtel-inc/mellowtel-bundled).
+
+1. Перейдіть до [репозиторію mellowtel-bundled](https://github.com/mellowtel-inc/mellowtel-bundled)
+2. Завантажте файл `mellowtel.js`
+3. Скопіюйте його у вашу директорію розширення
+
+### Варіант 2: Генерація власного бандла
+
+Якщо ви віддаєте перевагу згенерувати бандл самостійно, виконайте наступні кроки:
+
+#### Створення тимчасової директорії для бандлування
+
+Створіть тимчасову директорію для встановлення Mellowtel і генерації бандла:
+
+```bash
+mkdir mellowtel-bundling
+cd mellowtel-bundling
+npm init -y
+npm install mellowtel
+```
+
+Це створює окрему папку з пакетом Mellowtel, яку ви будете використовувати лише для бандлування.
+
+#### Бандлування Mellowtel з esbuild
+
+Зсередини директорії `mellowtel-bundling` створіть один бандл, який працює як у сервісних працівниках, так і в контент-скриптах:
+
+```bash
+npx esbuild node_modules/mellowtel/dist/index.js --bundle --format=iife --global-name=Mellowtel --footer:js="globalThis.Mellowtel = Mellowtel.default" --platform=browser --outfile=mellowtel.js --minify --legal-comments=none
+```
+
+Ця команда:
+- Бере вихідний код Mellowtel з `node_modules/mellowtel/dist/index.js`
+- Бандлує всі залежності в один файл
+- Використовує формат IIFE з глобальним ім'ям для універсальної сумісності
+- Додає футер, щоб зробити експорт за замовчуванням доступним глобально
+- Оптимізує для браузерного середовища і мінімізує вихідний файл
+- Створює `mellowtel.js` у директорії для бандлування
+
+#### Копіювання бандла у ваше розширення
+
+Після виконання команди esbuild скопіюйте згенерований файл у вашу директорію розширення:
+
+```bash
+cp mellowtel.js ../your-extension/
+```
+
+Тепер ви можете видалити тимчасову директорію для бандлування, оскільки вам потрібен був лише вихідний файл:
+
+```bash
+cd ..
+rm -rf mellowtel-bundling
+```
+
+Тепер ваша папка розширення містить зібраний файл Mellowtel, готовий до використання.
+
+## Налаштування вашого маніфесту (обидва варіанти)
+
+Незалежно від того, який варіант ви вибрали вище, налаштуйте ваш `manifest.json`, щоб включити бандл Mellowtel у контент-скрипти:
+
+```json
+{
+  "manifest_version": 3,
+  "name": "Назва вашого розширення",
+  "version": "1.0",
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["mellowtel.js", "content_script.js"]
+    }
+  ],
+  "permissions": [
+    "storage",
+    "declarativeNetRequestWithHostAccess"
+  ],
+  "host_permissions": [
+    "\u003Call_urls\u003E"
+  ]
+}
+```
+
+**Важливо**: 
+- Поле `"type": "module"` дозволяє імпорт ES-модулів у вашому сервісному працівнику.
+- У масиві контент-скриптів `mellowtel.js` повинен бути завантажений **перед** `content_script.js`, щоб глобальна змінна Mellowtel була доступна, коли ваш контент-скрипт запускається.
+
+## Використання Mellowtel у вашому розширенні
+
+Для вашого сервісного працівника (background.js) імпортуйте зібраний файл:
+
+```javascript
+// background.js
+import './mellowtel.js';
+
+(async () => {
+    const mellowtel = new Mellowtel("<configuration_key>"); // Замініть на ваш ключ конфігурації
+    await mellowtel.initBackground();
+})();
+```
+
+Для контент-скриптів Mellowtel доступний як глобальна змінна (імпорт не потрібен, оскільки він завантажується через маніфест):
+
+```javascript
+// content_script.js
+// Mellowtel доступний як глобальна змінна з mellowtel.js
+
+(async () => {
+  const mellowtel = new Mellowtel("<configuration_key>"); // Замініть на ваш ключ конфігурації
+  await mellowtel.initContentScript();
+})();
+```
+
+## Тестування вашого розширення
+
+Щоб протестувати ваше розширення:
+
+1. Перейдіть до `chrome://extensions/` у Chrome (або еквівалент у інших браузерах)
+2. Увімкніть "Режим розробника"
+3. Натисніть "Завантажити розпаковане" і виберіть вашу папку розширення
+
+Цей підхід дає вам переваги використання Mellowtel без складності налаштування повної системи збірки, такої як Webpack або Vite.

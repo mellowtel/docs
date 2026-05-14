@@ -1,0 +1,35 @@
+---
+sidebarTitle: "Soumettre au CWS"
+title: "Soumettre l’extension au Chrome Web Store"
+icon: "chrome"
+---
+
+Après avoir suivi les instructions pour importer Mellowtel dans ton extension, comme décrit dans le [Guide de démarrage rapide](/browser-plugins/quickstart), tu es prêt à soumettre ton extension au Web Store.
+Ce guide t’aidera à soumettre ton extension au Chrome Web Store.
+
+Temps estimé pour terminer : 3-5 minutes.
+
+
+### Justification pour le Web Store
+Le Web Store exige que tu justifies les permissions que tu demandes. Voici un modèle que tu peux utiliser (il explique comment Mellowtel utilise les permissions) :
+
+**DeclarativeNetRequest** :
+```txt
+La permission declarativeNetRequest est nécessaire pour supprimer certains en-têtes (par exemple, les en-têtes X-Frame) de certaines réponses au niveau sub_frame. Cela permet d'afficher des sites web dans une iframe sans rencontrer de problèmes liés au partage de ressources entre origines (CORS). Ces en-têtes sont immédiatement restaurés après le traitement de la réponse.
+```
+
+**Permissions d’hôte** :
+```txt
+Les permissions d’hôte sur all_urls sont nécessaires pour permettre à declarativeNetRequest de modifier les en-têtes de réponse sur toutes les URL. Cela est nécessaire pour supprimer certains en-têtes (par exemple, les en-têtes X-Frame) de certaines réponses au niveau sub_frame. Cela permet d'afficher des sites web dans une iframe sans rencontrer de problèmes liés au partage de ressources entre origines (CORS). Ces en-têtes sont immédiatement restaurés après le traitement de la réponse.
+```
+
+**Stockage** :
+```txt
+La permission de stockage est requise pour conserver l'état spécifique à l'extension et avoir une logique locale pour faciliter les communications entre les différentes parties de l'extension.
+```
+
+
+### Soumettre ton extension
+Tu peux suivre les instructions ici selon que tu soumets une nouvelle extension ou que tu mets à jour une extension existante :
+- [Soumettre une nouvelle extension](https://developer.chrome.com/docs/webstore/publish/)
+- [Mettre à jour une extension existante](https://developer.chrome.com/docs/webstore/update)

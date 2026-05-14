@@ -1,0 +1,237 @@
+---
+sidebarTitle: "赚更多 - Meucci"
+title: "通过启用附加功能 Meucci 赚取更多"
+icon: "circle-nodes"
+---
+
+<Warning>
+    此功能需要 Mellowtel 版本 1.6.2 或更高版本。与以前的版本相比，这是一个重大更改。
+</Warning>
+
+Mellowtel 提供了一项可选功能，允许你处理更多请求，从而赚取更多收入。此功能称为 "Meucci"。
+
+## 安装
+
+首先，使用你喜欢的包管理器安装所需的 npm 包：
+
+### 使用 npm
+```bash
+npm install @mellowtel/module-meucci
+```
+
+### 使用 yarn
+```bash
+yarn add @mellowtel/module-meucci
+```
+
+### 使用 pnpm
+```bash
+pnpm add @mellowtel/module-meucci
+```
+
+以下是如何在你的浏览器插件中启用 Meucci 功能的说明，包括标准和 Plasmo 框架实现的选项。
+
+## 标准实现
+
+### 1. 创建一个名为 `meucci.js` 的 JavaScript 文件
+
+在 src 目录中，或你存放 js 文件的任何位置，创建一个名为 `meucci.js` 的文件，并添加以下代码。确保此文件包含在最终的构建（/dist）目录中。
+
+如果你遵循了初始的 [webpack 配置设置](/browser-plugins/static-to-webpack)，可以简单地将此文件添加到 webpack 配置中的 `entry` 对象中。
+
+```javascript
+import ModuleMeucci from "@mellowtel/module-meucci";
+
+let moduleMeucci;
+
+(async () => {
+    moduleMeucci = new ModuleMeucci();
+    await moduleMeucci.init();
+})();
+```
+
+### 2. 更新你的 webpack 配置
+
+确保你的最终构建目录包含 `meucci.js` 文件。
+
+如果你遵循了初始的 [webpack 配置设置](/browser-plugins/static-to-webpack)，可以简单地将此文件添加到 webpack 配置中的 `entry` 对象中。
+
+```javascript
+module.exports = {
+    // ...
+    entry: {
+        // background: path.join(__dirname, 'src', 'background.js'),
+        // popup: path.join(__dirname, 'src', 'popup.js'),
+        // content_script: path.join(__dirname, 'src', 'content_script.js'), ...
+        // pascoli: path.join(__dirname, 'src', 'pascoli.js'),
+        meucci: path.join(__dirname, 'src', 'meucci.js'),
+        // ...
+    },
+    // ...
+}
+```
+
+### 3. 更新 manifest.json
+
+将 `meucci.js` 文件添加到你的 `manifest.json` 中作为 web_accessible_resources：
+
+```json
+{
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "meucci.js"
+      ],
+      "matches": [ "<all_urls>" ]
+    }
+  ]
+}
+```
+
+## Plasmo 框架实现
+
+如果你使用 Plasmo 框架，请按照以下替代步骤：
+
+### 1. 创建一个名为 `meucci.ts` 的 TypeScript 文件
+
+在 src 目录中，或你存放 ts 文件的任何位置，创建一个名为 `meucci.ts` 的文件，并添加以下代码：
+
+```typescript
+import ModuleMeucci from "@mellowtel/module-meucci";
+
+let moduleMeucci;
+
+(async () => {
+    moduleMeucci = new ModuleMeucci();
+    await moduleMeucci.init();
+})();
+```
+
+### 2. 创建构建脚本
+
+在你的项目根目录中创建一个 `build-meucci.js` 文件，内容如下：
+
+```javascript
+const esbuild = require('esbuild')
+const fs = require('fs')
+const path = require('path')
+
+// Function to wait for a directory to exist
+const waitForDirectory = async (dir, timeout = 10000) => {
+  const start = Date.now()
+  while (!fs.existsSync(dir)) {
+    if (Date.now() - start > timeout) {
+      throw new Error(`Timeout waiting for directory: ${dir}`)
+    }
+    await new Promise(resolve => setTimeout(resolve, 100))
+  }
+}
+
+// Create the build function
+async function buildMeucci() {
+  // Build the bundle
+  await esbuild.build({
+    entryPoints: ['src/meucci.ts'], // TODO: REPLACE with the path to your meucci.ts file
+    bundle: true,
+    outfile: 'meucci.bundled.js',
+    platform: 'browser',
+    format: 'iife',
+    minify: true,
+    target: ['es2020'],
+    define: {
+      'process.env.NODE_ENV': '"production"'
+    }
+  })
+
+  // Read the bundled file
+  const bundledContent = fs.readFileSync('meucci.bundled.js', 'utf8')
+
+  // Copy to dev and prod directories
+  const directories = [ 
+    'build/chrome-mv3-dev',
+    'build/chrome-mv3-prod',
+    'build/firefox-mv2-dev',
+    'build/firefox-mv2-prod',
+    'build/safari-mv2-dev',
+    'build/safari-mv2-prod',
+    'build/opera-mv3-dev',
+    'build/opera-mv3-prod'
+  ] // TODO: REPLACE with the paths to your dev and prod directories
+
+  // Process all directories concurrently
+  await Promise.all(directories.map(async (dir) => {
+    try {
+      console.log(`Waiting for directory: ${dir}`)
+      await waitForDirectory(dir)
+      // Write the bundled file
+      fs.writeFileSync(path.join(dir, 'meucci.js'), bundledContent)
+      console.log(`Added meucci.js to ${dir}`)
+    } catch (err) {
+      console.log(`Skipping ${dir} - ${err.message}`)
+    }
+  }))
+
+  // Clean up the temporary file
+  fs.unlinkSync('meucci.bundled.js')
+}
+
+buildMeucci().catch(err => {
+  console.error(err)
+  process.exit(1)
+})
+```
+
+### 3. 更新 package.json
+
+在你的 `package.json` 文件中添加以下内容：
+
+```json
+{
+  "scripts": {
+    "build:meucci": "node build-meucci.js"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "meucci.js"
+      ],
+      "matches": [ "<all_urls>" ]
+    }
+  ]
+}
+```
+
+你可以选择：
+1. 在你的主构建后手动运行构建脚本：`npm run build:meucci`
+2. 或者用 `&` 将其附加到现有的构建脚本中：`"build": "your-existing-build-command & npm run build:meucci"`
+
+这将确保 Meucci 文件被正确打包并复制到所有构建目录中，符合 Plasmo 结构。
+
+## 更新 initContentScript
+
+对于两种实现，修改你的内容脚本中的 `initContentScript` 方法，以包含 Meucci 文件的正确路径：
+
+```typescript
+// 对于标准实现
+await initContentScript({
+    meucciFilePath: "meucci.js"
+});
+```
+
+对于 Plasmo 框架，你可以使用以下内容：
+
+```typescript
+// 对于 Plasmo 框架
+await initContentScript({
+    meucciFilePath: "meucci.js"
+});
+```
+
+如果你也启用了 Pascoli，可以使用以下内容：
+
+```typescript
+await initContentScript({
+    pascoliFilePath: "pascoli.html", // 或 "tabs/pascoli.html" 如果使用 Plasmo 框架
+    meucciFilePath: "meucci.js"
+});
+```

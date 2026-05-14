@@ -1,0 +1,34 @@
+---
+sidebarTitle: "Indienen bij de CWS"
+title: "Extensie indienen bij de Chrome Web Store"
+icon: "chrome"
+---
+
+Nadat je de instructies hebt gevolgd om Mellowtel in je extensie te importeren zoals beschreven in [Snelstartgids](/browser-plugins/quickstart), ben je klaar om je extensie in te dienen bij de webwinkel. Deze handleiding helpt je bij het indienen van je extensie bij de Chrome Web Store.
+
+Geschatte tijd om te voltooien: 3-5 minuten.
+
+
+### Verantwoording voor de Webwinkel
+De Webwinkel vereist dat je de machtigingen die je aanvraagt verantwoordt. Hier is een sjabloon dat je kunt gebruiken (het legt uit hoe Mellowtel de machtigingen gebruikt):
+
+**DeclarativeNetRequest**:
+```txt
+De declarativeNetRequest-machtiging is vereist om bepaalde headers (bijv. X-Frame headers) van sommige reacties op sub_frame-niveau te verwijderen. Dit maakt het mogelijk om websites in een iframe weer te geven zonder problemen met cross-origin resource sharing (CORS). Deze headers worden onmiddellijk hersteld nadat de reactie is verwerkt.
+```
+
+**Hostmachtigingen**:
+```txt
+De hostmachtigingen op all_urls zijn vereist om declarativeNetRequest toe te staan om antwoordheaders op alle URL's te wijzigen. Dit is noodzakelijk om bepaalde headers (bijv. X-Frame headers) van sommige reacties op sub_frame-niveau te verwijderen. Dit maakt het mogelijk om websites in een iframe weer te geven zonder problemen met cross-origin resource sharing (CORS). Deze headers worden onmiddellijk hersteld nadat de reactie is verwerkt.
+```
+
+**Opslag**:
+```txt
+De opslagmachtigingen zijn vereist om de status specifiek voor de extensie te behouden en een lokale logica te hebben om communicatie tussen de verschillende onderdelen van de extensie te vergemakkelijken.
+```
+
+
+### Dien je extensie in
+Je kunt de instructies hier volgen, afhankelijk van of je een nieuwe extensie indient of een bestaande bijwerkt:
+- [Dien een nieuwe extensie in](https://developer.chrome.com/docs/webstore/publish/)
+- [Werk een bestaande extensie bij](https://developer.chrome.com/docs/webstore/update)

@@ -1,0 +1,61 @@
+---
+sidebarTitle: "Welkom"
+title: "Welkom 👋"
+icon: "hand-wave"
+---
+
+**Mellowtel is het open-source monetisatieplatform voor ontwikkelaars en makers in de AI-wereld.** Voeg de SDK toe aan je browserextensie, desktopapp, website of mobiele app en je gebruikers kunnen ervoor kiezen om een deel van hun ongebruikte internetbandbreedte te delen met vertrouwde partners. Jij verdient een deel van de inkomsten.
+
+## Hoe integratie eruitziet
+
+```bash
+npm install mellowtel
+```
+
+```javascript
+import Mellowtel from "mellowtel";
+
+const mellowtel = new Mellowtel("<YOUR_CONFIGURATION_KEY>");
+await mellowtel.initBackground();
+await mellowtel.generateAndOpenOptInLink();
+```
+
+Dat is de hele integratie voor een browserextensie. Andere platforms zijn vergelijkbaar. Zie de quickstarts hieronder.
+
+## Kies je platform
+
+<CardGroup cols={2}>
+    <Card title="Browser plugins" icon="puzzle-piece" href="/browser-plugins/quickstart">
+        Integreer Mellowtel in een Chrome-, Edge-, Firefox- of Safari-extensie in ~5 minuten.
+    </Card>
+    <Card title="Desktop apps" icon="desktop" href="/desktop-app/quickstart">
+        Monetiseer een Electron-, Windows- of macOS-desktopapp.
+    </Card>
+    <Card title="Websites" icon="atom" href="/website/quickstart">
+        Voeg Mellowtel toe aan elke website met een enkel script.
+    </Card>
+    <Card title="Mobiele apps" icon="mobile" href="/mobile-app/quickstart">
+        Monetiseer een iOS- of Android-mobiele app.
+    </Card>
+</CardGroup>
+
+## Lees de concepten voordat je live gaat
+
+Deze vier pagina's leggen de principes uit die elke Mellowtel-integratie moet respecteren: toestemming, privacy en snelheidsbeperking. Lees ze snel door en de rest van de documentatie zal logisch zijn.
+
+<CardGroup cols={2}>
+    <Card title="Conceptenoverzicht" icon="compass" href="/concepts/overview">
+        De vier ideeën achter Mellowtel op één pagina.
+    </Card>
+    <Card title="Opt-in / Opt-out" icon="signature" href="/concepts/opt-in-out">
+        Hoe je op de juiste manier gebruikersinstemming vastlegt (en intrekt).
+    </Card>
+</CardGroup>
+
+## Hoe de inkomsten werken
+
+De verdeling is **55% naar ontwikkelaars, 45% naar Mellowtel**. Naarmate we groeien, zullen we meer diensten kunnen aanbieden en het aandeel voor ontwikkelaars vergroten. In de toekomst kunnen er functies zijn waarmee je een deel van deze inkomsten direct met je gebruikers kunt delen; in de tussentijd kun je gebruikers die hebben gekozen voor deelname belonen met exclusieve functies of inhoud.
+
+## Hulp nodig?
+
+Deze site is de bron van waarheid voor alles wat technisch is. Voor alles anders (vragen, feedback, of gewoon om te praten met andere Mellowtel-ontwikkelaars), sluit je aan bij ons op [Discord](https://discord.com/invite/txAZp4MSDe).

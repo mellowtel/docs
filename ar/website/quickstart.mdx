@@ -1,0 +1,160 @@
+---
+sidebarTitle: "بداية سريعة"
+title: "ربح المال من موقعك مع Mellowtel"
+description: "ضيف فقط وسم سكريبت واحد باش تخلي الزوار يدعموك بمشاركة النطاق الترددي الغير مستخدم."
+icon: "صاروخ"
+---
+
+Mellowtel يسمح للزوار ديالك يشاركو النطاق الترددي الغير مستخدم باش يدعموك. تضيف ويدجيت صغير للموقع ديالك، الزوار يختارو يثبتو الإضافة المرافقة، وانت تربح بناءً على الطلبات اللي المتصفح ديالهم يعالجها.
+
+<Info>
+  **الوقت المقدر:** 5 إلى 10 دقائق. **غادي تحتاج:** حساب [Mellowtel](https://www.mellowtel.com/mellowtel-auth/) والوصول لـ HTML ديال الموقع ديالك (أو ما يعادلها في الإطار).
+</Info>
+
+## كيفاش تخدم
+
+<Steps>
+  <Step title="تدمج الويدجيت">
+    وسم سكريبت يرسم زر، أيقونة، أو بانر في الموقع ديالك.
+  </Step>
+  <Step title="الزائر يضغط عليه">
+    يتم توجيههم لتثبيت الإضافة المرافقة لـ Mellowtel.
+  </Step>
+  <Step title="تحصل على الاعتماد">
+    `invite_id` ديالك يربط ذاك الزائر بالحساب ديالك، باش الطلبات اللي المتصفح ديالهم يعالجها تنسب ليك.
+  </Step>
+</Steps>
+
+## قبل ما تبدا
+
+- حساب Mellowtel. [سجل هنا](https://www.mellowtel.com/mellowtel-auth/) إذا ما عندكش واحد.
+- `invite_id` ديالك، تلقاه في [لوحة التحكم](https://www.mellowtel.com/mellowtel-auth/) بعد ما تنشئ رابط الدعم.
+- الوصول لـ HTML ديال الموقع ديالك، أو القدرة على إضافة وسم `<script>` عبر الإطار أو CMS.
+
+## تثبيت الويدجيت
+
+لسق هذا في الموقع ديالك، وبدل `INVITE_ID` بالقيمة من لوحة التحكم ديالك. من المستحسن وضعه قبل `</body>` باش ما يعرقلش عرض الصفحة.
+
+<CodeGroup>
+
+```html HTML
+<script
+  src="https://cdn.mellow.tel/widget.js?type=button&position=bottom-right&invite_id=INVITE_ID"
+  async>
+</script>
+```
+
+```jsx Next.js (App Router)
+import Script from 'next/script'
+
+export default function Layout({ children }) {
+  return (
+    <html>
+      <body>
+        {children}
+        <Script
+          src="https://cdn.mellow.tel/widget.js?type=button&position=bottom-right&invite_id=INVITE_ID"
+          strategy="afterInteractive"
+        />
+      </body>
+    </html>
+  )
+}
+```
+
+```jsx React (Vite / CRA)
+import { useEffect } from 'react'
+
+export function MellowtelWidget() {
+  useEffect(() => {
+    const s = document.createElement('script')
+    s.src = 'https://cdn.mellow.tel/widget.js?type=button&position=bottom-right&invite_id=INVITE_ID'
+    s.async = true
+    document.body.appendChild(s)
+    return () => { s.remove() }
+  }, [])
+  return null
+}
+```
+
+```html WordPress
+<!-- ضيفها في footer.php ديال الثيم ديالك قبل </body> -->
+<!-- أو استعمل "Header & Footer Scripts" بلاجن ولصقها في خانة الفوتر. -->
+<script
+  src="https://cdn.mellow.tel/widget.js?type=button&position=bottom-right&invite_id=INVITE_ID"
+  async>
+</script>
+```
+
+```html Webflow / Shopify
+<!-- Webflow: إعدادات المشروع > كود مخصص > كود الفوتر -->
+<!-- Shopify: المتجر الإلكتروني > الثيمات > تحرير الكود > theme.liquid (قبل </body>) -->
+<script
+  src="https://cdn.mellow.tel/widget.js?type=button&position=bottom-right&invite_id=INVITE_ID"
+  async>
+</script>
+```
+
+</CodeGroup>
+
+## خيارات التكوين
+
+تحكم في مظهر الويدجيت عبر معلمات الاستعلام في URL ديال السكريبت.
+
+| المعلمة      | مطلوب    | القيم                                                               | الوصف                                               |
+| ------------ | -------- | ------------------------------------------------------------------- | --------------------------------------------------- |
+| `invite_id`  | نعم      | ID ديالك من لوحة التحكم                                             | ينسب الأرباح للحساب ديالك.                          |
+| `type`       | نعم      | `button`, `icon`, `banner`                                          | ستايل الويدجيت اللي يظهر في الموقع ديالك.            |
+| `position`   | نعم      | `bottom-right`, `bottom-left`, `top-right`, `top-left`              | فين يجلس الويدجيت في الصفحة.                         |
+
+<Tip>
+  جرب كل تركيبة مباشرة قبل ما تنشرها: [افتح معاينة الويدجيت](https://cdn.mellow.tel/preview?position=bottom-right&type=button&invite_id=ijxf49s9h2f). بدل المعلمات `type` و `position` في URL باش تشوف كل نسخة.
+</Tip>
+
+## تحقق من الخدمة
+
+<Steps>
+  <Step title="حمل الموقع ديالك">
+    افتح الصفحة في تبويب متصفح جديد (أو نافذة التصفح الخفي لتجاوز الكاش).
+  </Step>
+  <Step title="تأكد من عرض الويدجيت">
+    خاصك تشوف الزر، الأيقونة، أو البانر في المكان اللي اخترته. إذا كان مفقود، شوف كونسول المتصفح للطلبات المحجوبة.
+  </Step>
+  <Step title="اضغط على التدفق">
+    الضغط على الويدجيت خاصو يوجهك لصفحة تثبيت الإضافة مع `invite_id` ديالك مرفق.
+  </Step>
+  <Step title="شوف لوحة التحكم ديالك">
+    منين يثبت زائر ويختار المشاركة، النشاط ديالهم يظهر في لوحة التحكم ديالك في Mellowtel.
+  </Step>
+</Steps>
+
+## حل المشاكل
+
+<AccordionGroup>
+  <Accordion title="الويدجيت ما يظهرش">
+    - تأكد من أن وسم السكريبت داخل `<body>` و `invite_id` ديالك معمر.
+    - افتح DevTools وشوف تبويب الشبكة لطلب `cdn.mellow.tel/widget.js`. إذا كان محجوب، غالبا السبب هو مانع الإعلانات أو فلتر المحتوى.
+    - شوف سياسة أمان المحتوى ديالك. يمكن تحتاج تسمح بـ `https://cdn.mellow.tel` تحت `script-src`.
+  </Accordion>
+  <Accordion title="نشوف تحذير 'missing invite_id'">
+    المعلمة `invite_id` فارغة أو ما زال فيها `INVITE_ID` كقيمة افتراضية. انسخ القيمة الحقيقية من لوحة التحكم ديالك ولصقها في URL.
+  </Accordion>
+  <Accordion title="يخدم محليا لكن ما يخدمش في الإنتاج">
+    غالبا سياسة CSP أو قاعدة CDN تحذف السكريبت. شوف رؤوس الاستجابة في المضيف الإنتاجي ديالك واسمح بـ `cdn.mellow.tel`.
+  </Accordion>
+  <Accordion title="كيفاش نحذف الويدجيت؟">
+    حذف وسم `<script>` (أو المكون الإطاري اللي يلفه). ما كاين والو آخر لتنظيفه.
+  </Accordion>
+</AccordionGroup>
+
+## كشف للزوار ديالك
+
+نوصي بإضافة ملاحظة قصيرة لسياسة الخصوصية ديالك باش الزوار يفهمو معنى الاشتراك. حاجة بحال:
+
+> هاد الموقع شريك مع Mellowtel. إذا اخترت تثبيت الإضافة ديالهم، المتصفح ديالك يمكن يشارك النطاق الترددي الغير مستخدم لدعم هاد الموقع. التثبيت اختياري ويمكنك الانسحاب في أي وقت.
+
+شوف [الخصوصية](/concepts/privacy) و[الاشتراك / الانسحاب](/concepts/opt-in-out) للتفاصيل الكاملة اللي تقدر تربطها.
+
+## تحتاج مساعدة؟
+
+تواصل معنا على [info@mellowtel.com](mailto:info@mellowtel.com) أو انضم لينا على [Discord](https://discord.gg/mellowtel).

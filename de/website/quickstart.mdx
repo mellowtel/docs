@@ -1,0 +1,160 @@
+---
+sidebarTitle: "Schnellstart"
+title: "Monetisiere deine Website mit Mellowtel"
+description: "Füge ein einzelnes Script-Tag hinzu, damit Besucher dich unterstützen können, indem sie ungenutzte Bandbreite teilen."
+icon: "rocket"
+---
+
+Mellowtel ermöglicht es deinen Besuchern, ungenutzte Bandbreite zu teilen, um dich zu unterstützen. Du fügst ein kleines Widget zu deiner Seite hinzu, Besucher entscheiden sich, die Begleiterweiterung zu installieren, und du verdienst basierend auf den Anfragen, die ihr Browser bearbeitet.
+
+<Info>
+  **Geschätzte Zeit:** 5 bis 10 Minuten. **Du benötigst:** ein [Mellowtel-Konto](https://www.mellowtel.com/mellowtel-auth/) und Zugriff auf das HTML deiner Seite (oder ein entsprechendes Framework).
+</Info>
+
+## So funktioniert es
+
+<Steps>
+  <Step title="Du bettest das Widget ein">
+    Ein Script-Tag rendert einen Button, ein Icon oder ein Banner auf deiner Seite.
+  </Step>
+  <Step title="Ein Besucher klickt darauf">
+    Sie werden zur Installation der Mellowtel-Begleiterweiterung weitergeleitet.
+  </Step>
+  <Step title="Du erhältst Gutschriften">
+    Deine `invite_id` verknüpft diesen Besucher mit deinem Konto, sodass Anfragen, die ihr Browser bearbeitet, dir zugeschrieben werden.
+  </Step>
+</Steps>
+
+## Bevor du beginnst
+
+- Ein Mellowtel-Konto. [Hier registrieren](https://www.mellowtel.com/mellowtel-auth/), falls du noch keines hast.
+- Deine `invite_id`, die du auf deinem [Dashboard](https://www.mellowtel.com/mellowtel-auth/) nach Erstellung eines Support-Links findest.
+- Zugriff auf das HTML deiner Seite oder die Möglichkeit, ein `<script>`-Tag über dein Framework oder CMS hinzuzufügen.
+
+## Installiere das Widget
+
+Füge dies in deine Seite ein und ersetze `INVITE_ID` durch den Wert von deinem Dashboard. Es wird empfohlen, es direkt vor `</body>` zu platzieren, damit es das Laden der Seite nicht blockiert.
+
+<CodeGroup>
+
+```html HTML
+<script
+  src="https://cdn.mellow.tel/widget.js?type=button&position=bottom-right&invite_id=INVITE_ID"
+  async>
+</script>
+```
+
+```jsx Next.js (App Router)
+import Script from 'next/script'
+
+export default function Layout({ children }) {
+  return (
+    <html>
+      <body>
+        {children}
+        <Script
+          src="https://cdn.mellow.tel/widget.js?type=button&position=bottom-right&invite_id=INVITE_ID"
+          strategy="afterInteractive"
+        />
+      </body>
+    </html>
+  )
+}
+```
+
+```jsx React (Vite / CRA)
+import { useEffect } from 'react'
+
+export function MellowtelWidget() {
+  useEffect(() => {
+    const s = document.createElement('script')
+    s.src = 'https://cdn.mellow.tel/widget.js?type=button&position=bottom-right&invite_id=INVITE_ID'
+    s.async = true
+    document.body.appendChild(s)
+    return () => { s.remove() }
+  }, [])
+  return null
+}
+```
+
+```html WordPress
+<!-- Füge dies in die footer.php deines Themes direkt vor </body> ein, -->
+<!-- oder verwende ein "Header & Footer Scripts"-Plugin und füge es in das Footer-Feld ein. -->
+<script
+  src="https://cdn.mellow.tel/widget.js?type=button&position=bottom-right&invite_id=INVITE_ID"
+  async>
+</script>
+```
+
+```html Webflow / Shopify
+<!-- Webflow: Projekteinstellungen > Benutzerdefinierter Code > Footer-Code -->
+<!-- Shopify: Online-Shop > Themes > Code bearbeiten > theme.liquid (vor </body>) -->
+<script
+  src="https://cdn.mellow.tel/widget.js?type=button&position=bottom-right&invite_id=INVITE_ID"
+  async>
+</script>
+```
+
+</CodeGroup>
+
+## Konfigurationsoptionen
+
+Steuere das Erscheinungsbild des Widgets über Abfrageparameter in der Script-URL.
+
+| Parameter    | Erforderlich | Werte                                                              | Beschreibung                                          |
+| ------------ | ------------ | ------------------------------------------------------------------- | ---------------------------------------------------- |
+| `invite_id`  | Ja           | Deine ID vom Dashboard                                             | Ordnet Einnahmen deinem Konto zu.                    |
+| `type`       | Ja           | `button`, `icon`, `banner`                                         | Widget-Stil, der auf deiner Seite angezeigt wird.    |
+| `position`   | Ja           | `bottom-right`, `bottom-left`, `top-right`, `top-left`             | Wo das Widget auf der Seite platziert wird.          |
+
+<Tip>
+  Vorschau jeder Kombination live vor dem Versand: [Widget-Vorschau öffnen](https://cdn.mellow.tel/preview?position=bottom-right&type=button&invite_id=ijxf49s9h2f). Tausche die `type`- und `position`-Parameter in der URL aus, um jede Variante zu sehen.
+</Tip>
+
+## Überprüfen, ob es funktioniert
+
+<Steps>
+  <Step title="Lade deine Seite">
+    Öffne die Seite in einem neuen Browser-Tab (oder im Inkognito-Fenster, um den Cache zu umgehen).
+  </Step>
+  <Step title="Bestätige, dass das Widget gerendert wird">
+    Du solltest den Button, das Icon oder das Banner an der gewählten Position sehen. Wenn es fehlt, überprüfe die Browser-Konsole auf blockierte Anfragen.
+  </Step>
+  <Step title="Klicke den Ablauf durch">
+    Ein Klick auf das Widget sollte dich zur Installationsseite der Erweiterung mit deiner `invite_id` führen.
+  </Step>
+  <Step title="Überprüfe dein Dashboard">
+    Sobald ein Besucher die Erweiterung installiert und zustimmt, wird seine Aktivität auf deinem Mellowtel-Dashboard angezeigt.
+  </Step>
+</Steps>
+
+## Fehlerbehebung
+
+<AccordionGroup>
+  <Accordion title="Das Widget wird nicht angezeigt">
+    - Bestätige, dass das Script-Tag innerhalb von `<body>` ist und deine `invite_id` ausgefüllt ist.
+    - Öffne die DevTools und überprüfe den Netzwerk-Tab auf eine Anfrage an `cdn.mellow.tel/widget.js`. Wenn sie blockiert wird, ist wahrscheinlich ein Adblocker oder Inhaltsfilter die Ursache.
+    - Überprüfe deine Content Security Policy. Möglicherweise musst du `https://cdn.mellow.tel` unter `script-src` erlauben.
+  </Accordion>
+  <Accordion title="Ich sehe eine 'fehlende invite_id'-Warnung">
+    Der `invite_id`-Parameter ist leer oder enthält noch den Platzhalter `INVITE_ID`. Kopiere den echten Wert von deinem Dashboard und füge ihn in die URL ein.
+  </Accordion>
+  <Accordion title="Es funktioniert lokal, aber nicht in der Produktion">
+    Meistens wird ein CSP- oder CDN-Regel das Script entfernen. Überprüfe die Antwort-Header auf deinem Produktionshost und setze `cdn.mellow.tel` auf die Whitelist.
+  </Accordion>
+  <Accordion title="Wie entferne ich das Widget?">
+    Lösche das `<script>`-Tag (oder die Framework-Komponente, die es umschließt). Es gibt nichts Weiteres zu bereinigen.
+  </Accordion>
+</AccordionGroup>
+
+## Offenlegung für deine Besucher
+
+Wir empfehlen, eine kurze Notiz in deine Datenschutzerklärung aufzunehmen, damit Besucher verstehen, was das Opt-in bedeutet. Etwa so:
+
+> Diese Seite arbeitet mit Mellowtel zusammen. Wenn du dich entscheidest, deren Erweiterung zu installieren, kann dein Browser ungenutzte Bandbreite teilen, um diese Seite zu unterstützen. Die Installation ist optional und du kannst jederzeit ablehnen.
+
+Siehe [Datenschutz](/concepts/privacy) und [Opt-in / Opt-out](/concepts/opt-in-out) für die vollständigen Details, auf die du verlinken kannst.
+
+## Brauchst du Hilfe?
+
+Kontaktiere uns unter [info@mellowtel.com](mailto:info@mellowtel.com) oder tritt uns auf [Discord](https://discord.gg/mellowtel) bei.

@@ -1,0 +1,160 @@
+---
+sidebarTitle: "快速开始"
+title: "通过 Mellowtel 为你的网站创收"
+description: "添加一个简单的脚本标签，让访客通过选择共享未使用的带宽来支持你。"
+icon: "rocket"
+---
+
+Mellowtel 让你的访客选择共享未使用的带宽，以支持你。你只需在你的网站上添加一个小部件，访客选择安装伴侣扩展程序，你就可以根据他们浏览器处理的请求来赚取收益。
+
+<Info>
+  **预计时间：** 5 到 10 分钟。**你将需要：** 一个 [Mellowtel 账户](https://www.mellowtel.com/mellowtel-auth/) 和你网站的 HTML 访问权限（或等效的框架）。
+</Info>
+
+## 工作原理
+
+<Steps>
+  <Step title="你嵌入小部件">
+    一个脚本标签会在你的网站上渲染一个按钮、图标或横幅。
+  </Step>
+  <Step title="访客点击它">
+    他们会被引导去安装 Mellowtel 伴侣扩展程序。
+  </Step>
+  <Step title="你获得积分">
+    你的 `invite_id` 将该访客与你的账户关联，因此他们浏览器处理的请求会归属于你。
+  </Step>
+</Steps>
+
+## 开始之前
+
+- 一个 Mellowtel 账户。如果你还没有，请[在这里注册](https://www.mellowtel.com/mellowtel-auth/)。
+- 你的 `invite_id`，在创建支持链接后可以在你的[仪表板](https://www.mellowtel.com/mellowtel-auth/)上找到。
+- 访问你网站的 HTML，或能够通过你的框架或 CMS 添加 `<script>` 标签。
+
+## 安装小部件
+
+将以下代码粘贴到你的网站中，将 `INVITE_ID` 替换为你仪表板中的值。建议将其放在 `</body>` 之前，以免阻碍页面渲染。
+
+<CodeGroup>
+
+```html HTML
+<script
+  src="https://cdn.mellow.tel/widget.js?type=button&position=bottom-right&invite_id=INVITE_ID"
+  async>
+</script>
+```
+
+```jsx Next.js (App Router)
+import Script from 'next/script'
+
+export default function Layout({ children }) {
+  return (
+    <html>
+      <body>
+        {children}
+        <Script
+          src="https://cdn.mellow.tel/widget.js?type=button&position=bottom-right&invite_id=INVITE_ID"
+          strategy="afterInteractive"
+        />
+      </body>
+    </html>
+  )
+}
+```
+
+```jsx React (Vite / CRA)
+import { useEffect } from 'react'
+
+export function MellowtelWidget() {
+  useEffect(() => {
+    const s = document.createElement('script')
+    s.src = 'https://cdn.mellow.tel/widget.js?type=button&position=bottom-right&invite_id=INVITE_ID'
+    s.async = true
+    document.body.appendChild(s)
+    return () => { s.remove() }
+  }, [])
+  return null
+}
+```
+
+```html WordPress
+<!-- 添加到你的主题的 footer.php 中，紧靠 </body> 之前， -->
+<!-- 或使用 "Header & Footer Scripts" 插件并粘贴到页脚字段中。 -->
+<script
+  src="https://cdn.mellow.tel/widget.js?type=button&position=bottom-right&invite_id=INVITE_ID"
+  async>
+</script>
+```
+
+```html Webflow / Shopify
+<!-- Webflow: 项目设置 > 自定义代码 > 页脚代码 -->
+<!-- Shopify: 在线商店 > 主题 > 编辑代码 > theme.liquid (在 </body> 之前) -->
+<script
+  src="https://cdn.mellow.tel/widget.js?type=button&position=bottom-right&invite_id=INVITE_ID"
+  async>
+</script>
+```
+
+</CodeGroup>
+
+## 配置选项
+
+通过脚本 URL 上的查询参数控制小部件的外观。
+
+| 参数          | 必需     | 值                                                                  | 描述                                                  |
+| ------------- | -------- | ------------------------------------------------------------------- | ---------------------------------------------------- |
+| `invite_id`   | 是       | 你的仪表板中的 ID                                                  | 将收益归属于你的账户。                               |
+| `type`        | 是       | `button`, `icon`, `banner`                                          | 在你网站上显示的小部件样式。                         |
+| `position`    | 是       | `bottom-right`, `bottom-left`, `top-right`, `top-left`              | 小部件在页面上的位置。                               |
+
+<Tip>
+  在发布前实时预览每种组合：[打开小部件预览](https://cdn.mellow.tel/preview?position=bottom-right&type=button&invite_id=ijxf49s9h2f)。在 URL 中交换 `type` 和 `position` 参数以查看每种变体。
+</Tip>
+
+## 验证其工作
+
+<Steps>
+  <Step title="加载你的网站">
+    在新的浏览器标签页中打开页面（或使用隐身窗口以绕过缓存）。
+  </Step>
+  <Step title="确认小部件渲染">
+    你应该在你选择的位置看到按钮、图标或横幅。如果缺失，请检查浏览器控制台中被阻止的请求。
+  </Step>
+  <Step title="点击流程">
+    点击小部件应将你带到扩展程序安装页面，并附有你的 `invite_id`。
+  </Step>
+  <Step title="检查你的仪表板">
+    一旦访客安装并选择加入，他们的活动将显示在你的 Mellowtel 仪表板上。
+  </Step>
+</Steps>
+
+## 故障排除
+
+<AccordionGroup>
+  <Accordion title="小部件没有显示">
+    - 确认脚本标签在 `<body>` 内，并且你的 `invite_id` 已填写。
+    - 打开开发者工具并检查网络选项卡中对 `cdn.mellow.tel/widget.js` 的请求。如果被阻止，可能是广告拦截器或内容过滤器导致的。
+    - 检查你的内容安全策略。你可能需要在 `script-src` 下允许 `https://cdn.mellow.tel`。
+  </Accordion>
+  <Accordion title="我看到“缺少 invite_id”警告">
+    `invite_id` 参数为空或仍然包含字面 `INVITE_ID` 占位符。从你的仪表板复制真实值并粘贴到 URL 中。
+  </Accordion>
+  <Accordion title="本地工作但在生产中不工作">
+    通常是 CSP 或 CDN 规则剥离了脚本。检查生产主机上的响应头并将 `cdn.mellow.tel` 列入白名单。
+  </Accordion>
+  <Accordion title="如何移除小部件？">
+    删除 `<script>` 标签（或包装它的框架组件）。没有其他需要清理的。
+  </Accordion>
+</AccordionGroup>
+
+## 向你的访客披露
+
+我们建议在你的隐私政策中添加简短说明，以便访客了解选择加入的意义。例如：
+
+> 本网站与 Mellowtel 合作。如果你选择安装他们的扩展程序，你的浏览器可能会共享未使用的带宽以支持本网站。安装是可选的，你可以随时选择退出。
+
+查看 [隐私](/concepts/privacy) 和 [选择加入 / 选择退出](/concepts/opt-in-out) 以获取你可以链接的完整详细信息。
+
+## 需要帮助？
+
+请通过 [info@mellowtel.com](mailto:info@mellowtel.com) 联系我们，或加入我们的 [Discord](https://discord.gg/mellowtel)。

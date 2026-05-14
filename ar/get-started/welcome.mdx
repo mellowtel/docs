@@ -1,0 +1,61 @@
+---
+sidebarTitle: "مرحبا"
+title: "مرحبا 👋"
+icon: "hand-wave"
+---
+
+**Mellowtel هو منصة مفتوحة المصدر لتحقيق الدخل للمطورين والمبدعين في عالم الذكاء الاصطناعي.** ضيف الـ SDK في إضافة المتصفح، تطبيق سطح المكتب، الموقع الإلكتروني، أو تطبيق الهاتف النقال، ويمكن للمستخدمين ديالك يختارو يشاركو جزء صغير من عرض النطاق الترددي غير المستخدم ديالهم مع شركاء موثوقين. انت تربح حصة من الإيرادات.
+
+## كيفاش كتشوف التكامل
+
+```bash
+npm install mellowtel
+```
+
+```javascript
+import Mellowtel from "mellowtel";
+
+const mellowtel = new Mellowtel("<YOUR_CONFIGURATION_KEY>");
+await mellowtel.initBackground();
+await mellowtel.generateAndOpenOptInLink();
+```
+
+هذا هو التكامل الكامل لإضافة المتصفح. المنصات الأخرى مشابهة. شوف البدايات السريعة تحت.
+
+## اختار المنصة ديالك
+
+<CardGroup cols={2}>
+    <Card title="إضافات المتصفح" icon="puzzle-piece" href="/browser-plugins/quickstart">
+        دمج Mellowtel في إضافة Chrome، Edge، Firefox، أو Safari في ~5 دقائق.
+    </Card>
+    <Card title="تطبيقات سطح المكتب" icon="desktop" href="/desktop-app/quickstart">
+        حقق الدخل من تطبيق سطح المكتب Electron، Windows، أو macOS.
+    </Card>
+    <Card title="المواقع الإلكترونية" icon="atom" href="/website/quickstart">
+        ضيف Mellowtel لأي موقع إلكتروني بسكريبت واحد.
+    </Card>
+    <Card title="تطبيقات الهاتف النقال" icon="mobile" href="/mobile-app/quickstart">
+        حقق الدخل من تطبيق هاتف نقال iOS أو Android.
+    </Card>
+</CardGroup>
+
+## قبل ما تطلق، قرا المفاهيم
+
+هذ الصفحات الأربعة كتوضع المبادئ اللي خاص كل تكامل مع Mellowtel يحترمها: الموافقة، الخصوصية، وتحديد المعدل. قراهم مرة وحدة والباقي من الوثائق غادي يكون منطقي.
+
+<CardGroup cols={2}>
+    <Card title="نظرة عامة على المفاهيم" icon="compass" href="/concepts/overview">
+        الأفكار الأربعة وراء Mellowtel في صفحة وحدة.
+    </Card>
+    <Card title="الاختيار / الإلغاء" icon="signature" href="/concepts/opt-in-out">
+        كيفاش تلتقط (وتلغي) موافقة المستخدم بالطريقة الصحيحة.
+    </Card>
+</CardGroup>
+
+## كيفاش كيتخدم الإيرادات
+
+التقسيم هو **55% للمطورين، 45% لـ Mellowtel**. مع التوسع غادي نقدر نعرضو خدمات أكثر ونزيدو حصة المطورين. في المستقبل يمكن يكونو ميزات اللي تخليك تشارك جزء من هذ الإيرادات مباشرة مع المستخدمين ديالك؛ في الوقت الحالي تقدر تكافئ المستخدمين اللي اختارو المشاركة بميزات أو محتوى حصري.
+
+## محتاج مساعدة؟
+
+هذا الموقع هو المصدر الحقيقي لكل شيء تقني. لأي شيء آخر (أسئلة، ملاحظات، أو فقط باش تتواصل مع مطوري Mellowtel الآخرين)، انضم لينا على [Discord](https://discord.com/invite/txAZp4MSDe).

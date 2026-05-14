@@ -1,0 +1,34 @@
+---
+sidebarTitle: "Invia al CWS"
+title: "Invia l’estensione al Chrome Web Store"
+icon: "chrome"
+---
+
+Dopo aver seguito le istruzioni per importare Mellowtel nella tua estensione, come descritto in [Inizio Rapido](/browser-plugins/quickstart), sei pronto per inviare la tua estensione al Web Store. Questa guida ti aiuterà a inviare la tua estensione al Chrome Web Store.
+
+Tempo stimato per il completamento: 3-5 minuti.
+
+
+### Giustificazione per il Web Store
+Il Web Store richiede di giustificare i permessi che stai richiedendo. Ecco un modello che puoi utilizzare (spiega come Mellowtel utilizza i permessi):
+
+**DeclarativeNetRequest**:
+```txt
+Il permesso declarativeNetRequest è necessario per rimuovere certi header (ad esempio, gli header X-Frame) da alcune risposte a livello di sub_frame. Questo permette di visualizzare siti web in un iframe senza incorrere in problemi relativi alla condivisione di risorse tra origini diverse (CORS). Questi header vengono immediatamente ripristinati dopo che la risposta è stata elaborata.
+```
+
+**Permessi Host**:
+```txt
+I permessi host su all_urls sono necessari per permettere a declarativeNetRequest di modificare gli header delle risposte su tutti gli URL. Questo è necessario per rimuovere certi header (ad esempio, gli header X-Frame) da alcune risposte a livello di sub_frame. Questo permette di visualizzare siti web in un iframe senza incorrere in problemi relativi alla condivisione di risorse tra origini diverse (CORS). Questi header vengono immediatamente ripristinati dopo che la risposta è stata elaborata.
+```
+
+**Storage**:
+```txt
+Il permesso di storage è necessario per mantenere lo stato specifico dell’estensione e avere una logica locale per facilitare le comunicazioni tra le varie parti dell’estensione.
+```
+
+
+### Invia la tua estensione
+Puoi seguire le istruzioni qui a seconda che tu stia inviando una nuova estensione o aggiornando una esistente:
+- [Invia una nuova estensione](https://developer.chrome.com/docs/webstore/publish/)
+- [Aggiorna un’estensione esistente](https://developer.chrome.com/docs/webstore/update)

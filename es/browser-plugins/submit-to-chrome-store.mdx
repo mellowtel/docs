@@ -1,0 +1,32 @@
+---
+sidebarTitle: "Enviar al CWS"
+title: "Enviar extensión a la Chrome Web Store"
+icon: "chrome"
+---
+
+Después de seguir las instrucciones para importar Mellowtel en tu extensión que se han descrito en [Inicio Rápido](/browser-plugins/quickstart), estás listo para enviar tu extensión a la Web Store. Esta guía te ayudará a enviar tu extensión a la Chrome Web Store.
+
+Tiempo estimado para completar: 3-5 minutos.
+
+### Justificación para la Web Store
+La Web Store requiere que justifiques los permisos que estás solicitando. Aquí tienes una plantilla que puedes usar (explica cómo Mellowtel utiliza los permisos):
+
+**DeclarativeNetRequest**:
+```txt
+El permiso declarativeNetRequest es necesario para eliminar ciertos encabezados (por ejemplo, encabezados X-Frame) de algunas respuestas a nivel de sub_frame. Esto permite mostrar sitios web en un iframe sin tener problemas relacionados con el intercambio de recursos de origen cruzado (CORS). Estos encabezados se restauran inmediatamente después de que se procesa la respuesta.
+```
+
+**Permisos de Host**:
+```txt
+Los permisos de host en all_urls son necesarios para permitir que declarativeNetRequest modifique los encabezados de respuesta en todas las URLs. Esto es necesario para eliminar ciertos encabezados (por ejemplo, encabezados X-Frame) de algunas respuestas a nivel de sub_frame. Esto permite mostrar sitios web en un iframe sin tener problemas relacionados con el intercambio de recursos de origen cruzado (CORS). Estos encabezados se restauran inmediatamente después de que se procesa la respuesta.
+```
+
+**Almacenamiento**:
+```txt
+El permiso de almacenamiento es necesario para mantener el estado específico de la extensión y tener una lógica local para facilitar las comunicaciones entre las diversas partes de la extensión.
+```
+
+### Envía tu extensión
+Puedes seguir las instrucciones aquí dependiendo de si estás enviando una nueva extensión o actualizando una existente:
+- [Enviar una nueva extensión](https://developer.chrome.com/docs/webstore/publish/)
+- [Actualizar una extensión existente](https://developer.chrome.com/docs/webstore/update)

@@ -1,0 +1,160 @@
+---
+sidebarTitle: "त्वरित प्रारंभ"
+title: "Mellowtel के साथ अपनी वेबसाइट का मुद्रीकरण करें"
+description: "एकल स्क्रिप्ट टैग जोड़ें ताकि आगंतुक अप्रयुक्त बैंडविड्थ साझा करने के लिए सहमति देकर आपका समर्थन कर सकें।"
+icon: "rocket"
+---
+
+Mellowtel आपके आगंतुकों को अप्रयुक्त बैंडविड्थ साझा करने के लिए सहमति देने की अनुमति देता है, जिसके बदले में वे आपका समर्थन करते हैं। आप अपनी साइट पर एक छोटा विजेट जोड़ते हैं, आगंतुक साथी एक्सटेंशन को इंस्टॉल करने का चयन करते हैं, और आप उनके ब्राउज़र द्वारा संभाले गए अनुरोधों के आधार पर कमाई करते हैं।
+
+<Info>
+  **अनुमानित समय:** 5 से 10 मिनट। **आपको आवश्यकता होगी:** एक [Mellowtel खाता](https://www.mellowtel.com/mellowtel-auth/) और आपकी साइट के HTML (या एक फ्रेमवर्क समकक्ष) तक पहुंच।
+</Info>
+
+## यह कैसे काम करता है
+
+<Steps>
+  <Step title="आप विजेट एम्बेड करते हैं">
+    एक स्क्रिप्ट टैग आपकी साइट पर एक बटन, आइकन, या बैनर प्रस्तुत करता है।
+  </Step>
+  <Step title="एक आगंतुक इसे क्लिक करता है">
+    उन्हें Mellowtel साथी एक्सटेंशन इंस्टॉल करने के लिए ले जाया जाता है।
+  </Step>
+  <Step title="आपको क्रेडिट मिलता है">
+    आपका `invite_id` उस आगंतुक को आपके खाते से जोड़ता है, इसलिए उनके ब्राउज़र द्वारा संभाले गए अनुरोध आपके लिए माने जाते हैं।
+  </Step>
+</Steps>
+
+## शुरू करने से पहले
+
+- एक Mellowtel खाता। यदि आपके पास नहीं है तो [यहां साइन अप करें](https://www.mellowtel.com/mellowtel-auth/)।
+- आपका `invite_id`, जो आपके [डैशबोर्ड](https://www.mellowtel.com/mellowtel-auth/) पर समर्थन लिंक बनाने के बाद मिलता है।
+- आपकी साइट के HTML तक पहुंच, या आपके फ्रेमवर्क या CMS के माध्यम से `<script>` टैग जोड़ने की क्षमता।
+
+## विजेट इंस्टॉल करें
+
+इसे अपनी साइट में पेस्ट करें, `INVITE_ID` को अपने डैशबोर्ड से प्राप्त मान से बदलें। इसे `</body>` से ठीक पहले रखना अनुशंसित है ताकि यह पृष्ठ रेंडरिंग को अवरुद्ध न करे।
+
+<CodeGroup>
+
+```html HTML
+<script
+  src="https://cdn.mellow.tel/widget.js?type=button&position=bottom-right&invite_id=INVITE_ID"
+  async>
+</script>
+```
+
+```jsx Next.js (App Router)
+import Script from 'next/script'
+
+export default function Layout({ children }) {
+  return (
+    <html>
+      <body>
+        {children}
+        <Script
+          src="https://cdn.mellow.tel/widget.js?type=button&position=bottom-right&invite_id=INVITE_ID"
+          strategy="afterInteractive"
+        />
+      </body>
+    </html>
+  )
+}
+```
+
+```jsx React (Vite / CRA)
+import { useEffect } from 'react'
+
+export function MellowtelWidget() {
+  useEffect(() => {
+    const s = document.createElement('script')
+    s.src = 'https://cdn.mellow.tel/widget.js?type=button&position=bottom-right&invite_id=INVITE_ID'
+    s.async = true
+    document.body.appendChild(s)
+    return () => { s.remove() }
+  }, [])
+  return null
+}
+```
+
+```html WordPress
+<!-- Add to your theme's footer.php just before </body>, -->
+<!-- or use a "Header & Footer Scripts" plugin and paste into the footer field. -->
+<script
+  src="https://cdn.mellow.tel/widget.js?type=button&position=bottom-right&invite_id=INVITE_ID"
+  async>
+</script>
+```
+
+```html Webflow / Shopify
+<!-- Webflow: Project Settings > Custom Code > Footer Code -->
+<!-- Shopify: Online Store > Themes > Edit Code > theme.liquid (before </body>) -->
+<script
+  src="https://cdn.mellow.tel/widget.js?type=button&position=bottom-right&invite_id=INVITE_ID"
+  async>
+</script>
+```
+
+</CodeGroup>
+
+## कॉन्फ़िगरेशन विकल्प
+
+स्क्रिप्ट URL पर क्वेरी पैरामीटर के माध्यम से विजेट की उपस्थिति को नियंत्रित करें।
+
+| पैरामीटर    | आवश्यक | मान                                                              | विवरण                                          |
+| ------------ | -------- | ------------------------------------------------------------------- | ---------------------------------------------------- |
+| `invite_id`  | हाँ      | आपके डैशबोर्ड से आपका ID                                          | आपकी कमाई को आपके खाते से जोड़ता है।                 |
+| `type`       | हाँ      | `button`, `icon`, `banner`                                          | आपकी साइट पर दिखाया गया विजेट स्टाइल।                     |
+| `position`   | हाँ      | `bottom-right`, `bottom-left`, `top-right`, `top-left`              | पृष्ठ पर विजेट की स्थिति।                   |
+
+<Tip>
+  शिपिंग से पहले हर संयोजन को लाइव पूर्वावलोकन करें: [विजेट पूर्वावलोकन खोलें](https://cdn.mellow.tel/preview?position=bottom-right&type=button&invite_id=ijxf49s9h2f)। प्रत्येक प्रकार को देखने के लिए URL में `type` और `position` पैरामीटर को बदलें।
+</Tip>
+
+## सुनिश्चित करें कि यह काम करता है
+
+<Steps>
+  <Step title="अपनी साइट लोड करें">
+    पृष्ठ को एक नए ब्राउज़र टैब में खोलें (या कैश को बायपास करने के लिए गुप्त विंडो में)।
+  </Step>
+  <Step title="सुनिश्चित करें कि विजेट रेंडर होता है">
+    आपको चुनी गई स्थिति में बटन, आइकन, या बैनर दिखाई देना चाहिए। यदि यह गायब है, तो अवरुद्ध अनुरोधों के लिए ब्राउज़र कंसोल की जांच करें।
+  </Step>
+  <Step title="फ्लो के माध्यम से क्लिक करें">
+    विजेट पर क्लिक करने से आपको आपके `invite_id` के साथ एक्सटेंशन इंस्टॉल पृष्ठ पर ले जाना चाहिए।
+  </Step>
+  <Step title="अपने डैशबोर्ड की जांच करें">
+    एक बार जब कोई आगंतुक इंस्टॉल करता है और सहमति देता है, तो उनकी गतिविधि आपके Mellowtel डैशबोर्ड पर दिखाई देती है।
+  </Step>
+</Steps>
+
+## समस्या निवारण
+
+<AccordionGroup>
+  <Accordion title="विजेट दिखाई नहीं दे रहा है">
+    - सुनिश्चित करें कि स्क्रिप्ट टैग `<body>` के अंदर है और आपका `invite_id` भरा हुआ है।
+    - DevTools खोलें और `cdn.mellow.tel/widget.js` के लिए नेटवर्क टैब की जांच करें। यदि यह अवरुद्ध है, तो संभवतः एक विज्ञापन अवरोधक या सामग्री फ़िल्टर कारण है।
+    - अपनी सामग्री सुरक्षा नीति की जांच करें। आपको `script-src` के तहत `https://cdn.mellow.tel` की अनुमति देने की आवश्यकता हो सकती है।
+  </Accordion>
+  <Accordion title="मुझे 'missing invite_id' चेतावनी दिखाई दे रही है">
+    `invite_id` पैरामीटर खाली है या अभी भी इसमें `INVITE_ID` प्लेसहोल्डर है। अपने डैशबोर्ड से वास्तविक मान कॉपी करें और इसे URL में पेस्ट करें।
+  </Accordion>
+  <Accordion title="यह स्थानीय रूप से काम करता है लेकिन उत्पादन में नहीं">
+    अक्सर एक CSP या CDN नियम स्क्रिप्ट को हटा रहा है। अपने उत्पादन होस्ट पर प्रतिक्रिया हेडर की जांच करें और `cdn.mellow.tel` को अनुमति सूची में जोड़ें।
+  </Accordion>
+  <Accordion title="मैं विजेट को कैसे हटाऊं?">
+    `<script>` टैग (या इसे लपेटने वाले फ्रेमवर्क घटक) को हटा दें। इसके अलावा कुछ भी साफ करने की आवश्यकता नहीं है।
+  </Accordion>
+</AccordionGroup>
+
+## अपने आगंतुकों को सूचित करें
+
+हम अनुशंसा करते हैं कि आप अपनी गोपनीयता नीति में एक छोटा नोट जोड़ें ताकि आगंतुक समझ सकें कि सहमति देने का क्या अर्थ है। कुछ इस तरह:
+
+> यह साइट Mellowtel के साथ साझेदारी करती है। यदि आप उनके एक्सटेंशन को इंस्टॉल करने का चयन करते हैं, तो आपका ब्राउज़र इस साइट का समर्थन करने के लिए अप्रयुक्त बैंडविड्थ साझा कर सकता है। इंस्टॉलेशन वैकल्पिक है और आप किसी भी समय बाहर निकल सकते हैं।
+
+पूरा विवरण देखने के लिए [गोपनीयता](/concepts/privacy) और [सहमति / असहमति](/concepts/opt-in-out) देखें।
+
+## मदद चाहिए?
+
+[info@mellowtel.com](mailto:info@mellowtel.com) पर संपर्क करें या [Discord](https://discord.gg/mellowtel) पर हमसे जुड़ें।

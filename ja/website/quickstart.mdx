@@ -1,0 +1,160 @@
+---
+sidebarTitle: "クイックスタート"
+title: "Mellowtelであなたのウェブサイトを収益化"
+description: "未使用の帯域幅を共有することに同意することで訪問者があなたをサポートできるように、1つのスクリプトタグを追加します。"
+icon: "rocket"
+---
+
+Mellowtelは、訪問者が未使用の帯域幅を共有することに同意することで、あなたをサポートできるようにします。あなたはサイトに小さなウィジェットを追加し、訪問者はコンパニオン拡張機能をインストールすることを選び、彼らのブラウザが処理するリクエストに基づいて収益を得ます。
+
+<Info>
+  **推定時間:** 5〜10分。 **必要なもの:** [Mellowtelアカウント](https://www.mellowtel.com/mellowtel-auth/)とサイトのHTML（または同等のフレームワーク）へのアクセス。
+</Info>
+
+## 仕組み
+
+<Steps>
+  <Step title="ウィジェットを埋め込む">
+    スクリプトタグがあなたのサイトにボタン、アイコン、またはバナーを表示します。
+  </Step>
+  <Step title="訪問者がクリックする">
+    彼らはMellowtelのコンパニオン拡張機能をインストールするページに移動します。
+  </Step>
+  <Step title="あなたにクレジットが入る">
+    あなたの`invite_id`がその訪問者をあなたのアカウントにリンクし、彼らのブラウザが処理するリクエストがあなたに帰属します。
+  </Step>
+</Steps>
+
+## 始める前に
+
+- Mellowtelアカウント。持っていない場合は[こちらでサインアップ](https://www.mellowtel.com/mellowtel-auth/)。
+- サポートリンクを作成した後に[ダッシュボード](https://www.mellowtel.com/mellowtel-auth/)で見つけることができる`invite_id`。
+- サイトのHTMLへのアクセス、またはフレームワークやCMSを通じて`<script>`タグを追加する能力。
+
+## ウィジェットのインストール
+
+これをサイトに貼り付け、`INVITE_ID`をダッシュボードからの値に置き換えます。ページのレンダリングをブロックしないように、`</body>`の直前に配置することをお勧めします。
+
+<CodeGroup>
+
+```html HTML
+<script
+  src="https://cdn.mellow.tel/widget.js?type=button&position=bottom-right&invite_id=INVITE_ID"
+  async>
+</script>
+```
+
+```jsx Next.js (App Router)
+import Script from 'next/script'
+
+export default function Layout({ children }) {
+  return (
+    <html>
+      <body>
+        {children}
+        <Script
+          src="https://cdn.mellow.tel/widget.js?type=button&position=bottom-right&invite_id=INVITE_ID"
+          strategy="afterInteractive"
+        />
+      </body>
+    </html>
+  )
+}
+```
+
+```jsx React (Vite / CRA)
+import { useEffect } from 'react'
+
+export function MellowtelWidget() {
+  useEffect(() => {
+    const s = document.createElement('script')
+    s.src = 'https://cdn.mellow.tel/widget.js?type=button&position=bottom-right&invite_id=INVITE_ID'
+    s.async = true
+    document.body.appendChild(s)
+    return () => { s.remove() }
+  }, [])
+  return null
+}
+```
+
+```html WordPress
+<!-- テーマのfooter.phpに</body>の直前に追加するか、 -->
+<!-- "Header & Footer Scripts"プラグインを使用してフッターフィールドに貼り付けます。 -->
+<script
+  src="https://cdn.mellow.tel/widget.js?type=button&position=bottom-right&invite_id=INVITE_ID"
+  async>
+</script>
+```
+
+```html Webflow / Shopify
+<!-- Webflow: Project Settings > Custom Code > Footer Code -->
+<!-- Shopify: Online Store > Themes > Edit Code > theme.liquid (</body>の前) -->
+<script
+  src="https://cdn.mellow.tel/widget.js?type=button&position=bottom-right&invite_id=INVITE_ID"
+  async>
+</script>
+```
+
+</CodeGroup>
+
+## 設定オプション
+
+スクリプトURLのクエリパラメータを通じてウィジェットの外観を制御します。
+
+| パラメータ    | 必須     | 値                                                                | 説明                                                  |
+| ------------ | -------- | ------------------------------------------------------------------- | ---------------------------------------------------- |
+| `invite_id`  | はい      | ダッシュボードからのあなたのID                                      | あなたのアカウントに収益を帰属させます。                 |
+| `type`       | はい      | `button`, `icon`, `banner`                                          | あなたのサイトに表示されるウィジェットスタイル。         |
+| `position`   | はい      | `bottom-right`, `bottom-left`, `top-right`, `top-left`              | ページ上のウィジェットの位置。                         |
+
+<Tip>
+  出荷前にすべての組み合わせをライブでプレビュー: [ウィジェットプレビューを開く](https://cdn.mellow.tel/preview?position=bottom-right&type=button&invite_id=ijxf49s9h2f)。URLの`type`と`position`パラメータを交換して各バリエーションを確認してください。
+</Tip>
+
+## 動作確認
+
+<Steps>
+  <Step title="サイトを読み込む">
+    新しいブラウザタブ（またはキャッシュをバイパスするためのシークレットウィンドウ）でページを開きます。
+  </Step>
+  <Step title="ウィジェットが表示されることを確認">
+    選択した位置にボタン、アイコン、またはバナーが表示されるはずです。表示されない場合は、ブラウザコンソールでブロックされたリクエストを確認してください。
+  </Step>
+  <Step title="フローをクリックして進む">
+    ウィジェットをクリックすると、`invite_id`が付いた拡張機能のインストールページに移動するはずです。
+  </Step>
+  <Step title="ダッシュボードを確認">
+    訪問者がインストールして同意すると、その活動があなたのMellowtelダッシュボードに表示されます。
+  </Step>
+</Steps>
+
+## トラブルシューティング
+
+<AccordionGroup>
+  <Accordion title="ウィジェットが表示されない">
+    - スクリプトタグが`<body>`内にあり、`invite_id`が入力されていることを確認してください。
+    - DevToolsを開き、Networkタブで`cdn.mellow.tel/widget.js`へのリクエストを確認します。ブロックされている場合、広告ブロッカーやコンテンツフィルターが原因である可能性があります。
+    - コンテンツセキュリティポリシーを確認してください。`script-src`で`https://cdn.mellow.tel`を許可する必要があるかもしれません。
+  </Accordion>
+  <Accordion title="「missing invite_id」警告が表示される">
+    `invite_id`パラメータが空であるか、まだリテラルの`INVITE_ID`プレースホルダーを含んでいます。ダッシュボードから実際の値をコピーしてURLに貼り付けてください。
+  </Accordion>
+  <Accordion title="ローカルでは動作するが本番環境では動作しない">
+    多くの場合、CSPやCDNルールがスクリプトを削除しています。本番ホストのレスポンスヘッダーを確認し、`cdn.mellow.tel`を許可リストに追加してください。
+  </Accordion>
+  <Accordion title="ウィジェットを削除するには？">
+    `<script>`タグ（またはそれをラップしているフレームワークコンポーネント）を削除します。他にクリーンアップするものはありません。
+  </Accordion>
+</AccordionGroup>
+
+## 訪問者への開示
+
+訪問者が同意することの意味を理解できるように、プライバシーポリシーに短い注意書きを追加することをお勧めします。例えば：
+
+> このサイトはMellowtelと提携しています。彼らの拡張機能をインストールすることを選択した場合、ブラウザは未使用の帯域幅をこのサイトのサポートのために共有する可能性があります。インストールは任意であり、いつでもオプトアウトできます。
+
+完全な詳細をリンクするには、[プライバシー](/concepts/privacy)および[オプトイン/オプトアウト](/concepts/opt-in-out)を参照してください。
+
+## 助けが必要ですか？
+
+[info@mellowtel.com](mailto:info@mellowtel.com)に連絡するか、[Discord](https://discord.gg/mellowtel)に参加してください。

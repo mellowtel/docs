@@ -1,0 +1,223 @@
+---
+sidebarTitle: "Chrome / Edge-integratie"
+title: "Integreer Mellowtel in je Chrome/Edge-extensie"
+icon: "chrome"
+---
+
+Hier zie je hoe je de Mellowtel-bibliotheek implementeert in je Chrome/Edge-extensieproject.
+
+Geschatte tijd om te voltooien: 5-7 minuten.
+
+# Naleving van browserbeleid
+
+Mellowtel voldoet aan browserbeleid als de integratie de keuzes en instellingen van gebruikers respecteert.
+
+De officiële Mellowtel-plugins zijn beschikbaar op Chrome en Edge. Binnenkort zullen we ze ook indienen bij andere grote browsers.
+
+Chrome: https://chromewebstore.google.com/detail/support-with-mellowtel/jngbedjpioeongcicaomeideeompcbcc
+
+Edge: https://microsoftedge.microsoft.com/addons/detail/support-with-mellowtel/chpomjnojnimgcaomhmcmfgjinfoekhi
+
+Op Chrome kunnen sommige ontwikkelaars problemen ondervinden tijdens de beoordeling met het beleid voor enkelvoudig doel, dat stelt dat een plugin slechts één duidelijk omschreven functionaliteit mag hebben (maar vaak inconsistent wordt geïnterpreteerd in extensies met meerdere functies). 
+In die gevallen raden we ontwikkelaars aan hun persoonlijke link te delen en gebruikers te vragen de officiële Mellowtel Chrome-plugin te installeren die als enkel doel heeft ontwikkelaars te laten verdienen dankzij gebruikers die hen willen ondersteunen door hun ongebruikte bronnen te delen.
+Ontwikkelaars kunnen hun link maken vanuit het [Mellowtel-dashboard](https://www.mellowtel.com/dashboard/support-with-mellowtel) en gebruikers doorverwijzen naar de officiële [Mellowtel Chrome-plugin](https://chromewebstore.google.com/detail/support-with-mellowtel/jngbedjpioeongcicaomeideeompcbcc).
+
+Als je daarentegen een plugin op Chrome hebt die opereert in de AI-bandbreedte-deelruimte en dat het enige doel van de plugin is, kun je Mellowtel direct in je plugin integreren.
+
+Edge, Firefox of Safari hebben dit beleid echter niet, dus ontwikkelaars kunnen de bibliotheek ook direct in hun producten integreren en ervoor zorgen dat ze hun gebruikers vragen of ze hen willen ondersteunen of niet, en hen altijd een gemakkelijke manier bieden om hun instellingen op elk moment vanuit de plugin zelf te wijzigen.
+
+# Aanbevolen browsers
+
+Op dit moment raden we aan Mellowtel te integreren in Edge-plugins, aangezien we nog bezig zijn met het optimaliseren van de Firefox- en Safari-versies van de bibliotheek.
+
+# Vereisten
+Voordat je begint, zorg ervoor dat:
+
+1) Je plugin gebruikt [Manifest V3](https://developer.chrome.com/docs/extensions/develop/migrate/what-is-mv3).
+2) Je code op een gecompileerde manier is georganiseerd, door gebruik te maken van Webpack, Rollup of andere bundelaars.
+Als je geen bundelaar hebt ingesteld, volg dan eerst de gids [hier](/browser-plugins/static-to-webpack)
+
+# Installeer npm-pakket
+
+Om het npm-pakket te installeren, kun je de volgende opdracht in je terminal uitvoeren:
+
+```npm
+npm install mellowtel
+```
+
+<Accordion title="Yarn">
+    Als je yarn als je pakketbeheerder gebruikt, kun je de volgende opdracht uitvoeren:
+    ```yarn
+    yarn add mellowtel
+    ```
+</Accordion>
+
+# Beslis implementatie
+Er zijn twee manieren waarop je de bibliotheek in je extensie kunt implementeren.
+
+Als je de extensie voor de eerste keer op de Web Store gaat uitbrengen, volg dan Optie 1.
+Als je de extensie al op de Web Store hebt gepubliceerd, lees dan "Hoe te beslissen?"
+
+### Hoe te beslissen?
+
+Wanneer je je extensie vanuit de Web Store installeert, verschijnt er dan een waarschuwingsvenster dat om toestemming vraagt om "Al je gegevens op alle websites te lezen en te wijzigen"?
+
+Het ziet er zo uit:
+
+<Frame caption="Waarschuwingsvenster dat om toestemming vraagt om Al je gegevens op alle websites te lezen en te wijzigen">
+    <img src="/images/alert_web_store.png" />
+</Frame>
+
+Als dat zo is, kun je Optie 1 volgen. Als dat niet zo is, moet je Optie 2 volgen.
+
+# Optie 1
+Als je de extensie voor de eerste keer op de Web Store uitbrengt of de bibliotheek importeert in een extensie die om toestemming vraagt om op alle websites te werken, kun je Optie 1 volgen.
+
+### Stel je manifest in
+In je [manifest.json](https://developer.chrome.com/docs/extensions/reference/manifest) bestand wijzig je de `permissions` en `host_permissions` secties als volgt:
+
+```json
+{
+
+  "permissions": [
+    "storage",
+    "declarativeNetRequest"
+  ],
+  "host_permissions": [
+    "\u003Call_urls\u003E"
+  ]
+
+}
+```
+
+### Stel je serviceworker (achtergrondscript) in
+
+In je [serviceworker](https://developer.chrome.com/docs/extensions/develop/concepts/service-workers) bestand, moet je het `mellowtel` pakket importeren.
+Opmerking: De serviceworker staat ook bekend als `achtergrondscript`.
+
+Je kunt de volgende code kopiëren en plakken in je serviceworker bestand door de `configuration_key` te vervangen door je eigen sleutel.
+
+```javascript
+import Mellowtel from "mellowtel";
+
+let mellowtel;
+
+(async () => {
+    mellowtel = new Mellowtel("<configuration_key>"); // Vervang door je configuratiesleutel
+    await mellowtel.initBackground();
+})();
+```
+
+<Accordion title="Serviceworker code uitleg">
+Importeer het mellowtel pakket
+
+```javascript
+    import Mellowtel from "mellowtel";
+```
+
+Je kunt dan `Mellowtel(configuration_key, options?)` gebruiken om een nieuwe instantie van het Mellowtel-object te maken. Het Mellowtel-object is je toegangspunt tot de rest van Mellowtel's SDK. Je `configuration_key` is vereist bij het aanroepen van deze functie, omdat het je extensie identificeert voor Mellowtel. Je kunt je `configuration_key` vinden in het [dashboard](https://www.mellowtel.com/mellowtel-dashboard/#home)
+```javascript
+mellowtel = new Mellowtel("<configuration_key>");
+```
+
+Initialiseer Mellowtel door de `initBackground` methode aan te roepen. Deze methode initialiseert het Mellowtel-object en stelt de benodigde luisteraars in.
+```javascript
+await mellowtel.initBackground();
+```
+</Accordion>
+
+### Stel je contentscript in
+Je moet het mellowtel pakket ook importeren in [contentscripts](https://developer.chrome.com/docs/extensions/develop/concepts/content-scripts).
+
+Dit contentscript moet draaien in `all_frames` en `<all_urls>` bij het `document_start`.
+
+We raden aan een nieuw contentscript te maken (bijv. content_start_mellowtel.js) waar je de volgende code kunt kopiëren en plakken.
+Verander de `configuration_key` met je eigen sleutel.
+
+```javascript
+import Mellowtel from "mellowtel";
+
+(async () => {
+    const mellowtel = new Mellowtel("<configuration_key>"); // Vervang door je configuratiesleutel
+    await mellowtel.initContentScript();
+})();
+```
+
+Vergeet dan niet om dit contentscript ook toe te voegen in je `manifest.json` bestand in de content_scripts sectie naast elk ander contentscript dat je al hebt.
+Je kunt de volgende code kopiëren en plakken door de `name_of_your_content_script.js` te veranderen met de naam die je hebt gekozen.
+
+```json
+{
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["<name_of_your_content_script.js>"], // <-- Verander hier met de naam van je contentscript
+      "run_at": "document_start",
+      "all_frames": true
+    }
+  ]
+}
+```
+
+### Stel opt-in/opt-out logica in
+
+Om Mellowtel te activeren, moeten gebruikers expliciet instemmen met de service.
+
+Je kunt de opt-in/opt-out logica op twee manieren implementeren:
+1) Door de aanbevolen implementatie te gebruiken met de vooraf gebouwde pagina die door Mellowtel wordt geleverd.
+
+2) Door je eigen aangepaste opt-in/opt-out elementen te maken en de methoden te gebruiken die [hier](https://docs.mellowtel.com/concepts/opt-in-out#2-custom-elements) worden getoond.
+
+<Info>
+Als je ervoor kiest om je eigen opt-in/opt-out elementen te maken, overweeg dan om <a href="/mellowtel-elements/quickstart" target="_blank">**Mellowtel Elements**</a> te gebruiken - vooraf gebouwde UI-componenten die gebruikersinstemming en instellingen afhandelen met minimale integratie-inspanning.
+</Info>
+
+Als je de aanbevolen implementatie gebruikt, open dan je `serviceworker` bestand (ook bekend als achtergrondscript) en voeg de volgende code toe:
+
+```javascript
+chrome.runtime.onInstalled.addListener(async function(details) {
+    console.log("Extensie geïnstalleerd of bijgewerkt");
+    // Als je de eerste installatie en updates anders wilt afhandelen
+    /**
+    if(details.reason === "install"){
+        // roep een functie aan om een eerste installatie af te handelen
+    } else if(details.reason === "update") {
+        // roep een functie aan om een update af te handelen
+    }
+    **/
+    await mellowtel.generateAndOpenOptInLink();
+});
+```
+
+### Genereer instellingenlink
+
+Om je gebruikers volledige controle over hun bandbreedte te geven, is het vereist dat je een gemakkelijk toegankelijke manier biedt voor hen om hun instellingen op elk moment te wijzigen.
+
+Je kunt een link genereren door de methode `generateSettingsLink()` te gebruiken.
+Deze methode retourneert een link die de Mellowtel-instellingenpagina opent waar gebruikers op elk moment kunnen beslissen of ze willen deelnemen of niet.
+
+Deze link moet worden geplaatst in de popup, optiepagina of elke andere plaats waar gebruikers er gemakkelijk toegang toe hebben.
+
+Bijvoorbeeld, je kunt het in een `openSettings()` functie plaatsen zoals deze. Je kunt `openSettings()` aanroepen bij een knopklik of een ander relevant evenement:
+
+```javascript
+async function openSettings() {
+    try {
+        // Genereer en beheer de instellingenlink
+        const settingsLink = await mellowtel.generateSettingsLink();
+        // Log de gegenereerde link voor debugging
+        console.log("Gegenereerde instellingenlink:", settingsLink);
+        // Je kunt deze link nu gebruiken binnen een popup, optiepagina of elk UI-element
+    } catch (error) {
+        console.error("Fout bij het genereren van instellingenlink:", error);
+    }
+}
+```
+
+Perfect! Nu ben je klaar om je extensie naar de Web Store te sturen. Volg de gids hier om te zien hoe je je extensie [indient](/browser-plugins/submit-to-chrome-store)
+
+# Optie 2
+
+<Warning>Optie 2 kan mogelijk je extensie uitschakelen als deze niet correct wordt geïmplementeerd. Daarom is het niet beschikbaar voor alle gebruikers </Warning>
+
+Als je Optie 1 niet kunt implementeren, neem dan contact met ons op via [Discord](https://discord.com/invite/txAZp4MSDe)

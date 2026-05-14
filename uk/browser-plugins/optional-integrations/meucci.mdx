@@ -1,0 +1,237 @@
+---
+sidebarTitle: "Заробляй більше - Meucci"
+title: "Заробляй більше, увімкнувши додаткову функцію: Meucci"
+icon: "circle-nodes"
+---
+
+<Warning>
+    Ця функція вимагає Mellowtel версії 1.6.2 або вище. Це є критичною зміною порівняно з попередніми версіями.
+</Warning>
+
+Mellowtel надає додаткову функцію, яка дозволяє обробляти більше запитів і, таким чином, заробляти більше. Ця функція називається "Meucci".
+
+## Встановлення
+
+Спочатку встанови необхідний пакет npm, використовуючи свій улюблений менеджер пакетів:
+
+### Використовуючи npm
+```bash
+npm install @mellowtel/module-meucci
+```
+
+### Використовуючи yarn
+```bash
+yarn add @mellowtel/module-meucci
+```
+
+### Використовуючи pnpm
+```bash
+pnpm add @mellowtel/module-meucci
+```
+
+Нижче наведено інструкції для увімкнення функції Meucci у вашому плагіні браузера, з опціями для стандартної реалізації та реалізації з використанням Plasmo framework.
+
+## Стандартна реалізація
+
+### 1. Створи JavaScript файл з ім'ям `meucci.js`
+
+У каталозі src, або де у тебе знаходяться js файли, створи файл з ім'ям `meucci.js` і додай наступний код. Переконайся, що цей файл включений у твою фінальну збірку (каталог /dist).
+
+Якщо ти слідував початковій [налаштуванню webpack](/browser-plugins/static-to-webpack), ти можеш просто додати цей файл до об'єкта `entry` у твоїй конфігурації webpack.
+
+```javascript
+import ModuleMeucci from "@mellowtel/module-meucci";
+
+let moduleMeucci;
+
+(async () => {
+    moduleMeucci = new ModuleMeucci();
+    await moduleMeucci.init();
+})();
+```
+
+### 2. Онови свою конфігурацію webpack
+
+Переконайся, що твій фінальний каталог збірки включає файл `meucci.js`.
+
+Якщо ти слідував початковій [налаштуванню webpack](/browser-plugins/static-to-webpack), ти можеш просто додати цей файл до об'єкта `entry` у твоїй конфігурації webpack.
+
+```javascript
+module.exports = {
+    // ...
+    entry: {
+        // background: path.join(__dirname, 'src', 'background.js'),
+        // popup: path.join(__dirname, 'src', 'popup.js'),
+        // content_script: path.join(__dirname, 'src', 'content_script.js'), ...
+        // pascoli: path.join(__dirname, 'src', 'pascoli.js'),
+        meucci: path.join(__dirname, 'src', 'meucci.js'),
+        // ...
+    },
+    // ...
+}
+```
+
+### 3. Онови manifest.json
+
+Додай файл `meucci.js` до свого `manifest.json` як web_accessible_resources:
+
+```json
+{
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "meucci.js"
+      ],
+      "matches": [ "<all_urls>" ]
+    }
+  ]
+}
+```
+
+## Реалізація з використанням Plasmo Framework
+
+Якщо ти використовуєш Plasmo framework, дотримуйся цих альтернативних кроків:
+
+### 1. Створи TypeScript файл з ім'ям `meucci.ts`
+
+У каталозі src, або де у тебе знаходяться ts файли, створи файл з ім'ям `meucci.ts` і додай наступний код:
+
+```typescript
+import ModuleMeucci from "@mellowtel/module-meucci";
+
+let moduleMeucci;
+
+(async () => {
+    moduleMeucci = new ModuleMeucci();
+    await moduleMeucci.init();
+})();
+```
+
+### 2. Створи скрипт збірки
+
+Створи файл `build-meucci.js` у корені проекту з наступним вмістом:
+
+```javascript
+const esbuild = require('esbuild')
+const fs = require('fs')
+const path = require('path')
+
+// Функція для очікування наявності каталогу
+const waitForDirectory = async (dir, timeout = 10000) => {
+  const start = Date.now()
+  while (!fs.existsSync(dir)) {
+    if (Date.now() - start > timeout) {
+      throw new Error(`Час очікування на каталог вичерпано: ${dir}`)
+    }
+    await new Promise(resolve => setTimeout(resolve, 100))
+  }
+}
+
+// Створи функцію збірки
+async function buildMeucci() {
+  // Збери пакет
+  await esbuild.build({
+    entryPoints: ['src/meucci.ts'], // TODO: ЗАМІНИ на шлях до твого файлу meucci.ts
+    bundle: true,
+    outfile: 'meucci.bundled.js',
+    platform: 'browser',
+    format: 'iife',
+    minify: true,
+    target: ['es2020'],
+    define: {
+      'process.env.NODE_ENV': '"production"'
+    }
+  })
+
+  // Прочитай зібраний файл
+  const bundledContent = fs.readFileSync('meucci.bundled.js', 'utf8')
+
+  // Скопіюй у dev та prod каталоги
+  const directories = [ 
+    'build/chrome-mv3-dev',
+    'build/chrome-mv3-prod',
+    'build/firefox-mv2-dev',
+    'build/firefox-mv2-prod',
+    'build/safari-mv2-dev',
+    'build/safari-mv2-prod',
+    'build/opera-mv3-dev',
+    'build/opera-mv3-prod'
+  ] // TODO: ЗАМІНИ на шляхи до твоїх dev та prod каталогів
+
+  // Оброби всі каталоги одночасно
+  await Promise.all(directories.map(async (dir) => {
+    try {
+      console.log(`Очікування на каталог: ${dir}`)
+      await waitForDirectory(dir)
+      // Запиши зібраний файл
+      fs.writeFileSync(path.join(dir, 'meucci.js'), bundledContent)
+      console.log(`Додано meucci.js до ${dir}`)
+    } catch (err) {
+      console.log(`Пропущено ${dir} - ${err.message}`)
+    }
+  }))
+
+  // Видали тимчасовий файл
+  fs.unlinkSync('meucci.bundled.js')
+}
+
+buildMeucci().catch(err => {
+  console.error(err)
+  process.exit(1)
+})
+```
+
+### 3. Онови package.json
+
+Додай наступне до свого файлу `package.json`:
+
+```json
+{
+  "scripts": {
+    "build:meucci": "node build-meucci.js"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "meucci.js"
+      ],
+      "matches": [ "<all_urls>" ]
+    }
+  ]
+}
+```
+
+Ти можеш:
+1. Запустити скрипт збірки вручну після основної збірки: `npm run build:meucci`
+2. Або додати його до існуючого скрипту збірки з `&`: `"build": "your-existing-build-command & npm run build:meucci"`
+
+Це забезпечить правильне збирання та копіювання файлу Meucci у всі каталоги збірки у правильній структурі Plasmo.
+
+## Онови initContentScript
+
+Для обох реалізацій, зміни метод `initContentScript` у скрипті вмісту, щоб включити правильний шлях до файлу Meucci:
+
+```typescript
+// Для стандартної реалізації
+await initContentScript({
+    meucciFilePath: "meucci.js"
+});
+```
+
+Для Plasmo framework, ти можеш використовувати наступне:
+
+```typescript
+// Для Plasmo framework
+await initContentScript({
+    meucciFilePath: "meucci.js"
+});
+```
+
+Якщо у тебе також увімкнено Pascoli, ти можеш використовувати наступне:
+
+```typescript
+await initContentScript({
+    pascoliFilePath: "pascoli.html", // або "tabs/pascoli.html" якщо використовуєш Plasmo framework
+    meucciFilePath: "meucci.js"
+});
+```

@@ -1,0 +1,43 @@
+---
+sidebarTitle: "Inicio Rápido"
+title: "Integra Mellowtel en tu Aplicación de Escritorio"
+icon: "rocket"
+---
+
+Mellowtel permite a tus usuarios optar por compartir una pequeña fracción de su ancho de banda de internet no utilizado con socios de confianza (startups, investigadores y organizaciones sin fines de lucro) que recuperan datos disponibles públicamente de la web. Te pagan por las solicitudes atendidas, los usuarios obtienen la recompensa o característica premium que elijas ofrecerles a cambio, y no se recopilan, comparten ni venden datos personales.
+
+## Requisitos Previos
+
+Antes de comenzar, asegúrate de tener:
+
+- Una cuenta de Mellowtel y una **clave de configuración**. Genera la tuya desde el [panel de Mellowtel](https://www.mellowtel.com/mellowtel-auth/).
+- Un framework de escritorio compatible (ver abajo). Cada guía de framework incluye una revelación con un clic para el token de instalación del registro de paquetes, por lo que no necesitas solicitar uno con anticipación.
+
+<Warning>
+  **El consentimiento del usuario es obligatorio.** Ambos SDKs imponen el opt-in a nivel de API. Tu aplicación debe mostrar un diálogo de consentimiento claro y debe permitir a los usuarios gestionar su estado de opt-in en cualquier momento.
+</Warning>
+
+## Elige tu Framework
+
+Elige el framework que estás utilizando y sigue las instrucciones.
+
+<CardGroup cols={2}>
+  <Card title="Windows (.NET)" icon="windows" href="/desktop-app/windows">
+    Aplicaciones de consola, WPF o Windows Forms usando el SDK de .NET. Solo para Windows.
+  </Card>
+  <Card title="Electron" icon="bolt" href="/desktop-app/electron">
+    Aplicaciones de escritorio multiplataforma construidas con Electron. Funciona en macOS, Windows y Linux.
+  </Card>
+</CardGroup>
+
+{/*
+<Note>
+  **Los SDKs nativos para macOS y Linux aún no están disponibles.** Si distribuyes una aplicación nativa Cocoa, Swift, Qt o GTK y deseas soporte para Mellowtel, háznoslo saber en [Discord](https://discord.com/invite/txAZp4MSDe) para que podamos evaluar la demanda.
+</Note>
+*/}
+
+---
+
+Tiempo estimado para completar: 10-15 minutos por framework.
+
+Si necesitas ayuda o tienes comentarios, contáctanos en [info@mellowtel.com](mailto:info@mellowtel.com) o únete a nuestra [comunidad en Discord](https://discord.com/invite/txAZp4MSDe).

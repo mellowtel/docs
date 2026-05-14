@@ -1,0 +1,196 @@
+---
+sidebarTitle: "Electron"
+title: "ElectronアプリにMellowtelを統合する"
+icon: "bolt"
+platforms:
+  - desktop app
+---
+
+MellowtelをクロスプラットフォームのElectronアプリケーションに統合して、ユーザーが未使用のインターネット帯域幅を共有し、報酬やプレミアム機能を得られるようにしましょう。Electron SDKは、Electronが動作するすべての場所（macOS、Windows、Linux）で動作します。
+
+<Warning>
+  **ユーザーの同意は必須です。** SDKはユーザーが明示的に同意した場合にのみ動作します。`init()`は同意がない場合、静かに早期に終了します。そのため、SDKがエラーなしで開始されるがトラフィックを送信しない場合、最も可能性が高い理由はユーザーがまだ同意していないことです。
+</Warning>
+
+## 前提条件
+
+- Mellowtelアカウントと設定キー（[ダッシュボード](https://www.mellowtel.com/mellowtel-auth/)から取得）。
+- メインプロセスにアクセスできるElectronアプリケーション。
+
+---
+
+## インストール
+
+### 1. npm認証を設定する
+
+プロジェクトのルートディレクトリに`.npmrc`ファイルを作成し、npmをMellowtel GitHub Packagesレジストリに向け、インストールを認証します。
+
+```bash
+@mellowtel-inc:registry=https://npm.pkg.github.com/
+//npm.pkg.github.com/:_authToken=YOUR_NPM_TOKEN
+```
+
+`YOUR_NPM_TOKEN`を以下のインストールトークンに置き換えます。クリックして表示し、コードブロックのコピーアイコンを使用してクリップボードにコピーします。
+
+<Accordion title="インストールトークンを表示">
+  ```
+  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
+  ```
+</Accordion>
+
+### 2. パッケージをインストールする
+
+プロジェクトのルートから、Electron SDKをインストールします。
+
+```bash
+npm install @mellowtel-inc/mellowtel-electron
+```
+
+### 3. コードに追加する
+
+Electronのメインプロセスファイル（通常は`main.ts`または`main.js`）でSDKをインポートし、設定キーでインスタンス化し、ユーザーからの同意を求め、サービスを開始するために`init()`を呼び出します。
+
+```typescript
+import { app, BrowserWindow } from 'electron';
+import Mellowtel from '@mellowtel-inc/mellowtel-electron';
+
+
+// アプリが準備完了したら、ウィンドウを作成
+app.whenReady().then(async () => {
+  let win = createWindow();
+  
+  const mellowtel: Mellowtel = new Mellowtel('YOUR_CONFIGURATION_KEY');
+
+  await mellowtel.requestConsent(win, "3ヶ月無料で利用可能")
+  await mellowtel.init()
+});
+```
+
+<Note>
+  `YOUR_CONFIGURATION_KEY`をMellowtelダッシュボードからのキーに置き換えてください。
+</Note>
+
+**各呼び出しの役割:**
+
+- `new Mellowtel(configurationKey, options?)`はSDKをインスタンス化します。現在利用可能な唯一のオプションは`disableLogs`で、デフォルトは`true`です。統合中は`false`に設定して、接続状態やリクエスト活動をターミナルで確認できるようにします。
+- `requestConsent(window, incentive)`は渡された`BrowserWindow`にアンカーされた**ネイティブのElectronメッセージボックス**をレンダリングします。第二引数はダイアログの目立つ見出し（例："3ヶ月無料で利用可能"）で、Mellowtelの説明の上に表示されます。ユーザーが受け入れると`true`、拒否またはダイアログを閉じると`false`、すでに同意がある場合は`undefined`を返します。SDKはオプトインの決定を自動的に保持するため、その後に`optIn()`を呼び出す必要はありません。
+- `init()`は`configurationKey`が空の場合にのみ例外をスローします。ユーザーがオプトインしていない場合、ログを記録し静かに戻ります。それ以外の場合、MellowtelのバックエンドにWebSocketを開きます。この呼び出しはレンダラーUIに対して非ブロッキングであるため、接続が確立される間もウィンドウは応答性を保ちます。
+
+### システムダイアログの中断を防ぐ（推奨）
+
+SDKには、システムダイアログ（自動入力ポップアップ、翻訳バー、NTLM / Kerberos認証プロンプト、パスワードマネージャー統合、メディアオーバーレイ、初回起動ダイアログ）を抑制するためのオプションのヘルパー`setupMellowtelApp()`が付属しています。これにより、Mellowtelの隠れたウィンドウがバックグラウンドでリクエストを処理している間にユーザーが中断されることを防ぎます。
+
+メインプロセスファイルの先頭で、**`app.whenReady()`の前に**これを呼び出し、`@mellowtel-inc/mellowtel-electron`からのデフォルトエクスポートと一緒にインポートします。正規の使用法については、[上流のREADME](https://github.com/mellowtel-inc/mellowtel-electron#setupmellowtelapp-optional)を参照してください。
+
+---
+
+## ユーザーの同意
+
+<Warning>
+  同意ダイアログの表示は**必須**です。`init()`を呼び出す前にユーザーに明示的にオプトインさせる必要があり、いつでもオプトイン状態を管理できる方法を提供する必要があります。
+</Warning>
+
+同意を処理するための2つの方法があります：
+
+1. **組み込みのネイティブダイアログを使用する** `requestConsent(window, incentive)`を通じて。これは最速の方法であり、上記のスニペットが示しています。これは、インセンティブコピーを見出しとしてネイティブのElectron `dialog.showMessageBox`をレンダリングし、ユーザーの決定を自動的に保持します。
+2. **独自の同意UIを構築し、`optIn()`、`optOut()`、`getOptInStatus()`を通じてSDKを操作する**。これは、ネイティブダイアログが提供するもの以上のカスタムブランディング、より豊富な説明、またはローカリゼーションを望む場合に使用します。
+
+### 同意ダイアログに含めるべき内容
+
+<Steps>
+  <Step title="Mellowtelの機能を説明する">
+    簡単な言葉を使ってください。例：*"このアプリはMellowtelを使用して未使用のインターネット帯域幅を共有します。その見返りとして、[利益/機能]を得られます。設定でいつでもオプトアウトできます。"*
+  </Step>
+  <Step title="ユーザーに明確な選択肢を与える">
+    明確に区別された承諾と拒否のオプションを含めてください。
+  </Step>
+  <Step title="ポリシーへのリンクを含める">
+    [利用規約](https://www.mellowtel.com/terms-and-conditions)と[プライバシーポリシー](https://www.mellowtel.com/privacy-policy)へのリンクを含めてください。
+  </Step>
+</Steps>
+
+### 後でユーザーが同意を変更できるようにする
+
+Mellowtelは`showConsentSettings(window)`を通じて組み込みの設定ダイアログを提供します。これは、ユーザーの現在の状態に一致するオプトイン/オプトアウトボタンを備えたネイティブダイアログをレンダリングし、ユーザーが切り替えたときに`optIn()`または`optOut()`（およびオプトイン時のWebSocketの再接続）を内部的に呼び出します。アプリのメニュー項目または設定ボタンに接続して、ユーザーが選択を再訪できるようにします。
+
+独自の設定画面を構築したい場合は、`getOptInStatus()`を呼び出して現在の状態を読み取り、`optIn()` / `optOut()`を呼び出して変更します。
+
+---
+
+## メソッドリファレンス
+
+`Mellowtel`クラスは以下の公開メソッドを提供します。すべては`new Mellowtel(configurationKey, options?)`で作成したインスタンスで利用可能です。
+
+**ライフサイクル**
+
+- `init(): Promise<void>`はユーザーがオプトインしている場合にサービスを開始し、そうでない場合は静かに早期に終了します。設定キーが空の場合にのみ例外をスローします。
+- `requestConsent(window: BrowserWindow, incentive: string): Promise<boolean | undefined>`は組み込みのネイティブ同意ダイアログを表示し、結果を保持します。承諾で`true`、拒否または閉じるで`false`、すでに同意がある場合は`undefined`を返します。
+- `showConsentSettings(window: BrowserWindow): Promise<void>`は組み込みの同意管理ダイアログを表示します。ユーザーが選択を切り替えたときにSDKはオプトイン/オプトアウトの移行を内部的に処理します。
+
+**手動オプトイン制御**
+
+- `optIn(): Promise<void>`はダイアログを表示せずにユーザーをオプトインとしてフラグします。独自のUIを通じて同意を収集した後にのみ使用します。
+- `optOut(): Promise<void>`はユーザーをオプトアウトとしてフラグし、アクティブなWebSocket接続を閉じます。
+- `getOptInStatus(): boolean | undefined`は現在のオプトイン状態を返し、ユーザーが選択をしたことがない場合は`undefined`を返します。
+- `getNodeId(): string`はこのインストールのMellowtelノード識別子を返します。サポートチケットを提出する際に便利です。
+
+**リクエストカウンター**
+
+リクエストカウントは`electron-store`を通じてローカルに保持され、アプリの再起動を生き延びます。オプトインの影響をユーザーに示したい場合は、独自のUIに表示します。
+
+- `getTotalRequestCount(): number`はインストール以来処理された総リクエスト数を返します。
+- `getDailyRequestCount(): number`は今日処理されたリクエスト数を返します。
+- `getRequestCountForDate(date: string): number`は特定の日付`YYYY-MM-DD`のカウントを返します。
+- `getDailyRequestsHistory(): { [date: string]: number }`はすべての日次カウントをマップとして返します。
+- `getRequestCountsInRange(startDate: string, endDate: string): { [date: string]: number }`は日付範囲のカウントを返します。
+- `getRequestCounts(): { total: number; daily: number; dailyHistory: { [date: string]: number } }`は3つのカウンターすべてを1回の呼び出しで返します。
+
+---
+
+## シャットダウンとライフサイクル
+
+Electron SDKは独自の`before-quit`または`will-quit`ハンドラを登録しません。Electronプロセスが終了すると、バックグラウンドのWebSocket接続もそれと共に終了し、明示的なクリーンアップは必要ありません。
+
+セッション途中でMellowtelを切断したい場合（例：アプリ内の「一時停止」設定をユーザーが切り替えた場合）、`optOut()`を呼び出します。これにより、オプトインフラグがクリアされ、アクティブな接続が閉じられます。再接続するには、`optIn()`を呼び出した後に`init()`を呼び出します。
+
+## 同意の永続化
+
+オプトイン状態はプラットフォームデフォルトの`electron-store`設定パスに保存されます：
+
+- macOS: `~/Library/Application Support/<YourAppName>/config.json`
+- Windows: `%APPDATA%\<YourAppName>\config.json`
+- Linux: `~/.config/<YourAppName>/config.json`
+
+状態はアプリの更新を生き延びます。アプリをアンインストールしても、アンインストーラーがアプリの設定ディレクトリを明示的に削除しない限り、自動的にクリアされません。
+
+---
+
+## トラブルシューティング
+
+<AccordionGroup>
+  <Accordion title='"パッケージが見つかりません"エラーがインストール中に発生'>
+    1. `.npmrc`がプロジェクトのルートにあり、`package.json`の隣にあることを確認します。
+    2. トークンに前後の空白がないことを確認します。
+    3. npmキャッシュをクリアし、`npm cache clean --force`を実行した後に`npm install`を再試行します。
+  </Accordion>
+  <Accordion title='"Unauthorized"または401がインストール中に発生'>
+    1. `.npmrc`のトークンが正しくアクティブであることを確認します。確信が持てない場合は、[info@mellowtel.com](mailto:info@mellowtel.com)から新しいトークンをリクエストしてください。
+    2. `@mellowtel-inc:registry`行が存在し、`https://npm.pkg.github.com/`を指していることを確認します。
+  </Accordion>
+  <Accordion title="同意ダイアログが表示されない">
+    1. `app.whenReady()`が解決された**後**に、かつ有効で破棄されていない`BrowserWindow`参照を使用して`requestConsent`を呼び出していることを確認します。
+    2. `setupMellowtelApp()`を使用する場合は、**`app.whenReady()`の前に**呼び出されていることを確認します。
+  </Accordion>
+  <Accordion title='"init()がエラーなしで実行されるが何も起こらない"'>
+    これは設計によるものです。`init()`はユーザーがオプトインしていない場合、静かに早期に戻ります。`getOptInStatus()`を確認してください。`undefined`または`false`を返す場合は、最初に`requestConsent`を実行します。内部の「ユーザーがオプトインしていない」ログは`disableLogs`がデフォルトのままにされている場合に抑制されるため（下記「ログが静か」参照）、ターミナルはフラグを切り替えるまでどちらの信号も与えません。
+  </Accordion>
+  <Accordion title="ログが静か">
+    `disableLogs`コンストラクタオプションはデフォルトで`true`です。統合中は、接続状態とリクエスト活動をターミナルに表示するために、コンストラクタの第二引数として`{ disableLogs: false }`を渡します。これは「オプトインしていない」静かなノーオペレーション（上記参照）と実際の接続失敗を区別する最速の方法でもあります。
+  </Accordion>
+</AccordionGroup>
+
+---
+
+完了までの推定時間: 10〜15分。
+
+ヘルプが必要な場合やフィードバックがある場合は、[info@mellowtel.com](mailto:info@mellowtel.com)までご連絡いただくか、[Discordコミュニティ](https://discord.com/invite/txAZp4MSDe)に参加してください。

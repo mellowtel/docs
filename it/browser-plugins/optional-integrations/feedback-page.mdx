@@ -1,0 +1,55 @@
+---
+sidebarTitle: "Feedback degli utenti"
+title: "Raccogli feedback dai tuoi utenti"
+icon: "comment"
+---
+
+Mellowtel fornisce una pagina di feedback pre-costruita che puoi utilizzare per raccogliere feedback dai tuoi utenti, così puoi iterare più velocemente e migliorare il tuo prodotto. Al momento la pagina è disponibile solo per i plugin del browser. La pagina di feedback è simile a [questa](https://www.mellowtel.com/uninstall-feedback/?extension_id=testId&configuration_key=testConfiguration) passando dinamicamente l'icona e il nome del tuo plugin.
+
+Puoi quindi leggere il feedback dalla dashboard di Mellowtel e utilizzarlo per migliorare il tuo plugin del browser.
+
+IMPORTANTE: Sarai in grado di leggere il feedback dalla dashboard di Mellowtel solo se hai un plugin pubblicato sul web store e non in modalità dev. Se sei ancora in fase di sviluppo e vuoi testare la pagina di feedback, contattaci tramite la chat.
+
+Ecco come puoi aggiungere la pagina di feedback al tuo plugin del browser:
+
+
+## Aggiungi la pagina di feedback al tuo plugin
+
+La pagina di feedback è ospitata da Mellowtel ed è accessibile tramite un URL che puoi generare utilizzando il metodo `generateFeedbackLink()` dal pacchetto JS di Mellowtel.
+
+Se vuoi aprire direttamente la pagina di feedback in una nuova scheda, puoi utilizzare il metodo `generateAndOpenFeedbackLink()` e aprirà una pagina simile a [questa](https://www.mellowtel.com/uninstall-feedback/?extension_id=testId&configuration_key=testConfiguration), passando dinamicamente l'icona e il nome del tuo plugin.
+
+Puoi aprire la pagina di feedback chiamando il metodo `generateFeedbackLink()` dallo script di background o dallo script di contenuto della tua estensione quando un utente disinstalla il tuo plugin del browser.
+
+Ecco come puoi farlo.
+
+Apri il tuo file `service worker` (noto anche come script di background) e aggiungi il seguente codice:
+
+Ricorda di sostituire `<YOUR_CONFIGURATION_KEY>` con il tuo effettivo codice di configurazione Mellowtel. Se non hai ancora un codice di configurazione, puoi ottenerne uno registrandoti su [Mellowtel](https://www.mellowtel.com/mellowtel-auth/).
+
+```javascript
+import Mellowtel from "mellowtel";
+
+let mellowtel;
+
+(async () => {
+    mellowtel = new Mellowtel("<YOUR_CONFIGURATION_KEY>");
+    await mellowtel.initBackground();
+})();
+
+// Apri la pagina di feedback quando l'utente disinstalla l'estensione
+chrome.runtime.onInstalled.addListener(async function(details) {
+    console.log("Estensione installata o aggiornata");
+    // Se vuoi gestire installazioni e aggiornamenti in modo diverso
+    /**
+    if(details.reason === "install"){
+        // chiama una funzione per gestire una prima installazione
+    } else if(details.reason === "update") {
+        // chiama una funzione per gestire un aggiornamento
+    }
+    **/
+    // await mellowtel.generateAndOpenOptInLink(); per gestire le impostazioni degli utenti. Per maggiori dettagli: documentazione opt-in-out
+    const uninstallURl = await mellowtel.generateFeedbackLink();
+    chrome.runtime.setUninstallURL(uninstallURl);
+});
+```

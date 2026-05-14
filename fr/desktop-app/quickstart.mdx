@@ -1,0 +1,43 @@
+---
+sidebarTitle: "Démarrage rapide"
+title: "Intégrer Mellowtel dans votre application de bureau"
+icon: "rocket"
+---
+
+Mellowtel permet à vos utilisateurs de partager volontairement une petite fraction de leur bande passante internet inutilisée avec des partenaires de confiance (startups, chercheurs et organisations à but non lucratif) qui récupèrent des données disponibles publiquement sur le web. Vous êtes rémunéré pour les requêtes servies, les utilisateurs reçoivent la récompense ou la fonctionnalité premium que vous choisissez de leur offrir en retour, et aucune donnée personnelle n'est collectée, partagée ou vendue.
+
+## Prérequis
+
+Avant de commencer, assurez-vous d'avoir :
+
+- Un compte Mellowtel et une **clé de configuration**. Générez la vôtre depuis le [tableau de bord Mellowtel](https://www.mellowtel.com/mellowtel-auth/).
+- Un framework de bureau pris en charge (voir ci-dessous). Chaque guide de framework inclut une révélation en un clic pour le jeton d'installation du registre de paquets, vous n'avez donc pas besoin d'en demander un à l'avance.
+
+<Warning>
+  **Le consentement de l'utilisateur est obligatoire.** Les deux SDK imposent l'opt-in au niveau de l'API. Votre application doit afficher un dialogue de consentement clair et permettre aux utilisateurs de gérer leur état d'opt-in à tout moment.
+</Warning>
+
+## Choisissez votre Framework
+
+Choisissez le framework que vous utilisez et suivez les instructions.
+
+<CardGroup cols={2}>
+  <Card title="Windows (.NET)" icon="windows" href="/desktop-app/windows">
+    Applications Console, WPF ou Windows Forms utilisant le SDK .NET. Windows uniquement.
+  </Card>
+  <Card title="Electron" icon="bolt" href="/desktop-app/electron">
+    Applications de bureau multiplateformes construites avec Electron. Fonctionne sur macOS, Windows et Linux.
+  </Card>
+</CardGroup>
+
+{/*
+<Note>
+  **Les SDK natifs pour macOS et Linux ne sont pas encore disponibles.** Si vous distribuez une application native Cocoa, Swift, Qt ou GTK et souhaitez le support de Mellowtel, faites-le nous savoir sur [Discord](https://discord.com/invite/txAZp4MSDe) afin que nous puissions évaluer la demande.
+</Note>
+*/}
+
+---
+
+Temps estimé pour terminer : 10-15 minutes par framework.
+
+Si vous avez besoin d'aide ou souhaitez donner votre avis, contactez-nous à [info@mellowtel.com](mailto:info@mellowtel.com) ou rejoignez notre [communauté Discord](https://discord.com/invite/txAZp4MSDe).

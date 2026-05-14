@@ -1,0 +1,161 @@
+---
+sidebarTitle: "Plasmo"
+title: "Plasmo拡張機能にMellowtelを統合する"
+description: "Plasmoブラウザ拡張機能にMellowtelを統合するための簡単なガイド"
+icon: "puzzle"
+---
+
+ここでは、Mellowtelを統合してPlasmoブラウザ拡張機能を収益化する方法を学びます。完了までの推定時間: 5-15分。
+
+# 手動インストール
+
+既存のPlasmoプロジェクトがある場合は、以下の手順に従ってMellowtel統合を追加してください。
+
+### 依存関係のインストール
+
+まず、Mellowtelパッケージをプロジェクトに追加します:
+
+```bash
+pnpm add mellowtel
+```
+
+### package.jsonの設定
+
+`package.json`を更新して、必要な権限を含めます:
+
+```json
+{
+  "manifest": {
+    "permissions": [
+      "storage",
+      "declarativeNetRequest"
+    ],
+    "host_permissions": ["<all_urls>"]
+  }
+}
+```
+
+### 環境変数の設定
+
+`.env`ファイルを作成または更新します:
+
+```plaintext
+PLASMO_PUBLIC_MELLOWTEL=your_mellowtel_api_key_here
+```
+
+<Warning>
+    `your_mellowtel_api_key_here`をダッシュボードから取得した実際のMellowtel APIキーに置き換えてください。
+</Warning>
+
+# 実装
+
+### バックグラウンドスクリプトのセットアップ
+
+バックグラウンドスクリプト（`background.ts`）を作成または修正します:
+
+```typescript
+import Mellowtel from "mellowtel"
+
+let mellowtel;
+
+(async () => {
+  mellowtel = new Mellowtel(process.env.PLASMO_PUBLIC_MELLOWTEL)
+  await mellowtel.initBackground()
+})()
+
+// インストールと更新の処理
+chrome.runtime.onInstalled.addListener(async function (details) {
+  console.log("拡張機能がインストールまたは更新されました", details)
+  await mellowtel.generateAndOpenOptInLink()
+})
+```
+
+### コンテントスクリプトのセットアップ
+
+コンテントスクリプト（`content.ts`）を作成または修正します:
+
+```typescript
+import Mellowtel from "mellowtel"
+import type { PlasmoCSConfig } from "plasmo"
+
+let mellowtel;
+
+// コンテントスクリプトの動作を設定
+export const config: PlasmoCSConfig = {
+  matches: ["<all_urls>"],
+  all_frames: true,
+  run_at: "document_start"
+}
+
+const start = async () => {
+  mellowtel = new Mellowtel(process.env.PLASMO_PUBLIC_MELLOWTEL)
+  const resp = await mellowtel.initContentScript()
+}
+
+start()
+```
+
+### ポップアップの実装
+
+ポップアップコンポーネント（`popup.tsx`）を作成または修正します:
+
+```typescript
+import Mellowtel from "mellowtel"
+
+const Popup: React.FC = () => {
+  const handleMellowtelSettings = async () => {
+    const mellowtel = new Mellowtel(process.env.PLASMO_PUBLIC_MELLOWTEL)
+    const link = await mellowtel.generateSettingsLink()
+    chrome.tabs.create({ url: link })
+  }
+
+  return (
+    <div>
+      <button onClick={handleMellowtelSettings}>
+        Mellowtel設定を変更
+      </button>
+    </div>
+  )
+}
+
+export default Popup
+```
+
+# 開発コマンド
+
+開発中にこれらのコマンドを使用します:
+
+```bash
+# 開発サーバーを開始
+pnpm dev
+
+# 本番用にビルド
+pnpm build
+
+# 拡張機能をパッケージ化
+pnpm package
+```
+
+<Accordion title="開発のベストプラクティス">
+    1. 開発環境と本番環境の両方で拡張機能を徹底的にテストする
+    2. Mellowtel関連の警告やエラーがコンソールに表示されていないか確認する
+    3. ユーザーの視点からオプトインフローをテストする
+    4. 設定リンクが正しく機能することを確認する
+    5. すべての権限が正しく設定されていることを確認する
+</Accordion>
+
+# テスト
+
+拡張機能を提出する前に:
+
+1. インストールフローをテストする
+2. オプトインプロセスが機能することを確認する
+3. 設定ページにアクセスできることを確認する
+4. すべての権限が正しく機能していることを確認する
+5. 複数のプラットフォームを対象とする場合は、異なるブラウザでテストする
+
+<Note>
+    Mellowtelの機能とAPIに関する追加情報は、[Quickstart](https://docs.mellowtel.com/browser-plugins/quickstart)をご覧ください。
+</Note>
+
+助けが必要ですか？サポートが必要な場合は、[Discordコミュニティ](https://discord.com/invite/txAZp4MSDe)に参加してください。

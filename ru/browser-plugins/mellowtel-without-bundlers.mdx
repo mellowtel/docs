@@ -1,0 +1,154 @@
+---
+sidebarTitle: "Mellowtel без сборщиков"
+title: "Интеграция Mellowtel без сборщиков"
+icon: "box"
+---
+
+Это руководство объясняет, как интегрировать Mellowtel в ваше расширение для браузера без использования сборщиков, таких как Webpack или Vite. Вместо этого вы будете использовать один предварительно собранный файл, который работает как в контент-скриптах, так и в сервис-воркерах.
+
+## Настройка проекта
+
+Начните с базовой структуры расширения для браузера:
+
+```
+your-extension/
+├── icons/
+├── popup/
+│   ├── popup.html
+│   └── popup.js
+├── background.js           # Ваш сервис-воркер
+├── content_script.js
+├── manifest.json
+└── mellowtel.js           # Будет добавлено на следующем шаге
+```
+
+## Получение пакета Mellowtel
+
+У вас есть два варианта получения файла `mellowtel.js` для вашего расширения:
+
+### Вариант 1: Использовать предварительно собранный файл
+
+Самый простой способ начать — использовать предварительно собранный файл `mellowtel.js` из [репозитория mellowtel-bundled](https://github.com/mellowtel-inc/mellowtel-bundled).
+
+1. Перейдите в [репозиторий mellowtel-bundled](https://github.com/mellowtel-inc/mellowtel-bundled)
+2. Скачайте файл `mellowtel.js`
+3. Скопируйте его в директорию вашего расширения
+
+### Вариант 2: Создать свой собственный пакет
+
+Если вы предпочитаете создать пакет самостоятельно, выполните следующие шаги:
+
+#### Создайте временную директорию для сборки
+
+Создайте временную директорию для установки Mellowtel и генерации пакета:
+
+```bash
+mkdir mellowtel-bundling
+cd mellowtel-bundling
+npm init -y
+npm install mellowtel
+```
+
+Это создаст отдельную папку с пакетом Mellowtel, которую вы будете использовать только для сборки.
+
+#### Соберите Mellowtel с помощью esbuild
+
+Находясь в директории `mellowtel-bundling`, создайте единый пакет, который работает как в сервис-воркерах, так и в контент-скриптах:
+
+```bash
+npx esbuild node_modules/mellowtel/dist/index.js --bundle --format=iife --global-name=Mellowtel --footer:js="globalThis.Mellowtel = Mellowtel.default" --platform=browser --outfile=mellowtel.js --minify --legal-comments=none
+```
+
+Эта команда:
+- Берет исходный код Mellowtel из `node_modules/mellowtel/dist/index.js`
+- Собирает все зависимости в один файл
+- Использует формат IIFE с глобальным именем для универсальной совместимости
+- Добавляет футер, чтобы сделать экспорт по умолчанию доступным глобально
+- Оптимизирует для браузерной среды и минимизирует вывод
+- Создает `mellowtel.js` в директории сборки
+
+#### Скопируйте пакет в ваше расширение
+
+После выполнения команды esbuild скопируйте сгенерированный файл в директорию вашего расширения:
+
+```bash
+cp mellowtel.js ../your-extension/
+```
+
+Теперь вы можете удалить временную директорию для сборки, так как вам нужен был только выходной файл:
+
+```bash
+cd ..
+rm -rf mellowtel-bundling
+```
+
+Ваша папка расширения теперь содержит собранный файл Mellowtel, готовый к использованию.
+
+## Настройте ваш манифест (оба варианта)
+
+Независимо от того, какой вариант вы выбрали выше, настройте ваш `manifest.json`, чтобы включить пакет Mellowtel в контент-скрипты:
+
+```json
+{
+  "manifest_version": 3,
+  "name": "Your Extension Name",
+  "version": "1.0",
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["mellowtel.js", "content_script.js"]
+    }
+  ],
+  "permissions": [
+    "storage",
+    "declarativeNetRequestWithHostAccess"
+  ],
+  "host_permissions": [
+    "\u003Call_urls\u003E"
+  ]
+}
+```
+
+**Важно**: 
+- Поле `"type": "module"` позволяет использовать импорты ES-модулей в вашем сервис-воркере.
+- В массиве контент-скриптов `mellowtel.js` должен загружаться **перед** `content_script.js`, чтобы глобальная переменная Mellowtel была доступна, когда ваш контент-скрипт выполняется.
+
+## Используйте Mellowtel в вашем расширении
+
+Для вашего сервис-воркера (background.js) импортируйте собранный файл:
+
+```javascript
+// background.js
+import './mellowtel.js';
+
+(async () => {
+    const mellowtel = new Mellowtel("<configuration_key>"); // Замените на ваш ключ конфигурации
+    await mellowtel.initBackground();
+})();
+```
+
+Для контент-скриптов Mellowtel доступен как глобальная переменная (импорт не нужен, так как он загружается через манифест):
+
+```javascript
+// content_script.js
+// Mellowtel доступен как глобальная переменная из mellowtel.js
+
+(async () => {
+  const mellowtel = new Mellowtel("<configuration_key>"); // Замените на ваш ключ конфигурации
+  await mellowtel.initContentScript();
+})();
+```
+
+## Тестирование вашего расширения
+
+Чтобы протестировать ваше расширение:
+
+1. Перейдите на `chrome://extensions/` в Chrome (или эквивалент в других браузерах)
+2. Включите "Режим разработчика"
+3. Нажмите "Загрузить распакованное" и выберите папку вашего расширения
+
+Этот подход дает вам преимущества использования Mellowtel без сложности настройки полноценной системы сборки, такой как Webpack или Vite.

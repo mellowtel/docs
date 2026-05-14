@@ -1,0 +1,45 @@
+---
+title: "Privacy"
+description: "Cosa Mellowtel può e non può vedere sui tuoi utenti"
+icon: "lock"
+---
+
+## Cos'è
+
+Ogni richiesta Mellowtel viene eseguita all'interno di una finestra isolata e senza credenziali, creata su richiesta e distrutta immediatamente dopo. La finestra non ha accesso alla sessione dell'utente, all'identità o a qualsiasi dato che il tuo prodotto memorizza sul dispositivo.
+
+## Perché è importante
+
+Stai chiedendo ai tuoi utenti di condividere la loro larghezza di banda. Diranno di sì, e tu rimarrai conforme alle politiche dei negozi dei browser, solo se puoi rispondere "cosa vede effettivamente Mellowtel?" con un elenco chiaro e specifico. Questa pagina è quell'elenco.
+
+## A cosa Mellowtel *non* ha accesso
+
+Quando una richiesta viene eseguita, la finestra isolata non può leggere:
+
+- Cookie (di prima o terza parte)
+- `localStorage`, `sessionStorage` o IndexedDB
+- Lo stato di autenticazione dell'utente su qualsiasi sito
+- Qualsiasi dato memorizzato dalla tua estensione o app
+- La cronologia di navigazione dell'utente o le schede aperte
+- Informazioni personali identificabili di qualsiasi tipo
+
+Pensa a ogni richiesta come se fosse eseguita in una nuova finestra in incognito che non è correlata all'istanza normale del browser dell'utente.
+
+## Cosa Mellowtel *vede*
+
+- Un identificatore di nodo generato casualmente, assegnato una volta per installazione. Non è collegato a nessuna informazione personale e non può essere utilizzato per identificare l'utente.
+- L'URL che il partner fidato ha chiesto di recuperare (che per definizione è contenuto web pubblico).
+- La risposta HTTP da quell'URL pubblico.
+
+## Verifica tu stesso
+
+La logica di isolamento è open source. Se tu o il tuo team di sicurezza volete verificare il modello di isolamento prima della distribuzione, leggete il codice sorgente su [GitHub](https://github.com/mellowtel-inc/).
+
+<Note>
+**TODO:** Sostituisci il link dell'organizzazione sopra con un deep-link al file specifico che crea la finestra senza credenziali, in modo che i revisori possano passare direttamente al codice rilevante.
+</Note>
+
+## Correlati
+
+- [Opt-in / Opt-out](/concepts/opt-in-out): come viene acquisito il consenso dell'utente prima che accada qualsiasi cosa sopra descritta.
+- [Rate Limiting](/concepts/rate-limiting): come il volume delle richieste viene mantenuto invisibile all'utente.

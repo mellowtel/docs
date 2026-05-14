@@ -1,0 +1,223 @@
+---
+sidebarTitle: "Integrazione Chrome / Edge"
+title: "Integra Mellowtel nella tua estensione Chrome/Edge"
+icon: "chrome"
+---
+
+Qui vedrai come implementare la libreria Mellowtel nel tuo progetto di estensione Chrome/Edge.
+
+Tempo stimato per il completamento: 5-7 minuti.
+
+# Conformità alle politiche del browser
+
+Mellowtel è conforme alle politiche del browser se l'integrazione rispetta le scelte e le impostazioni degli utenti.
+
+I plugin ufficiali di Mellowtel sono disponibili su Chrome ed Edge. Presto li sottoporremo anche ad altri principali browser.
+
+Chrome: https://chromewebstore.google.com/detail/support-with-mellowtel/jngbedjpioeongcicaomeideeompcbcc
+
+Edge: https://microsoftedge.microsoft.com/addons/detail/support-with-mellowtel/chpomjnojnimgcaomhmcmfgjinfoekhi
+
+Su Chrome, alcuni sviluppatori potrebbero incontrare problemi durante la revisione con la politica dello scopo unico, che afferma che un plugin può avere solo una funzionalità chiaramente dichiarata (ma spesso viene interpretata in modo incoerente tra le estensioni multi-funzionalità). 
+In questi casi, consigliamo agli sviluppatori di condividere il loro link personale e chiedere agli utenti di installare il plugin ufficiale di Mellowtel Chrome che ha lo scopo unico di permettere agli sviluppatori di guadagnare grazie agli utenti che vogliono supportarli condividendo le loro risorse inattive.
+Gli sviluppatori possono creare il loro link dalla [dashboard di Mellowtel](https://www.mellowtel.com/dashboard/support-with-mellowtel) e reindirizzare gli utenti al [plugin ufficiale di Mellowtel Chrome](https://chromewebstore.google.com/detail/support-with-mellowtel/jngbedjpioeongcicaomeideeompcbcc).
+
+Se, invece, hai un plugin su Chrome che opera nel campo della condivisione della larghezza di banda AI e questo è lo scopo unico del plugin, puoi integrare Mellowtel direttamente nel tuo plugin.
+
+Invece, Edge, Firefox o Safari non hanno questa politica, quindi gli sviluppatori possono anche integrare la libreria direttamente nei loro prodotti e assicurarsi di chiedere ai loro utenti se vogliono supportarli o meno e lasciare sempre loro un modo semplice per cambiare le loro impostazioni in qualsiasi momento dal plugin stesso.
+
+# Browser consigliati
+
+Al momento, consigliamo di integrare Mellowtel nei plugin Edge poiché stiamo ancora lavorando per ottimizzare le versioni della libreria per Firefox e Safari.
+
+# Requisiti
+Prima di iniziare, assicurati che:
+
+1) Il tuo plugin utilizzi [Manifest V3](https://developer.chrome.com/docs/extensions/develop/migrate/what-is-mv3).
+2) Il tuo codice sia organizzato in modo compilato, utilizzando Webpack, Rollup o altri bundler.
+Se non hai un bundler configurato, segui prima la guida [qui](/browser-plugins/static-to-webpack)
+
+# Installa il pacchetto npm
+
+Per installare il pacchetto npm, puoi eseguire il seguente comando nel tuo terminale:
+
+```npm
+npm install mellowtel
+```
+
+<Accordion title="Yarn">
+    Se stai usando yarn come gestore dei pacchetti, puoi eseguire il seguente comando:
+    ```yarn
+    yarn add mellowtel
+    ```
+</Accordion>
+
+# Decidi l'implementazione
+Ci sono due modi in cui puoi implementare la libreria nella tua estensione.
+
+Se stai per rilasciare l'estensione per la prima volta sul Web Store segui l'Opzione 1.
+Se hai già l'estensione pubblicata sul Web Store leggi "Come decidere?"
+
+### Come decidere?
+
+Quando installi la tua estensione dal Web Store, appare una finestra di avviso che chiede il permesso di "Leggere e modificare tutti i tuoi dati su tutti i siti web"?
+
+Sembra così:
+
+<Frame caption="Finestra di avviso che chiede il permesso di leggere e modificare tutti i tuoi dati su tutti i siti web">
+    <img src="/images/alert_web_store.png" />
+</Frame>
+
+Se sì, puoi seguire l'Opzione 1. Se no, devi seguire l'Opzione 2.
+
+# Opzione 1
+Se stai rilasciando l'estensione per la prima volta sul Web Store o stai importando la libreria in un'estensione che chiede il permesso di operare su tutti i siti web, puoi seguire l'Opzione 1.
+
+### Configura il tuo manifest
+Nel tuo file [manifest.json](https://developer.chrome.com/docs/extensions/reference/manifest) modifica le sezioni `permissions` e `host_permissions` in questo modo:
+
+```json
+{
+
+  "permissions": [
+    "storage",
+    "declarativeNetRequest"
+  ],
+  "host_permissions": [
+    "\u003Call_urls\u003E"
+  ]
+
+}
+```
+
+### Configura il tuo service worker (script in background)
+
+Nel tuo file [service worker](https://developer.chrome.com/docs/extensions/develop/concepts/service-workers), devi importare il pacchetto `mellowtel`.
+Nota: Il service worker è anche noto come `script in background`.
+
+Puoi copiare e incollare il seguente codice nel tuo file service worker cambiando la `configuration_key` con la tua chiave personale.
+
+```javascript
+import Mellowtel from "mellowtel";
+
+let mellowtel;
+
+(async () => {
+    mellowtel = new Mellowtel("<configuration_key>"); // Sostituisci con la tua chiave di configurazione
+    await mellowtel.initBackground();
+})();
+```
+
+<Accordion title="Analisi del codice del service worker">
+Importa il pacchetto mellowtel
+
+```javascript
+    import Mellowtel from "mellowtel";
+```
+
+Puoi quindi usare `Mellowtel(configuration_key, options?)` per creare una nuova istanza dell'oggetto Mellowtel. L'oggetto Mellowtel è il tuo punto di ingresso al resto dell'SDK di Mellowtel. La tua `configuration_key` è necessaria quando chiami questa funzione, poiché identifica la tua estensione a Mellowtel. Puoi trovare la tua `configuration_key` nella [dashboard](https://www.mellowtel.com/mellowtel-dashboard/#home)
+```javascript
+mellowtel = new Mellowtel("<configuration_key>");
+```
+
+Inizializza Mellowtel chiamando il metodo `initBackground`. Questo metodo inizializzerà l'oggetto Mellowtel e configurerà i listener necessari.
+```javascript
+await mellowtel.initBackground();
+```
+</Accordion>
+
+### Configura il tuo script di contenuto
+Devi importare il pacchetto mellowtel anche negli [script di contenuto](https://developer.chrome.com/docs/extensions/develop/concepts/content-scripts).
+
+Questo script di contenuto dovrebbe essere eseguito in `all_frames` e `<all_urls>` al `document_start`.
+
+Suggeriamo di creare un nuovo script di contenuto (ad esempio content_start_mellowtel.js) dove puoi copiare e incollare il seguente codice.
+Cambia la `configuration_key` con la tua chiave personale.
+
+```javascript
+import Mellowtel from "mellowtel";
+
+(async () => {
+    const mellowtel = new Mellowtel("<configuration_key>"); // Sostituisci con la tua chiave di configurazione
+    await mellowtel.initContentScript();
+})();
+```
+
+Poi ricorda di aggiungere anche questo script di contenuto nel tuo file `manifest.json` nella sezione content_scripts insieme a qualsiasi altro script di contenuto che hai già.
+Puoi copiare e incollare il seguente codice cambiando il `name_of_your_content_script.js` con il nome che hai scelto.
+
+```json
+{
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["<name_of_your_content_script.js>"], // <-- Cambia qui con il nome del tuo script di contenuto
+      "run_at": "document_start",
+      "all_frames": true
+    }
+  ]
+}
+```
+
+### Configura la logica di opt-in/opt-out
+
+Per attivare Mellowtel, gli utenti devono esplicitamente optare per il servizio.
+
+Puoi implementare la logica di opt-in/opt-out in due modi:
+1) Utilizzando l'implementazione consigliata con la pagina pre-costruita fornita da Mellowtel.
+
+2) Creando i tuoi elementi personalizzati di opt-in/opt-out e utilizzando i metodi mostrati [qui](https://docs.mellowtel.com/concepts/opt-in-out#2-custom-elements)
+
+<Info>
+Se scegli di creare i tuoi elementi di opt-in/opt-out, considera l'uso di <a href="/mellowtel-elements/quickstart" target="_blank">**Mellowtel Elements**</a> - componenti UI pre-costruiti che gestiscono il consenso e le impostazioni degli utenti con un minimo sforzo di integrazione.
+</Info>
+
+Se utilizzi l'implementazione consigliata, apri il tuo file `service worker` (noto anche come script in background) e aggiungi il seguente codice:
+
+```javascript
+chrome.runtime.onInstalled.addListener(async function(details) {
+    console.log("Estensione installata o aggiornata");
+    // Se vuoi gestire l'installazione e gli aggiornamenti in modo diverso
+    /**
+    if(details.reason === "install"){
+        // chiama una funzione per gestire una prima installazione
+    } else if(details.reason === "update") {
+        // chiama una funzione per gestire un aggiornamento
+    }
+    **/
+    await mellowtel.generateAndOpenOptInLink();
+});
+```
+
+### Genera il link delle impostazioni
+
+Per permettere ai tuoi utenti di avere il controllo completo sulla loro larghezza di banda, è necessario lasciare un modo facilmente accessibile per cambiare le loro impostazioni in qualsiasi momento.
+
+Puoi generare un link utilizzando il metodo `generateSettingsLink()`.
+Questo metodo restituirà un link che aprirà la pagina delle impostazioni di Mellowtel dove gli utenti possono decidere in qualsiasi momento se vogliono optare o meno.
+
+Questo link dovrebbe essere posizionato all'interno del popup, della pagina delle opzioni o in qualsiasi altro luogo facilmente accessibile dagli utenti.
+
+Ad esempio puoi metterlo in una funzione `openSettings()` come questa. Puoi chiamare `openSettings()` su un clic di un pulsante o qualsiasi altro evento rilevante:
+
+```javascript
+async function openSettings() {
+    try {
+        // Genera e gestisci il link delle impostazioni
+        const settingsLink = await mellowtel.generateSettingsLink();
+        // Registra il link generato per il debug
+        console.log("Link delle impostazioni generato:", settingsLink);
+        // Ora puoi usare questo link all'interno di un popup, pagina delle opzioni o qualsiasi elemento UI
+    } catch (error) {
+        console.error("Errore nella generazione del link delle impostazioni:", error);
+    }
+}
+```
+
+Perfetto! Ora sei pronto per inviare la tua estensione al Web Store. Segui la guida qui per vedere come [inviare la tua estensione](/browser-plugins/submit-to-chrome-store)
+
+# Opzione 2
+
+<Warning>L'Opzione 2 potrebbe potenzialmente disabilitare la tua estensione se non implementata correttamente. Ecco perché non è disponibile per tutti gli utenti </Warning>
+
+Se non puoi implementare l'Opzione 1, contattaci su [Discord](https://discord.com/invite/txAZp4MSDe)

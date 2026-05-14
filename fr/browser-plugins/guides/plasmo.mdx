@@ -1,0 +1,162 @@
+---
+sidebarTitle: "Plasmo"
+title: "Intégrer Mellowtel dans votre extension Plasmo"
+description: "Un guide rapide sur comment intégrer Mellowtel dans votre extension de navigateur Plasmo"
+icon: "puzzle"
+---
+
+Ici, tu apprendras comment monétiser ton extension de navigateur Plasmo en intégrant Mellowtel.
+Temps estimé pour compléter : 5-15 minutes.
+
+# Installation Manuelle
+
+Si tu as un projet Plasmo existant, suis ces étapes pour ajouter l'intégration Mellowtel.
+
+### Installer les Dépendances
+
+Tout d'abord, ajoute le package Mellowtel à ton projet :
+
+```bash
+pnpm add mellowtel
+```
+
+### Configurer package.json
+
+Mets à jour ton `package.json` pour inclure les permissions requises :
+
+```json
+{
+  "manifest": {
+    "permissions": [
+      "storage",
+      "declarativeNetRequest"
+    ],
+    "host_permissions": ["<all_urls>"]
+  }
+}
+```
+
+### Définir les Variables d'Environnement
+
+Crée ou mets à jour ton fichier `.env` :
+
+```plaintext
+PLASMO_PUBLIC_MELLOWTEL=your_mellowtel_api_key_here
+```
+
+<Warning>
+    Assure-toi de remplacer `your_mellowtel_api_key_here` par ta véritable clé API Mellowtel depuis le tableau de bord.
+</Warning>
+
+# Implémentation
+
+### Configuration du Script d'Arrière-plan
+
+Crée ou modifie ton script d'arrière-plan (`background.ts`) :
+
+```typescript
+import Mellowtel from "mellowtel"
+
+let mellowtel;
+
+(async () => {
+  mellowtel = new Mellowtel(process.env.PLASMO_PUBLIC_MELLOWTEL)
+  await mellowtel.initBackground()
+})()
+
+// Gérer l'installation et les mises à jour
+chrome.runtime.onInstalled.addListener(async function (details) {
+  console.log("Extension Installée ou Mise à Jour", details)
+  await mellowtel.generateAndOpenOptInLink()
+})
+```
+
+### Configuration du Script de Contenu
+
+Crée ou modifie ton script de contenu (`content.ts`) :
+
+```typescript
+import Mellowtel from "mellowtel"
+import type { PlasmoCSConfig } from "plasmo"
+
+let mellowtel;
+
+// Configurer le comportement du script de contenu
+export const config: PlasmoCSConfig = {
+  matches: ["<all_urls>"],
+  all_frames: true,
+  run_at: "document_start"
+}
+
+const start = async () => {
+  mellowtel = new Mellowtel(process.env.PLASMO_PUBLIC_MELLOWTEL)
+  const resp = await mellowtel.initContentScript()
+}
+
+start()
+```
+
+### Implémentation du Popup
+
+Crée ou modifie ton composant popup (`popup.tsx`) :
+
+```typescript
+import Mellowtel from "mellowtel"
+
+const Popup: React.FC = () => {
+  const handleMellowtelSettings = async () => {
+    const mellowtel = new Mellowtel(process.env.PLASMO_PUBLIC_MELLOWTEL)
+    const link = await mellowtel.generateSettingsLink()
+    chrome.tabs.create({ url: link })
+  }
+
+  return (
+    <div>
+      <button onClick={handleMellowtelSettings}>
+        Modifier les Paramètres Mellowtel
+      </button>
+    </div>
+  )
+}
+
+export default Popup
+```
+
+# Commandes de Développement
+
+Utilise ces commandes pendant le développement :
+
+```bash
+# Démarrer le serveur de développement
+pnpm dev
+
+# Construire pour la production
+pnpm build
+
+# Packager l'extension
+pnpm package
+```
+
+<Accordion title="Meilleures Pratiques de Développement">
+    1. Teste toujours ton extension de manière approfondie dans les environnements de développement et de production
+    2. Surveille la console pour tout avertissement ou erreur lié à Mellowtel
+    3. Teste le flux d'opt-in du point de vue de l'utilisateur
+    4. Vérifie que le lien des paramètres fonctionne correctement
+    5. Assure-toi que toutes les permissions sont correctement configurées
+</Accordion>
+
+# Tests
+
+Avant de soumettre ton extension :
+
+1. Teste le flux d'installation
+2. Vérifie que le processus d'opt-in fonctionne
+3. Vérifie que la page des paramètres est accessible
+4. Confirme que toutes les permissions fonctionnent correctement
+5. Teste sur différents navigateurs si tu cibles plusieurs plateformes
+
+<Note>
+    Pour plus d'informations sur les fonctionnalités et l'API de Mellowtel, visite le [Quickstart](https://docs.mellowtel.com/browser-plugins/quickstart).
+</Note>
+
+Besoin d'aide ? Rejoins notre [communauté Discord](https://discord.com/invite/txAZp4MSDe) pour obtenir du support.

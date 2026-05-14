@@ -1,0 +1,54 @@
+---
+sidebarTitle: "Retour d’utilisateur"
+title: "Collecter les retours de vos utilisateurs"
+icon: "comment"
+---
+
+Mellowtel fournit une page de retour préconstruite que tu peux utiliser pour collecter les retours de tes utilisateurs afin de pouvoir itérer plus rapidement et améliorer ton produit. Actuellement, la page est disponible uniquement pour les plugins de navigateur. La page de retour est similaire à celle-ci [ici](https://www.mellowtel.com/uninstall-feedback/?extension_id=testId&configuration_key=testConfiguration) en passant dynamiquement l'icône et le nom de ton plugin.
+
+Tu peux ensuite lire les retours depuis le tableau de bord Mellowtel et les utiliser pour améliorer ton plugin de navigateur.
+
+IMPORTANT : Tu pourras lire les retours depuis le tableau de bord Mellowtel uniquement si tu as un plugin qui est publié sur le web store et non en mode dev. Si tu es encore en développement et que tu souhaites tester la page de retour, merci de nous contacter via le chat.
+
+Voici comment tu peux ajouter la page de retour à ton plugin de navigateur :
+
+## Ajouter la page de retour à ton plugin
+
+La page de retour est hébergée par Mellowtel et est accessible via une URL que tu peux générer en utilisant la méthode `generateFeedbackLink()` du package JS de Mellowtel.
+
+Si tu souhaites ouvrir directement la page de retour dans un nouvel onglet, tu peux utiliser la méthode `generateAndOpenFeedbackLink()` et elle ouvrira une page similaire à celle-ci [ici](https://www.mellowtel.com/uninstall-feedback/?extension_id=testId&configuration_key=testConfiguration) en passant dynamiquement l'icône et le nom de ton plugin.
+
+Tu peux ouvrir la page de retour en appelant la méthode `generateFeedbackLink()` depuis le script de fond ou le script de contenu de ton extension lorsque l'utilisateur désinstalle ton plugin de navigateur.
+
+Voici comment tu peux le faire.
+
+Ouvre ton fichier `service worker` (également connu sous le nom de script de fond) et ajoute le code suivant :
+
+N'oublie pas de remplacer `<YOUR_CONFIGURATION_KEY>` par ta véritable clé de configuration Mellowtel. Si tu n'as pas encore de clé de configuration, tu peux en obtenir une en t'inscrivant sur [Mellowtel](https://www.mellowtel.com/mellowtel-auth/).
+
+```javascript
+import Mellowtel from "mellowtel";
+
+let mellowtel;
+
+(async () => {
+    mellowtel = new Mellowtel("<YOUR_CONFIGURATION_KEY>");
+    await mellowtel.initBackground();
+})();
+
+// Ouvre la page de retour lorsque l'utilisateur désinstalle l'extension
+chrome.runtime.onInstalled.addListener(async function(details) {
+    console.log("Extension installée ou mise à jour");
+    // Si tu veux gérer l'installation et les mises à jour différemment
+    /**
+    if(details.reason === "install"){
+        // appelle une fonction pour gérer une première installation
+    } else if(details.reason === "update") {
+        // appelle une fonction pour gérer une mise à jour
+    }
+    **/
+    // await mellowtel.generateAndOpenOptInLink(); pour gérer les paramètres des utilisateurs. Pour plus de détails : docs opt-in-out
+    const uninstallURl = await mellowtel.generateFeedbackLink();
+    chrome.runtime.setUninstallURL(uninstallURl);
+});
+```

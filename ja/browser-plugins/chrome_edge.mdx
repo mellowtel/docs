@@ -1,0 +1,223 @@
+---
+sidebarTitle: "Chrome / Edge 統合"
+title: "Chrome/Edge 拡張機能に Mellowtel を統合する"
+icon: "chrome"
+---
+
+ここでは、Chrome/Edge 拡張機能プロジェクトに Mellowtel ライブラリを実装する方法を紹介します。
+
+完了までの推定時間: 5-7 分。
+
+# ブラウザポリシーへの準拠
+
+Mellowtel は、ユーザーの選択と設定を尊重する統合であれば、ブラウザポリシーに準拠しています。
+
+公式の Mellowtel プラグインは Chrome と Edge で利用可能です。近いうちに他の主要なブラウザにも提出する予定です。
+
+Chrome: https://chromewebstore.google.com/detail/support-with-mellowtel/jngbedjpioeongcicaomeideeompcbcc
+
+Edge: https://microsoftedge.microsoft.com/addons/detail/support-with-mellowtel/chpomjnojnimgcaomhmcmfgjinfoekhi
+
+Chrome では、一部の開発者がレビュー中に単一目的ポリシーに関する問題に直面することがあります。このポリシーは、プラグインが明確に述べられた1つの機能のみを持つことを要求しています（ただし、複数機能を持つ拡張機能では一貫性なく解釈されることが多いです）。
+そのような場合、開発者は個人のリンクを共有し、ユーザーに公式の Mellowtel Chrome プラグインをインストールするよう依頼することをお勧めします。このプラグインは、ユーザーがアイドルリソースを共有して開発者をサポートしたい場合に、開発者が利益を得ることを可能にする単一の目的を持っています。
+開発者は [Mellowtel ダッシュボード](https://www.mellowtel.com/dashboard/support-with-mellowtel) からリンクを作成し、公式の [Mellowtel Chrome プラグイン](https://chromewebstore.google.com/detail/support-with-mellowtel/jngbedjpioeongcicaomeideeompcbcc) にユーザーをリダイレクトできます。
+
+一方で、AI 帯域幅共有スペースで動作する Chrome プラグインを持っていて、それがプラグインの単一の目的である場合、Mellowtel を直接プラグインに統合できます。
+
+一方、Edge、Firefox、または Safari にはこのポリシーがないため、開発者はライブラリを直接製品に統合し、ユーザーにサポートするかどうかを尋ね、いつでもプラグイン自体から設定を変更できる簡単な方法を提供することができます。
+
+# 推奨ブラウザ
+
+現時点では、Mellowtel を Edge プラグインに統合することをお勧めします。Firefox と Safari バージョンのライブラリの最適化にまだ取り組んでいるためです。
+
+# 要件
+始める前に、以下を確認してください:
+
+1) プラグインが [Manifest V3](https://developer.chrome.com/docs/extensions/develop/migrate/what-is-mv3) を使用していること。
+2) コードが Webpack、Rollup、または他のバンドラーを使用してコンパイルされた方法で整理されていること。
+バンドラーが設定されていない場合は、まず [こちら](/browser-plugins/static-to-webpack) のガイドに従ってください。
+
+# npm パッケージのインストール
+
+npm パッケージをインストールするには、ターミナルで次のコマンドを実行します:
+
+```npm
+npm install mellowtel
+```
+
+<Accordion title="Yarn">
+    パッケージマネージャーとして yarn を使用している場合は、次のコマンドを実行できます:
+    ```yarn
+    yarn add mellowtel
+    ```
+</Accordion>
+
+# 実装方法を決定する
+拡張機能にライブラリを実装する方法は2つあります。
+
+Web ストアで初めて拡張機能をリリースする場合は、オプション1に従ってください。
+既に Web ストアに拡張機能を公開している場合は、「どのように決定するか」を読んでください。
+
+### どのように決定するか？
+
+Web ストアから拡張機能をインストールすると、「すべてのウェブサイトでデータを読み取り、変更する」許可を求める警告ウィンドウが表示されますか？
+
+このように見えます:
+
+<Frame caption="すべてのウェブサイトでデータを読み取り、変更する許可を求める警告ウィンドウ">
+    <img src="/images/alert_web_store.png" />
+</Frame>
+
+もし表示される場合は、オプション1に従うことができます。表示されない場合は、オプション2に従う必要があります。
+
+# オプション1
+Web ストアで初めて拡張機能をリリースする場合、またはすべてのウェブサイトで動作する許可を求める拡張機能にライブラリをインポートする場合は、オプション1に従うことができます。
+
+### マニフェストを設定する
+[manifest.json](https://developer.chrome.com/docs/extensions/reference/manifest) ファイルで `permissions` と `host_permissions` セクションを次のように変更します:
+
+```json
+{
+
+  "permissions": [
+    "storage",
+    "declarativeNetRequest"
+  ],
+  "host_permissions": [
+    "\u003Call_urls\u003E"
+  ]
+
+}
+```
+
+### サービスワーカー（バックグラウンドスクリプト）を設定する
+
+[サービスワーカー](https://developer.chrome.com/docs/extensions/develop/concepts/service-workers) ファイルで `mellowtel` パッケージをインポートする必要があります。
+注: サービスワーカーは `バックグラウンドスクリプト` とも呼ばれます。
+
+次のコードをサービスワーカーファイルにコピーして貼り付け、自分の `configuration_key` に変更します。
+
+```javascript
+import Mellowtel from "mellowtel";
+
+let mellowtel;
+
+(async () => {
+    mellowtel = new Mellowtel("<configuration_key>"); // 自分の設定キーに置き換えてください
+    await mellowtel.initBackground();
+})();
+```
+
+<Accordion title="サービスワーカーコードの内訳">
+mellowtel パッケージをインポートする
+
+```javascript
+    import Mellowtel from "mellowtel";
+```
+
+その後、`Mellowtel(configuration_key, options?)` を使用して Mellowtel オブジェクトの新しいインスタンスを作成できます。Mellowtel オブジェクトは Mellowtel の SDK のエントリーポイントです。この関数を呼び出す際に `configuration_key` が必要であり、Mellowtel に対して拡張機能を識別します。`configuration_key` は [ダッシュボード](https://www.mellowtel.com/mellowtel-dashboard/#home) で見つけることができます。
+```javascript
+mellowtel = new Mellowtel("<configuration_key>");
+```
+
+`initBackground` メソッドを呼び出して Mellowtel を初期化します。このメソッドは Mellowtel オブジェクトを初期化し、必要なリスナーを設定します。
+```javascript
+await mellowtel.initBackground();
+```
+</Accordion>
+
+### コンテントスクリプトを設定する
+[コンテントスクリプト](https://developer.chrome.com/docs/extensions/develop/concepts/content-scripts) にも mellowtel パッケージをインポートする必要があります。
+
+このコンテントスクリプトは `all_frames` と `<all_urls>` で `document_start` に実行されるべきです。
+
+新しいコンテントスクリプト（例: content_start_mellowtel.js）を作成し、次のコードをコピーして貼り付けることをお勧めします。
+`configuration_key` を自分のキーに変更します。
+
+```javascript
+import Mellowtel from "mellowtel";
+
+(async () => {
+    const mellowtel = new Mellowtel("<configuration_key>"); // 自分の設定キーに置き換えてください
+    await mellowtel.initContentScript();
+})();
+```
+
+その後、`manifest.json` ファイルの content_scripts セクションにこのコンテントスクリプトを他のコンテントスクリプトと一緒に追加することを忘れないでください。
+次のコードをコピーして貼り付け、`name_of_your_content_script.js` を選んだ名前に変更します。
+
+```json
+{
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["<name_of_your_content_script.js>"], // <-- コンテントスクリプトの名前に変更してください
+      "run_at": "document_start",
+      "all_frames": true
+    }
+  ]
+}
+```
+
+### オプトイン/オプトアウトロジックを設定する
+
+Mellowtel をアクティブにするには、ユーザーがサービスに明示的にオプトインする必要があります。
+
+オプトイン/オプトアウトロジックを実装する方法は2つあります:
+1) Mellowtel が提供する事前構築されたページを使用した推奨実装。
+
+2) 独自のカスタムオプトイン/オプトアウト要素を作成し、[こちら](https://docs.mellowtel.com/concepts/opt-in-out#2-custom-elements) に示されている方法を使用する。
+
+<Info>
+独自のオプトイン/オプトアウト要素を作成することを選択する場合は、<a href="/mellowtel-elements/quickstart" target="_blank">**Mellowtel Elements**</a> を使用することを検討してください。これは、ユーザーの同意と設定を最小限の統合努力で処理する事前構築された UI コンポーネントです。
+</Info>
+
+推奨実装を使用する場合は、`service worker` ファイル（バックグラウンドスクリプトとも呼ばれる）を開き、次のコードを追加します。
+
+```javascript
+chrome.runtime.onInstalled.addListener(async function(details) {
+    console.log("拡張機能がインストールまたは更新されました");
+    // 初回インストールと更新を異なる方法で処理したい場合
+    /**
+    if(details.reason === "install"){
+        // 初回インストールを処理する関数を呼び出す
+    } else if(details.reason === "update") {
+        // 更新を処理する関数を呼び出す
+    }
+    **/
+    await mellowtel.generateAndOpenOptInLink();
+});
+```
+
+### 設定リンクを生成する
+
+ユーザーが帯域幅を完全にコントロールできるようにするために、いつでも設定を変更できる簡単にアクセス可能な方法を提供する必要があります。
+
+`generateSettingsLink()` メソッドを使用してリンクを生成できます。
+このメソッドは、ユーザーがいつでもオプトインまたはオプトアウトを決定できる Mellowtel 設定ページを開くリンクを返します。
+
+このリンクは、ポップアップ、オプションページ、またはユーザーが簡単にアクセスできる他の場所に配置する必要があります。
+
+例えば、このように `openSettings()` 関数内に配置できます。ボタンクリックや他の関連イベントで `openSettings()` を呼び出すことができます。
+
+```javascript
+async function openSettings() {
+    try {
+        // 設定リンクを生成して管理する
+        const settingsLink = await mellowtel.generateSettingsLink();
+        // デバッグ用に生成されたリンクをログに記録
+        console.log("生成された設定リンク:", settingsLink);
+        // このリンクをポップアップ、オプションページ、または任意の UI 要素内で使用できます
+    } catch (error) {
+        console.error("設定リンクの生成エラー:", error);
+    }
+}
+```
+
+完璧です！これで拡張機能を Web ストアに送信する準備が整いました。[拡張機能を提出する方法](/browser-plugins/submit-to-chrome-store) を確認するには、こちらのガイドに従ってください。
+
+# オプション2
+
+<Warning>オプション2は、正しく実装されないと拡張機能を無効にする可能性があります。そのため、すべてのユーザーには利用できません </Warning>
+
+オプション1を実装できない場合は、[Discord](https://discord.com/invite/txAZp4MSDe) でお問い合わせください。

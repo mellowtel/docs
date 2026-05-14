@@ -1,0 +1,36 @@
+---
+title: "Limitation de débit"
+description: "Comment Mellowtel reste invisible pour l’utilisateur final"
+icon: "stopwatch"
+---
+
+## Ce que c’est
+
+Mellowtel limite automatiquement le nombre de requêtes qu’un seul appareil (un "nœud") acceptera et traitera. Cette limite est appliquée à l’intérieur du SDK. Tu ne la configures pas, et un partenaire malveillant ne peut pas l’augmenter de l’extérieur.
+
+## Pourquoi c’est important
+
+Tout le produit dépend du fait que les utilisateurs ne remarquent pas que Mellowtel est en fonctionnement. Si un nœud servait un nombre illimité de requêtes, un utilisateur avec une connexion lente le ressentirait dans son navigateur. La limitation de débit est le mécanisme qui protège cette promesse, et c’est pourquoi tu peux déployer Mellowtel à de vrais utilisateurs sans te soucier des tickets de support concernant "le navigateur semble lent."
+
+## Comment ça fonctionne
+
+Chaque requête est effectuée dans une fenêtre sandboxée qui est créée pour la requête et détruite immédiatement après. C’est le même modèle d’isolation utilisé par les réseaux publicitaires comme Google AdSense, avec la garantie supplémentaire que la fenêtre est *sans identifiants* (voir [Confidentialité](/concepts/privacy)). Comme chaque requête est de courte durée et isolée, le seul paramètre qui compte pour l’expérience utilisateur est *combien* sont exécutées, et c’est ce que la limitation de débit contrôle.
+
+La limite actuelle varie en fonction de :
+
+- **Vitesse de la bande passante** : les connexions plus lentes reçoivent moins de requêtes.
+- **Géolocalisation** : la capacité est équilibrée régionalement.
+- **Disponibilité globale du réseau** : le SDK recule lorsque la demande mondiale est faible.
+
+<Note>
+**À FAIRE :** Documenter les chiffres concrets (plafonds de req/min, niveaux géographiques, seuils de bande passante) une fois finalisés. Pour l’instant, les limites sont intentionnellement adaptatives et non exposées via l’API publique.
+</Note>
+
+## Surface de l’API
+
+Il n’y a pas d’API de limitation de débit à appeler. La limitation est interne et toujours active. Tu ne peux pas la désactiver, et tu ne devrais pas avoir besoin de l’inspecter. Si tu penses que la limitation de débit cause un problème dans ton intégration, [ouvre un problème sur GitHub](https://github.com/mellowtel-inc/) ou contacte-nous sur [Discord](https://discord.com/invite/txAZp4MSDe).
+
+## Connexe
+
+- [Confidentialité](/concepts/privacy) : ce à quoi la fenêtre sandboxée a et n’a pas accès.
+- [Opt-in / Opt-out](/concepts/opt-in-out) : la couche de consentement qui se trouve devant tout cela.

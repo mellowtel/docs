@@ -1,0 +1,89 @@
+---
+sidebarTitle: "Soumettre à Edge Add-ons"
+title: "Soumettre l’extension à Microsoft Edge Add-ons"
+icon: "edge"
+---
+
+Après avoir importé Mellowtel dans ton extension comme indiqué dans le guide [Démarrage rapide](/browser-plugins/quickstart), suis ces étapes pour soumettre ton extension au magasin Microsoft Edge Add-ons.
+
+## Préparer Ton Extension
+
+1. **Développer et Tester** : Assure-toi d'avoir un prototype fonctionnel de ton extension testé dans Microsoft Edge.
+
+2. **Créer un Fichier ZIP** : Emballe les fichiers de ton extension dans une archive ZIP, incluant :
+   - Le manifeste de l'extension
+   - Toutes les images et fichiers requis
+
+3. **Vérifier le Manifeste** : Vérifie que les champs suivants dans ton manifeste sont exacts :
+   - `Name`
+   - `Description`
+
+## Soumettre à Microsoft Edge Add-ons
+
+1. **Créer un Compte Développeur** :
+   - Si tu n'en as pas, crée un compte développeur sur [Partner Center](https://partner.microsoft.com/dashboard/microsoftedge/public/login?ref=addons).
+   - Pour des instructions détaillées sur la création d'un compte développeur, consulte le [guide d'enregistrement des développeurs](https://docs.microsoft.com/microsoft-edge/extensions-chromium/publish/create-dev-account).
+
+2. **Commencer une Nouvelle Soumission** :
+   - Va sur le tableau de bord développeur et sélectionne "Créer une nouvelle extension".
+
+3. **Téléverser Ton Package** :
+   - Sur la page des Packages, téléverse ton fichier ZIP d'extension.
+   - Attends la validation et résous les problèmes si nécessaire.
+
+   ![Écran de téléversement du package](/images/edge/packages.png)
+   
+   L'écran de téléversement te permet de glisser-déposer ton fichier ZIP ou de parcourir pour le sélectionner. Assure-toi que ton package contient :
+   1. Le fichier manifeste avec des détails comme le nom, la version, une courte description, les permissions, et la langue par défaut.
+   2. Les images et autres fichiers requis par ton extension.
+
+4. **Fournir les Détails de Disponibilité** :
+   - Définis la visibilité (Publique ou Cachée).
+   - Choisis les marchés pour la distribution.
+
+   ![Paramètres de disponibilité](/images/edge/availability.png)
+   
+   Dans la section Disponibilité :
+   - Choisis entre Publique (tout le monde peut trouver et utiliser l'extension) ou Cachée (seuls ceux avec l'URL de la liste du magasin peuvent l'utiliser).
+   - Sélectionne les marchés où ton extension sera disponible. Par défaut, c'est défini pour tous les marchés actuels et futurs.
+
+5. **Définir les Propriétés de l’Extension** :
+   - Sélectionne une catégorie.
+   - Spécifie les exigences de la politique de confidentialité.
+   - Ajoute l'URL du site web et les détails de contact pour le support.
+   - Indique s'il y a du contenu mature.
+
+   ![Section des propriétés](/images/edge/properties.png)
+   
+   Dans la section Propriétés :
+   - Choisis la catégorie qui décrit le mieux ton extension.
+   - Indique si ton extension accède, collecte ou transmet des informations personnelles.
+   - Fournis une URL de politique de confidentialité si nécessaire.
+   - Ajoute l'URL de ton site web et les détails de contact pour le support.
+
+6. **Ajouter les Détails de la Liste du Magasin** :
+   - Fournis une description (jusqu'à 10 000 caractères).
+   - Téléverse un logo pour le Store de l’Extension (300x300 pixels recommandé).
+   - Ajoute des tuiles promotionnelles et des captures d'écran optionnelles.
+   - Inclue des termes de recherche pour améliorer la découvrabilité.
+
+7. **Compléter la Soumission** :
+   - Ajoute des notes pour la certification.
+   - Clique sur "Publier" pour soumettre ton extension.
+
+## Après la Soumission
+
+- Microsoft examinera ton extension, ce qui peut prendre jusqu'à sept jours ouvrables.
+- Tu seras notifié lorsque l'examen sera terminé.
+- Si des problèmes sont trouvés, adresse-les et soumets à nouveau.
+
+## Conseils pour une Soumission Réussie
+
+- Suis les [politiques des développeurs pour Microsoft Edge Add-ons](https://docs.microsoft.com/microsoft-edge/extensions-chromium/store-policies/developer-policies).
+- Fournis des descriptions claires et concises et des images de haute qualité.
+- Assure-toi que ta politique de confidentialité est complète si tu collectes des données utilisateur.
+- Réponds rapidement à tout commentaire ou question des examinateurs.
+
+Rappelle-toi, l'intégration de Mellowtel ne devrait pas affecter ton processus de soumission, mais assure-toi qu'elle est conforme aux politiques de Microsoft concernant la collecte de données et la confidentialité des utilisateurs.
+
+Pour plus d'informations détaillées, visite la [Documentation pour les développeurs de Microsoft Edge Add-ons](https://docs.microsoft.com/microsoft-edge/extensions-chromium/publish/publish-extension).

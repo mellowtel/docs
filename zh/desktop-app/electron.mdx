@@ -1,0 +1,196 @@
+---
+sidebarTitle: "Electron"
+title: "在你的 Electron 应用中集成 Mellowtel"
+icon: "bolt"
+platforms:
+  - desktop app
+---
+
+将 Mellowtel 集成到你的跨平台 Electron 应用中，让用户可以通过分享未使用的互联网带宽来获得奖励或高级功能。Electron SDK 可以在任何支持 Electron 的平台上运行（macOS、Windows 和 Linux）。
+
+<Warning>
+  **用户同意是必须的。** SDK 只有在用户明确同意的情况下才会运行。如果没有记录同意，`init()` 会静默地提前返回，因此如果你看到 SDK 启动没有错误但从未发送流量，最可能的原因是用户尚未同意。
+</Warning>
+
+## 前提条件
+
+- 一个 Mellowtel 账户和配置密钥（从 [dashboard](https://www.mellowtel.com/mellowtel-auth/) 获取）。
+- 一个可以访问主进程的 Electron 应用。
+
+---
+
+## 安装
+
+### 1. 配置 npm 认证
+
+在项目的根目录下创建一个 `.npmrc` 文件，将 npm 指向 Mellowtel GitHub Packages 注册表并进行安装认证：
+
+```bash
+@mellowtel-inc:registry=https://npm.pkg.github.com/
+//npm.pkg.github.com/:_authToken=YOUR_NPM_TOKEN
+```
+
+将 `YOUR_NPM_TOKEN` 替换为下面的安装令牌。点击以显示，然后使用代码块上的复制图标将其复制到剪贴板。
+
+<Accordion title="显示安装令牌">
+  ```
+  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
+  ```
+</Accordion>
+
+### 2. 安装包
+
+从项目根目录安装 Electron SDK：
+
+```bash
+npm install @mellowtel-inc/mellowtel-electron
+```
+
+### 3. 添加到你的代码中
+
+在你的 Electron 主进程文件中（通常是 `main.ts` 或 `main.js`），导入 SDK，使用你的配置密钥实例化它，向用户请求同意，然后调用 `init()` 启动服务。
+
+```typescript
+import { app, BrowserWindow } from 'electron';
+import Mellowtel from '@mellowtel-inc/mellowtel-electron';
+
+
+// 当应用准备好时，创建窗口
+app.whenReady().then(async () => {
+  let win = createWindow();
+  
+  const mellowtel: Mellowtel = new Mellowtel('YOUR_CONFIGURATION_KEY');
+
+  await mellowtel.requestConsent(win, "免费获得3个月")
+  await mellowtel.init()
+});
+```
+
+<Note>
+  将 `YOUR_CONFIGURATION_KEY` 替换为你的 Mellowtel dashboard 中的密钥。
+</Note>
+
+**每个调用的作用：**
+
+- `new Mellowtel(configurationKey, options?)` 实例化 SDK。目前唯一可用的选项是 `disableLogs`，默认为 `true`。在集成时将其设置为 `false`，以便在终端中查看连接状态和请求活动。
+- `requestConsent(window, incentive)` 渲染一个 **原生 Electron 消息框**，锚定到你传入的 `BrowserWindow`。第二个参数是对话框的显著标题（例如，"免费获得3个月"），显示在 Mellowtel 功能的固定说明上方。如果用户接受则解析为 `true`，如果用户拒绝或关闭对话框则为 `false`，如果同意已记录则为 `undefined`。SDK 会自动持久化选择，因此你不需要在之后调用 `optIn()`。
+- `init()` 仅在 `configurationKey` 为空时抛出错误。如果用户尚未同意，它会记录并静默返回。否则，它会打开一个到 Mellowtel 后端的 WebSocket。调用对渲染器 UI 是非阻塞的，因此在建立连接时窗口仍然响应。
+
+### 防止系统对话框中断（推荐）
+
+SDK 附带一个可选的助手函数 `setupMellowtelApp()`，它配置 Electron 命令行标志以抑制系统对话框（自动填充弹出窗口、翻译栏、NTLM / Kerberos 认证提示、密码管理器集成、媒体覆盖、首次运行对话框），这些对话框可能会在 Mellowtel 的隐藏窗口在后台处理请求时中断用户。
+
+在主进程文件的顶部调用它，**在** `app.whenReady()` 之前，并与从 `@mellowtel-inc/mellowtel-electron` 的默认导出一起导入。请参阅 [上游 README](https://github.com/mellowtel-inc/mellowtel-electron#setupmellowtelapp-optional) 以获取规范用法。
+
+---
+
+## 用户同意
+
+<Warning>
+  显示同意对话框是 **必须的**。在调用 `init()` 之前，你必须让用户明确选择加入，并且必须提供一种方式让他们随时管理他们的选择状态。
+</Warning>
+
+你有两种处理同意的方式：
+
+1. **使用内置的原生对话框** 通过 `requestConsent(window, incentive)`。这是最快的方式，也是上面的代码片段所展示的。它使用你的激励文案作为标题渲染一个原生 Electron `dialog.showMessageBox`，并自动持久化用户的决定。
+2. **构建你自己的同意 UI** 并通过 `optIn()`、`optOut()` 和 `getOptInStatus()` 驱动 SDK。如果你想要自定义品牌、更丰富的说明或超出原生对话框提供的本地化，请使用此选项。
+
+### 你的同意对话框必须包含的内容
+
+<Steps>
+  <Step title="解释 Mellowtel 的功能">
+    使用简单的语言。例如：*"此应用使用 Mellowtel 来分享你未使用的互联网带宽。作为回报，你将获得 [好处/功能]。你可以随时在设置中选择退出。"*
+  </Step>
+  <Step title="给用户一个明确的选择">
+    包含明确的接受和拒绝选项。
+  </Step>
+  <Step title="链接到政策">
+    包含指向 [服务条款](https://www.mellowtel.com/terms-and-conditions) 和 [隐私政策](https://www.mellowtel.com/privacy-policy) 的链接。
+  </Step>
+</Steps>
+
+### 允许用户稍后更改他们的同意
+
+Mellowtel 提供了一个内置的设置对话框，通过 `showConsentSettings(window)`。它渲染一个原生对话框，带有与用户当前状态匹配的选择加入/选择退出按钮，并在用户切换时内部调用 `optIn()` 或 `optOut()`（以及在选择加入时重新连接 WebSocket）。将其连接到应用中的菜单项或设置按钮，以便用户可以重新访问他们的选择。
+
+如果你更喜欢构建自己的设置屏幕，请调用 `getOptInStatus()` 读取当前状态，并通过 `optIn()` / `optOut()` 进行更改。
+
+---
+
+## 方法参考
+
+`Mellowtel` 类公开了以下公共方法。所有方法都可以在你用 `new Mellowtel(configurationKey, options?)` 创建的实例上使用。
+
+**生命周期**
+
+- `init(): Promise<void>` 如果用户已选择加入则启动服务，否则静默提前返回。仅在配置密钥为空时抛出错误。
+- `requestConsent(window: BrowserWindow, incentive: string): Promise<boolean | undefined>` 显示内置的原生同意对话框并持久化结果。接受时返回 `true`，拒绝或关闭时返回 `false`，如果已给出同意则返回 `undefined`。
+- `showConsentSettings(window: BrowserWindow): Promise<void>` 显示内置的管理同意对话框。SDK 在用户切换选择时内部处理选择加入/选择退出转换。
+
+**手动选择加入控制**
+
+- `optIn(): Promise<void>` 将用户标记为选择加入而不显示对话框。仅在通过你自己的 UI 收集同意后使用。
+- `optOut(): Promise<void>` 将用户标记为选择退出并关闭活动的 WebSocket 连接。
+- `getOptInStatus(): boolean | undefined` 返回当前的选择加入状态，如果用户从未做出选择则返回 `undefined`。
+- `getNodeId(): string` 返回此安装的 Mellowtel 节点标识符。提交支持票证时很有用。
+
+**请求计数器**
+
+请求计数通过 `electron-store` 本地持久化，并在应用重启后保留。如果你想向用户展示选择加入的影响，可以在自己的 UI 中显示它们。
+
+- `getTotalRequestCount(): number` 返回自安装以来处理的总请求数。
+- `getDailyRequestCount(): number` 返回今天处理的请求数。
+- `getRequestCountForDate(date: string): number` 返回特定 `YYYY-MM-DD` 日期的计数。
+- `getDailyRequestsHistory(): { [date: string]: number }` 返回每个每日计数作为映射。
+- `getRequestCountsInRange(startDate: string, endDate: string): { [date: string]: number }` 返回日期范围内的计数。
+- `getRequestCounts(): { total: number; daily: number; dailyHistory: { [date: string]: number } }` 一次调用返回所有三个计数器。
+
+---
+
+## 关闭和生命周期
+
+Electron SDK **不**注册自己的 `before-quit` 或 `will-quit` 处理程序。当你的 Electron 进程退出时，后台的 WebSocket 连接会随之断开，你不需要在你的端进行显式清理。
+
+如果你想在会话中途断开 Mellowtel（例如，当用户在你的应用中切换“暂停”设置时），请调用 `optOut()`。这既清除选择加入标志，又关闭活动连接。要重新连接，请调用 `optIn()` 然后是 `init()`。
+
+## 同意持久化
+
+选择加入状态存储在平台默认的 `electron-store` 配置路径中：
+
+- macOS: `~/Library/Application Support/<YourAppName>/config.json`
+- Windows: `%APPDATA%\<YourAppName>\config.json`
+- Linux: `~/.config/<YourAppName>/config.json`
+
+状态在应用更新后仍然存在。卸载应用不会自动清除它，除非你的卸载程序明确删除应用的配置目录。
+
+---
+
+## 故障排除
+
+<AccordionGroup>
+  <Accordion title='"Package not found" error during install'>
+    1. 确保 `.npmrc` 在项目根目录，与 `package.json` 相邻。
+    2. 确保令牌没有前导或尾随空格。
+    3. 清除 npm 缓存并重试，运行 `npm cache clean --force` 然后 `npm install`。
+  </Accordion>
+  <Accordion title='"Unauthorized" or 401 during install'>
+    1. 确保 `.npmrc` 中的令牌正确且有效。如果不确定，请从 [info@mellowtel.com](mailto:info@mellowtel.com) 请求新的令牌。
+    2. 确认 `@mellowtel-inc:registry` 行存在并指向 `https://npm.pkg.github.com/`。
+  </Accordion>
+  <Accordion title="The consent dialog never appears">
+    1. 确保在 `app.whenReady()` 解析后调用 `requestConsent`，并使用有效的、未销毁的 `BrowserWindow` 引用。
+    2. 如果使用 `setupMellowtelApp()`，请确认它在 `app.whenReady()` 之前调用，而不是之后。
+  </Accordion>
+  <Accordion title='"init() runs without errors but nothing happens"'>
+    这是设计使然。当用户尚未选择加入时，`init()` 会静默提前返回。检查 `getOptInStatus()` 以确认。如果返回 `undefined` 或 `false`，请先运行 `requestConsent`。注意，当 `disableLogs` 保持默认时，内部的“用户未选择加入”日志会被吞掉，因此终端在你翻转该标志之前不会给你任何信号。
+  </Accordion>
+  <Accordion title="Logs are silent">
+    `disableLogs` 构造函数选项默认为 `true`。在集成时将 `{ disableLogs: false }` 作为第二个参数传递给构造函数，以便在终端中显示连接状态和请求活动。这也是区分“未选择加入”静默无操作（见上文）与实际连接失败的最快方法。
+  </Accordion>
+</AccordionGroup>
+
+---
+
+预计完成时间：10-15 分钟。
+
+如果你需要帮助或有反馈，请通过 [info@mellowtel.com](mailto:info@mellowtel.com) 联系我们，或加入我们的 [Discord 社区](https://discord.com/invite/txAZp4MSDe)。

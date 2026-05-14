@@ -1,0 +1,56 @@
+---
+sidebarTitle: "Feedback المستخدم"
+title: "جمع التعليقات من المستخدمين"
+icon: "comment"
+---
+
+Mellowtel توفر صفحة جاهزة لجمع التعليقات من المستخدمين باش تقدر تحسن المنتج ديالك بسرعة. حاليا، الصفحة متوفرة فقط للإضافات ديال المتصفح. صفحة التعليقات تشبه هذي [الصفحة](https://www.mellowtel.com/uninstall-feedback/?extension_id=testId&configuration_key=testConfiguration) عن طريق تمرير أيقونة واسم الإضافة ديالك بشكل ديناميكي.
+
+تقدر تقرا التعليقات من لوحة التحكم ديال Mellowtel وتستعملها باش تحسن الإضافة ديالك.
+
+مهم: تقدر تقرا التعليقات من لوحة التحكم ديال Mellowtel غير إذا كانت الإضافة ديالك منشورة في المتجر وماشي في وضع التطوير.
+إذا كنت ما زلت في مرحلة التطوير وحاب تجرب صفحة التعليقات، تواصل معنا عبر الدردشة.
+
+ها كيفاش تقدر تضيف صفحة التعليقات للإضافة ديالك في المتصفح:
+
+
+## إضافة صفحة التعليقات للإضافة ديالك
+
+صفحة التعليقات مستضافة من طرف Mellowtel وتقدر توصل لها عبر رابط تقدر تولده باستخدام الطريقة `generateFeedbackLink()` من حزمة Mellowtel JS.
+
+إذا حاب تفتح صفحة التعليقات مباشرة في تبويب جديد، تقدر تستعمل الطريقة `generateAndOpenFeedbackLink()` وراح تفتح صفحة مشابهة لهذي [الصفحة](https://www.mellowtel.com/uninstall-feedback/?extension_id=testId&configuration_key=testConfiguration) عن طريق تمرير أيقونة واسم الإضافة ديالك بشكل ديناميكي.
+
+تقدر تفتح صفحة التعليقات عن طريق استدعاء الطريقة `generateFeedbackLink()` من السكريبت الخلفي أو سكريبت المحتوى ديال الإضافة ديالك لما المستخدم يحذف الإضافة ديالك من المتصفح.
+
+ها كيفاش تقدر تديرها.
+
+افتح ملف `service worker` (المعروف أيضا بالسكريبت الخلفي) وأضف الكود التالي:
+
+تذكر تبدل `<YOUR_CONFIGURATION_KEY>` بالمفتاح الفعلي ديالك في Mellowtel. إذا ما عندكش مفتاح التكوين، تقدر تحصل عليه بالتسجيل في [Mellowtel](https://www.mellowtel.com/mellowtel-auth/).
+
+```javascript
+import Mellowtel from "mellowtel";
+
+let mellowtel;
+
+(async () => {
+    mellowtel = new Mellowtel("<YOUR_CONFIGURATION_KEY>");
+    await mellowtel.initBackground();
+})();
+
+// فتح صفحة التعليقات لما المستخدم يحذف الإضافة
+chrome.runtime.onInstalled.addListener(async function(details) {
+    console.log("الإضافة تم تثبيتها أو تحديثها");
+    // إذا حاب تتعامل مع التثبيت والتحديث بشكل مختلف
+    /**
+    if(details.reason === "install"){
+        // استدعاء وظيفة للتعامل مع التثبيت الأول
+    } else if(details.reason === "update") {
+        // استدعاء وظيفة للتعامل مع التحديث
+    }
+    **/
+    // await mellowtel.generateAndOpenOptInLink(); للتعامل مع إعدادات المستخدمين. للمزيد من التفاصيل: وثائق opt-in-out
+    const uninstallURl = await mellowtel.generateFeedbackLink();
+    chrome.runtime.setUninstallURL(uninstallURl);
+});
+```

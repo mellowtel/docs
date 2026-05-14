@@ -1,0 +1,151 @@
+---
+sidebarTitle: "من ثابت إلى Webpack"
+title: "إعداد Webpack لمكون إضافي للمتصفح"
+icon: "cube"
+---
+
+هاد الدليل يوضح كيفاش تجهز مشروع الإضافة ديالك للمتصفح باستخدام Webpack، مع التركيز على تكوين يدعم نقاط دخول متعددة لجافاسكريبت وإدارة الأصول الثابتة.
+
+### الخطوة 1: إعداد المشروع الأولي
+
+بدا بتنظيم المشروع ديالك باش يستوعب ملفات المصدر، الأصول الثابتة، والإخراج النهائي المجمع. لازم يكون هيكل المشروع ديالك كيما هكا:
+
+```
+your-extension/
+├── public/            # يحتوي على الملفات الثابتة كيما HTML، CSS، وملف manifest
+│   ├── images/
+│   ├── icons/
+│   ├── manifest.json
+│   └── popup.html
+├── src/               # يحتوي على كود المصدر لجافاسكريبت
+│   ├── background.js
+│   ├── popup.js
+│   ├── content_script.js
+│   └── ... (أي ملفات JS أخرى)
+└── package.json       # ملف حزمة NPM
+```
+
+### الخطوة 2: إعداد Node.js و NPM
+
+تأكد بلي Node.js و NPM متثبتين في النظام ديالك. Node.js ضروري باش تشغل نظام الحزم، و NPM تستعمل باش تدير تبعيات المشروع ديالك.
+
+### الخطوة 3: تثبيت Webpack والتبعيات الأخرى
+
+روح للمجلد الرئيسي للمشروع ديالك في التيرمينال وابدأ مشروع NPM جديد إذا ما درتش هاد الشي من قبل:
+
+```bash
+npm init -y
+```
+
+بعدها، ثبت Webpack واللودرز والإضافات اللازمة:
+
+```bash
+npm install --save-dev webpack webpack-cli babel-loader @babel/core @babel/preset-env copy-webpack-plugin file-loader
+```
+
+- **Webpack** يجمع جافاسكريبت والأصول ديالك.
+- **Babel** يسمح لك تستعمل ميزات جافاسكريبت الحديثة.
+- **CopyPlugin** ينسخ الملفات والمجلدات إلى مجلد البناء ديالك.
+- **File Loader** يحل import/require() على ملف إلى رابط ويب ويصدر الملف إلى مجلد الإخراج.
+
+### الخطوة 4: تكوين Webpack
+
+أنشئ ملف `webpack.config.js` في جذر المشروع ديالك. هاد الملف لازم يحدد نقاط الدخول ديالك، تكوين الإخراج، قواعد الموديل لتحميل أنواع الملفات المختلفة، والإضافات لوظائف إضافية. ها كيفاش لازم يكون `webpack.config.js` ديالك مع الإعداد المعطى:
+
+```javascript
+const path = require('path');
+const CopyPlugin = require('copy-webpack-plugin');
+
+module.exports = {
+    mode: 'development', // استعمل 'production' للبناء الإنتاجي
+    entry: {
+        background: path.join(__dirname, 'src', 'background.js'),
+        popup: path.join(__dirname, 'src', 'popup.js'),
+        content_script: path.join(__dirname, 'src', 'content_script.js'),
+    },
+    output: {
+        path: path.join(__dirname, 'dist'),
+        filename: '[name].js',
+        publicPath: ""
+    },
+    module: {
+        rules: [
+            {
+                test: /\.js$/,
+                exclude: /node_modules/,
+                use: {
+                    loader: 'babel-loader',
+                    options: {
+                        presets: ['@babel/preset-env']
+                    }
+                }
+            },
+            {
+                test: /\.js$/,
+                exclude: /node_modules/
+            },
+            {
+                test: /\.(png|svg|jpg|gif)$/,
+                use: [
+                    'file-loader',
+                ],
+            },
+        ]
+    },
+    plugins: [
+        new CopyPlugin({
+            patterns: [
+                { from: 'public', to: '' } // انسخ جميع الأصول و manifest.json من 'public' إلى 'dist'
+            ],
+        }),
+    ]
+};
+```
+
+### الخطوة 5: تعديل ملفات Manifest و HTML
+
+تأكد بلي `manifest.json` وأي ملفات HTML تشير للسكريبتات والأصول بشكل صحيح. مثلا، السكريبتات راح تكون في مجلد `dist`، لذا حدث المسارات بشكل مناسب.
+
+### الخطوة 6: دمج سكريبتات البناء في `package.json`
+
+بعد ما تجهز المشروع ديالك مع Webpack وتكونه كيما موضح في الخطوات السابقة، راح تحب تأتمت عملية البناء والمراقبة باستخدام سكريبتات `npm`. افتح ملف `package.json` ديالك وأضف السكريبتات التالية داخل كائن `scripts`:
+
+```json
+"scripts": {
+  "test": "echo \"Error: no test specified\" && exit 1",
+  "build": "webpack --mode production",
+  "watch": "webpack --mode development --watch"
+},
+```
+
+ها شنو يدير كل سكريبت:
+- `"build"`: يجمع الإضافة ديالك في وضع الإنتاج، ويحسن الإخراج للنشر. هاد الوضع يفعل تحسينات كيما التصغير وإزالة الكود الميت.
+- `"watch"`: يشغل Webpack في وضع التطوير ويراقب الملفات ديالك للتغييرات، ويعيد تجميع المشروع تلقائيا عند تعديل ملف. هاد الشي مفيد أثناء التطوير للحصول على ردود فعل فورية على التغييرات.
+
+### الخطوة 7: اختبار وبناء الإضافة
+
+باش تبني الإضافة ديالك للإنتاج، استعمل:
+
+```bash
+npm run build
+```
+
+هاد الأمر يشغل Webpack مع العلم `--mode production`، ويحسن المشروع ديالك للنشر.
+
+للتطوير، تقدر تخلي Webpack يراقب الملفات ديالك ويعيد تجميعها كلما اكتشف تغييرات:
+
+```bash
+npm run watch
+```
+
+هاد الشي يخلي عملية التطوير أسهل، حيث ما تحتاجش تبني المشروع يدويا بعد كل تغيير.
+
+### الخطوة 7: اختبار الإضافة
+
+باش تختبر الإضافة ديالك في Chrome:
+
+1. روح لـ `chrome://extensions/` في متصفح Chrome.
+2. فعل "وضع المطور" في الزاوية العليا اليمنى.
+3. اضغط على "تحميل غير معبأ" واختر مجلد `dist` ديالك.
+
+هاد الشي راح يثبت الإضافة محليا للاختبار وأغراض التطوير.

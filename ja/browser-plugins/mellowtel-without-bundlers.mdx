@@ -1,0 +1,154 @@
+---
+sidebarTitle: "バンドラーなしでMellowtel"
+title: "バンドラーなしでMellowtelを統合する"
+icon: "box"
+---
+
+このガイドでは、WebpackやViteのようなバンドラーを使用せずに、Mellowtelをブラウザ拡張機能に統合する方法を説明します。その代わりに、コンテンツスクリプトとサービスワーカーの両方で動作する単一の事前バンドルファイルを使用します。
+
+## プロジェクトセットアップ
+
+基本的なブラウザ拡張機能の構造から始めます：
+
+```
+your-extension/
+├── icons/
+├── popup/
+│   ├── popup.html
+│   └── popup.js
+├── background.js           # あなたのサービスワーカー
+├── content_script.js
+├── manifest.json
+└── mellowtel.js           # 次のステップで追加されます
+```
+
+## Mellowtelバンドルの取得
+
+拡張機能用の`mellowtel.js`ファイルを取得するには、2つのオプションがあります：
+
+### オプション1: 事前バンドルファイルを使用
+
+最も簡単に始める方法は、[mellowtel-bundledリポジトリ](https://github.com/mellowtel-inc/mellowtel-bundled)から事前バンドルされた`mellowtel.js`ファイルを使用することです。
+
+1. [mellowtel-bundledリポジトリ](https://github.com/mellowtel-inc/mellowtel-bundled)にアクセス
+2. `mellowtel.js`ファイルをダウンロード
+3. それを拡張機能ディレクトリにコピー
+
+### オプション2: 自分でバンドルを生成
+
+自分でバンドルを生成したい場合は、次の手順に従ってください：
+
+#### 一時的なバンドリングディレクトリを作成
+
+Mellowtelをインストールし、バンドルを生成するための一時ディレクトリを作成します：
+
+```bash
+mkdir mellowtel-bundling
+cd mellowtel-bundling
+npm init -y
+npm install mellowtel
+```
+
+これにより、バンドリングのみに使用するMellowtelパッケージを含む別のフォルダが作成されます。
+
+#### esbuildでMellowtelをバンドル
+
+`mellowtel-bundling`ディレクトリ内から、サービスワーカーとコンテンツスクリプトの両方で動作する単一のバンドルを作成します：
+
+```bash
+npx esbuild node_modules/mellowtel/dist/index.js --bundle --format=iife --global-name=Mellowtel --footer:js="globalThis.Mellowtel = Mellowtel.default" --platform=browser --outfile=mellowtel.js --minify --legal-comments=none
+```
+
+このコマンドは：
+- `node_modules/mellowtel/dist/index.js`からMellowtelのソースを取得
+- すべての依存関係を単一ファイルにバンドル
+- IIFE形式を使用して、普遍的な互換性を持たせるためのグローバル名を使用
+- デフォルトエクスポートをグローバルに利用可能にするフッターを追加
+- ブラウザ環境向けに最適化し、出力を最小化
+- バンドリングディレクトリに`mellowtel.js`を作成
+
+#### バンドルを拡張機能にコピー
+
+esbuildコマンドを実行した後、生成されたファイルを拡張機能ディレクトリにコピーします：
+
+```bash
+cp mellowtel.js ../your-extension/
+```
+
+出力ファイルのみが必要なので、一時バンドリングディレクトリを削除できます：
+
+```bash
+cd ..
+rm -rf mellowtel-bundling
+```
+
+これで、拡張機能フォルダには使用準備が整ったMellowtelのバンドルファイルが含まれています。
+
+## マニフェストの設定（どちらのオプションでも）
+
+上記のどちらのオプションを選んだ場合でも、`manifest.json`を設定してコンテンツスクリプトにMellowtelバンドルを含めます：
+
+```json
+{
+  "manifest_version": 3,
+  "name": "Your Extension Name",
+  "version": "1.0",
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["mellowtel.js", "content_script.js"]
+    }
+  ],
+  "permissions": [
+    "storage",
+    "declarativeNetRequestWithHostAccess"
+  ],
+  "host_permissions": [
+    "\u003Call_urls\u003E"
+  ]
+}
+```
+
+**重要**: 
+- `"type": "module"`フィールドは、サービスワーカーでのESモジュールインポートを有効にします。
+- コンテンツスクリプトの配列では、`mellowtel.js`は`content_script.js`より**前に**ロードされる必要があります。これにより、コンテンツスクリプトが実行されるときにMellowtelのグローバル変数が利用可能になります。
+
+## 拡張機能でMellowtelを使用する
+
+サービスワーカー（background.js）では、バンドルファイルをインポートします：
+
+```javascript
+// background.js
+import './mellowtel.js';
+
+(async () => {
+    const mellowtel = new Mellowtel("<configuration_key>"); // あなたの設定キーに置き換えてください
+    await mellowtel.initBackground();
+})();
+```
+
+コンテンツスクリプトでは、Mellowtelはグローバル変数として利用可能です（インポートは不要、マニフェスト経由でロードされるため）：
+
+```javascript
+// content_script.js
+// Mellowtelはmellowtel.jsからのグローバル変数として利用可能です
+
+(async () => {
+  const mellowtel = new Mellowtel("<configuration_key>"); // あなたの設定キーに置き換えてください
+  await mellowtel.initContentScript();
+})();
+```
+
+## 拡張機能のテスト
+
+拡張機能をテストするには：
+
+1. Chromeで`chrome://extensions/`にアクセス（他のブラウザでも同様）
+2. 「デベロッパーモード」を有効にする
+3. 「パッケージ化されていない拡張機能を読み込む」をクリックし、拡張機能フォルダを選択
+
+このアプローチにより、WebpackやViteのようなフルビルドシステムを設定する複雑さなしに、Mellowtelを使用する利点を得ることができます。

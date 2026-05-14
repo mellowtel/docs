@@ -1,0 +1,36 @@
+---
+title: "Limitación de Tasa"
+description: "Cómo Mellowtel se mantiene invisible para el usuario final"
+icon: "cronómetro"
+---
+
+## Qué es
+
+Mellowtel limita automáticamente cuántas solicitudes aceptará y procesará un solo dispositivo (un "nodo"). El límite se aplica dentro del SDK. No lo configuras tú, y un socio que se comporte mal no puede aumentarlo desde el exterior.
+
+## Por qué es importante
+
+Todo el producto depende de que los usuarios no noten que Mellowtel está funcionando. Si un nodo atendiera solicitudes ilimitadas, un usuario con una conexión lenta lo sentiría en su navegador. La limitación de tasa es el mecanismo que protege esa promesa, y es la razón por la que puedes enviar Mellowtel a usuarios reales sin preocuparte por tickets de soporte sobre "el navegador se siente lento".
+
+## Cómo funciona
+
+Cada solicitud se realiza dentro de una ventana aislada que se crea para la solicitud y se destruye inmediatamente después. Este es el mismo modelo de aislamiento utilizado por redes publicitarias como Google AdSense, con la garantía adicional de que la ventana es *sin credenciales* (ver [Privacidad](/concepts/privacy)). Debido a que cada solicitud es de corta duración y está aislada, el único factor que importa para la experiencia del usuario es *cuántas* se ejecutan, y eso es lo que controla la limitación de tasa.
+
+El límite actual varía según:
+
+- **Velocidad de ancho de banda**: las conexiones más lentas reciben menos solicitudes.
+- **Geolocalización**: la capacidad se equilibra regionalmente.
+- **Disponibilidad general de la red**: el SDK retrocede cuando la demanda global es baja.
+
+<Note>
+**TODO:** Documentar números concretos (límites de solicitudes/minuto, niveles geográficos, umbrales de ancho de banda) una vez finalizados. Por ahora, los límites son intencionalmente adaptativos y no se exponen a través de la API pública.
+</Note>
+
+## Superficie de la API
+
+No hay una API de limitación de tasa para llamar. La limitación es interna y siempre está activada. No puedes desactivarla, y no deberías necesitar inspeccionarla. Si crees que la limitación de tasa está causando un problema en tu integración, [abre un problema en GitHub](https://github.com/mellowtel-inc/) o contáctanos en [Discord](https://discord.com/invite/txAZp4MSDe).
+
+## Relacionado
+
+- [Privacidad](/concepts/privacy): a qué tiene y no tiene acceso la ventana aislada.
+- [Opt-in / Opt-out](/concepts/opt-in-out): la capa de consentimiento que se encuentra delante de todo esto.

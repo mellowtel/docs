@@ -1,0 +1,45 @@
+---
+title: "Privacy"
+description: "Wat Mellowtel wel en niet kan zien over je gebruikers"
+icon: "lock"
+---
+
+## Wat het is
+
+Elke Mellowtel-aanvraag draait binnen een gesandboxed, credentialloze venster dat op aanvraag wordt gemaakt en onmiddellijk daarna wordt vernietigd. Het venster heeft geen toegang tot de sessie van de gebruiker, identiteit, of enige gegevens die jouw product op het apparaat opslaat.
+
+## Waarom het belangrijk is
+
+Je vraagt je gebruikers om hun bandbreedte te delen. Ze zullen alleen ja zeggen, en jij blijft alleen voldoen aan de beleidsregels van de browserwinkel, als je de vraag "wat ziet Mellowtel eigenlijk?" kunt beantwoorden met een duidelijke, specifieke lijst. Deze pagina is die lijst.
+
+## Waar Mellowtel *geen* toegang toe heeft
+
+Wanneer een aanvraag wordt uitgevoerd, kan het gesandboxde venster niet lezen:
+
+- Cookies (first-party of third-party)
+- `localStorage`, `sessionStorage`, of IndexedDB
+- De authenticatiestatus van de gebruiker op een site
+- Gegevens die jouw extensie of app opslaat
+- De browsegeschiedenis of geopende tabbladen van de gebruiker
+- Persoonlijk identificeerbare informatie van welke aard dan ook
+
+Denk aan elke aanvraag als draaien in een nieuw incognito venster dat niet gerelateerd is aan de normale browserinstantie van de gebruiker.
+
+## Wat Mellowtel *wel* ziet
+
+- Een willekeurig gegenereerde knooppuntidentificator, eenmaal toegewezen per installatie. Het is niet gekoppeld aan persoonlijke informatie en kan niet worden gebruikt om de gebruiker te identificeren.
+- De URL die de vertrouwde partner vroeg om op te halen (wat per definitie openbare webinhoud is).
+- De HTTP-respons van die openbare URL.
+
+## Verifieer het zelf
+
+De sandboxing-logica is open source. Als jij of je beveiligingsteam het isolatiemodel willen controleren voordat het wordt verzonden, lees dan de bron op [GitHub](https://github.com/mellowtel-inc/).
+
+<Note>
+**TODO:** Vervang de organisatielink hierboven door een dieplink naar het specifieke bestand dat het credentialloze venster creëert, zodat reviewers direct naar de relevante code kunnen springen.
+</Note>
+
+## Gerelateerd
+
+- [Opt-in / Opt-out](/concepts/opt-in-out): hoe gebruikersconsent wordt vastgelegd voordat iets van het bovenstaande gebeurt.
+- [Rate Limiting](/concepts/rate-limiting): hoe het aanvraagvolume onzichtbaar wordt gehouden voor de gebruiker.

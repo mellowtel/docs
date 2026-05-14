@@ -1,0 +1,89 @@
+---
+sidebarTitle: "提交到 Edge 附加组件"
+title: "将扩展提交到 Microsoft Edge 附加组件"
+icon: "edge"
+---
+
+在按照[快速入门](/browser-plugins/quickstart)指南将 Mellowtel 导入到你的扩展后，按照以下步骤将你的扩展提交到 Microsoft Edge 附加组件商店。
+
+## 准备你的扩展
+
+1. **开发和测试**：确保你的扩展在 Microsoft Edge 中有一个可运行的原型并经过测试。
+
+2. **创建 ZIP 文件**：将你的扩展文件打包成一个 ZIP 压缩包，包括：
+   - 扩展清单
+   - 所有必需的图片和文件
+
+3. **检查清单**：检查你的清单中的以下字段是否准确：
+   - `Name`
+   - `Description`
+
+## 提交到 Microsoft Edge 附加组件
+
+1. **创建开发者账户**：
+   - 如果你还没有账户，请在 [Partner Center](https://partner.microsoft.com/dashboard/microsoftedge/public/login?ref=addons) 上创建一个开发者账户。
+   - 有关创建开发者账户的详细说明，请参阅[开发者注册指南](https://docs.microsoft.com/microsoft-edge/extensions-chromium/publish/create-dev-account)。
+
+2. **开始新的提交**：
+   - 进入开发者仪表板并选择“创建新扩展”。
+
+3. **上传你的包**：
+   - 在包页面上传你的扩展 ZIP 文件。
+   - 等待验证并解决任何必要的问题。
+
+   ![上传包界面](/images/edge/packages.png)
+   
+   上传界面允许你拖放 ZIP 文件或浏览选择它。确保你的包包含：
+   1. 详细信息如名称、版本、简短描述、权限和默认语言的清单文件。
+   2. 你的扩展所需的图片和其他文件。
+
+4. **提供可用性详情**：
+   - 设置可见性（公开或隐藏）。
+   - 选择分发市场。
+
+   ![可用性设置](/images/edge/availability.png)
+   
+   在可用性部分：
+   - 选择公开（任何人都可以找到和使用扩展）或隐藏（只有拥有商店列表 URL 的人可以使用）。
+   - 选择你的扩展将可用的市场。默认情况下，它设置为所有当前和未来市场。
+
+5. **设置扩展属性**：
+   - 选择一个类别。
+   - 指定隐私政策要求。
+   - 添加网站 URL 和支持联系信息。
+   - 指明是否有成人内容。
+
+   ![属性部分](/images/edge/properties.png)
+   
+   在属性部分：
+   - 选择最能描述你的扩展的类别。
+   - 指明你的扩展是否访问、收集或传输个人信息。
+   - 如有需要，提供隐私政策 URL。
+   - 添加你的网站 URL 和支持联系信息。
+
+6. **添加商店列表详情**：
+   - 提供描述（最多 10,000 字符）。
+   - 上传扩展商店徽标（推荐 300x300 像素）。
+   - 添加可选的宣传图块和截图。
+   - 包含搜索词以提高可发现性。
+
+7. **完成提交**：
+   - 添加任何认证备注。
+   - 点击“发布”提交你的扩展。
+
+## 提交后
+
+- Microsoft 将审核你的扩展，这可能需要最多七个工作日。
+- 审核完成后你将收到通知。
+- 如果发现问题，解决它们并重新提交。
+
+## 成功提交的提示
+
+- 遵循 [Microsoft Edge 附加组件的开发者政策](https://docs.microsoft.com/microsoft-edge/extensions-chromium/store-policies/developer-policies)。
+- 提供清晰、简洁的描述和高质量的图片。
+- 如果你收集任何用户数据，确保你的隐私政策是全面的。
+- 及时回应任何审核员的评论或问题。
+
+请记住，集成 Mellowtel 不应影响你的提交过程，但请确保它符合 Microsoft 关于数据收集和用户隐私的政策。
+
+有关更详细的信息，请访问 [Microsoft Edge 附加组件开发者文档](https://docs.microsoft.com/microsoft-edge/extensions-chromium/publish/publish-extension)。

@@ -1,0 +1,36 @@
+---
+title: "Rate Limiting"
+description: "Wie Mellowtel sich für den Endbenutzer unsichtbar hält"
+icon: "stopwatch"
+---
+
+## Was es ist
+
+Mellowtel begrenzt automatisch, wie viele Anfragen ein einzelnes Gerät (ein "Node") akzeptieren und verarbeiten wird. Diese Begrenzung wird innerhalb des SDK durchgesetzt. Du konfigurierst es nicht, und ein fehlerhaftes Partnerprogramm kann es von außen nicht erhöhen.
+
+## Warum es wichtig ist
+
+Das gesamte Produkt hängt davon ab, dass die Benutzer nicht bemerken, dass Mellowtel läuft. Wenn ein Node unbegrenzt Anfragen bedienen würde, würde ein Benutzer mit einer langsamen Verbindung dies in seinem Browser spüren. Rate Limiting ist der Mechanismus, der dieses Versprechen schützt, und es ist der Grund, warum du Mellowtel an echte Benutzer ausliefern kannst, ohne dir Sorgen über Support-Tickets zu machen, die sagen "der Browser fühlt sich langsam an."
+
+## Wie es funktioniert
+
+Jede Anfrage wird in einem isolierten Fenster ausgeführt, das für die Anfrage erstellt und sofort danach abgebaut wird. Dies ist dasselbe Isolationsmodell, das von Werbenetzwerken wie Google AdSense verwendet wird, mit der zusätzlichen Garantie, dass das Fenster *credentialless* ist (siehe [Datenschutz](/concepts/privacy)). Da jede Anfrage kurzlebig und isoliert ist, ist der einzige Regler, der für die Benutzererfahrung wichtig ist, *wie viele* ausgeführt werden, und genau das steuert das Rate Limiting.
+
+Das aktuelle Limit variiert basierend auf:
+
+- **Bandbreitengeschwindigkeit**: Langsamere Verbindungen erhalten weniger Anfragen.
+- **Geolokalisierung**: Die Kapazität wird regional ausgeglichen.
+- **Gesamte Netzwerkverfügbarkeit**: Das SDK zieht sich zurück, wenn die globale Nachfrage gering ist.
+
+<Note>
+**TODO:** Dokumentiere konkrete Zahlen (req/min Obergrenzen, Geo-Stufen, Bandbreitenschwellen) sobald finalisiert. Derzeit sind die Limits absichtlich adaptiv und nicht über die öffentliche API zugänglich.
+</Note>
+
+## API-Oberfläche
+
+Es gibt keine Rate-Limiting-API, die aufgerufen werden kann. Die Drosselung ist intern und immer aktiv. Du kannst sie nicht deaktivieren und solltest sie nicht inspizieren müssen. Wenn du glaubst, dass Rate Limiting ein Problem in deiner Integration verursacht, [öffne ein Issue auf GitHub](https://github.com/mellowtel-inc/) oder kontaktiere uns auf [Discord](https://discord.com/invite/txAZp4MSDe).
+
+## Verwandte Themen
+
+- [Datenschutz](/concepts/privacy): was das isolierte Fenster kann und nicht kann.
+- [Opt-in / Opt-out](/concepts/opt-in-out): die Zustimmungsschicht, die dem Ganzen vorausgeht.

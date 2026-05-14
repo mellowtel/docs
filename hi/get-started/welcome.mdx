@@ -1,0 +1,61 @@
+---
+sidebarTitle: "स्वागत"
+title: "स्वागत है 👋"
+icon: "hand-wave"
+---
+
+**Mellowtel डेवलपर्स और क्रिएटर्स के लिए AI दुनिया में एक ओपन-सोर्स मोनेटाइजेशन प्लेटफॉर्म है।** अपने ब्राउज़र एक्सटेंशन, डेस्कटॉप ऐप, वेबसाइट, या मोबाइल ऐप में SDK डालें और आपके उपयोगकर्ता अपने अप्रयुक्त इंटरनेट बैंडविड्थ का एक हिस्सा भरोसेमंद साझेदारों के साथ साझा करने के लिए ऑप्ट-इन कर सकते हैं। आप राजस्व का एक हिस्सा कमाते हैं।
+
+## इंटीग्रेशन कैसा दिखता है
+
+```bash
+npm install mellowtel
+```
+
+```javascript
+import Mellowtel from "mellowtel";
+
+const mellowtel = new Mellowtel("<YOUR_CONFIGURATION_KEY>");
+await mellowtel.initBackground();
+await mellowtel.generateAndOpenOptInLink();
+```
+
+यह ब्राउज़र एक्सटेंशन के लिए पूरा इंटीग्रेशन है। अन्य प्लेटफॉर्म भी इसी तरह हैं। नीचे दिए गए क्विकस्टार्ट्स देखें।
+
+## अपनी प्लेटफॉर्म चुनें
+
+<CardGroup cols={2}>
+    <Card title="ब्राउज़र प्लगइन्स" icon="puzzle-piece" href="/browser-plugins/quickstart">
+        Chrome, Edge, Firefox, या Safari एक्सटेंशन में ~5 मिनट में Mellowtel इंटीग्रेट करें।
+    </Card>
+    <Card title="डेस्कटॉप ऐप्स" icon="desktop" href="/desktop-app/quickstart">
+        Electron, Windows, या macOS डेस्कटॉप ऐप को मोनेटाइज करें।
+    </Card>
+    <Card title="वेबसाइट्स" icon="atom" href="/website/quickstart">
+        किसी भी वेबसाइट में एक ही स्क्रिप्ट से Mellowtel जोड़ें।
+    </Card>
+    <Card title="मोबाइल ऐप्स" icon="mobile" href="/mobile-app/quickstart">
+        iOS या Android मोबाइल ऐप को मोनेटाइज करें।
+    </Card>
+</CardGroup>
+
+## शिप करने से पहले, अवधारणाएँ पढ़ें
+
+ये चार पृष्ठ उन सिद्धांतों की व्याख्या करते हैं जिन्हें हर Mellowtel इंटीग्रेशन को सम्मानित करना चाहिए: सहमति, गोपनीयता, और दर सीमांकन। इन्हें एक बार पढ़ें और बाकी के दस्तावेज़ समझ में आएंगे।
+
+<CardGroup cols={2}>
+    <Card title="अवधारणाओं का अवलोकन" icon="compass" href="/concepts/overview">
+        Mellowtel के पीछे के चार विचार एक पृष्ठ में।
+    </Card>
+    <Card title="ऑप्ट-इन / ऑप्ट-आउट" icon="signature" href="/concepts/opt-in-out">
+        उपयोगकर्ता की सहमति को सही तरीके से कैसे कैप्चर (और रद्द) करें।
+    </Card>
+</CardGroup>
+
+## राजस्व कैसे काम करता है
+
+विभाजन है **55% डेवलपर्स के लिए, 45% Mellowtel के लिए**। जैसे-जैसे हम स्केल करेंगे, हम अधिक सेवाएं प्रदान करने और डेवलपर शेयर बढ़ाने में सक्षम होंगे। आगे चलकर ऐसे फीचर्स हो सकते हैं जो आपको इस राजस्व का एक हिस्सा सीधे अपने उपयोगकर्ताओं के साथ साझा करने की अनुमति देंगे; इस बीच, आप ऑप्ट-इन उपयोगकर्ताओं को विशेष फीचर्स या सामग्री के साथ पुरस्कृत कर सकते हैं।
+
+## मदद चाहिए?
+
+यह साइट तकनीकी रूप से सब कुछ के लिए सत्य का स्रोत है। किसी और चीज़ के लिए (प्रश्न, फीडबैक, या बस अन्य Mellowtel डेवलपर्स के साथ समय बिताने के लिए), [Discord](https://discord.com/invite/txAZp4MSDe) पर हमारे साथ जुड़ें।
