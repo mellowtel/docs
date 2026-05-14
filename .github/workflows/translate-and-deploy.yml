@@ -21,6 +21,7 @@ on:
 env:
   DEPLOY_BRANCH: prod
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  LANGUAGES: "de fr es nl zh it ja ru"
 
 concurrency:
   group: translate-deploy
@@ -56,7 +57,7 @@ jobs:
           else
             if git rev-parse HEAD~1 >/dev/null 2>&1; then
               # Get changed English MDX files (exclude language directories)
-              files=$(git diff --name-only HEAD~1 HEAD -- '*.mdx' | grep -v '^de/' | grep -v '^fr/' | grep -v '^es/' | grep -v '^nl/' | grep -v '^zh/' | grep -v '^it/' | grep -v '^ja/' | grep -v '^ru/' | tr '\n' ',' | sed 's/,$//')
+              files=$(git diff --name-only HEAD~1 HEAD -- '*.mdx' | grep -vE "^($(echo "$LANGUAGES" | tr ' ' '|'))/" | tr '\n' ',' | sed 's/,$//')
               echo "files=$files" >> $GITHUB_OUTPUT
             else
               echo "files=" >> $GITHUB_OUTPUT
@@ -77,7 +78,7 @@ jobs:
           git fetch origin prod:prod 2>/dev/null || true
           if git rev-parse prod >/dev/null 2>&1; then
             echo "Copying existing translations from prod branch..."
-            for lang in de fr es nl zh it ja ru; do
+            for lang in $LANGUAGES; do
               git checkout prod -- "$lang/" 2>/dev/null || echo "No existing $lang translations"
             done
           fi
@@ -110,7 +111,7 @@ jobs:
           git fetch origin prod:prod 2>/dev/null || true
           if git rev-parse prod >/dev/null 2>&1; then
             echo "Copying existing translations from prod..."
-            for lang in de fr es nl zh it ja ru; do
+            for lang in $LANGUAGES; do
               git checkout prod -- "$lang/" 2>/dev/null || echo "No $lang yet"
             done
           fi
@@ -257,7 +258,7 @@ jobs:
         run: |
           # Force-add locale dirs first — they are in .gitignore (to prevent
           # accidental commits on main) but must be committed on prod.
-          git add -f de/ fr/ es/ nl/ zh/ it/ ja/ ru/ 2>/dev/null || true
+          for lang in $LANGUAGES; do git add -f "$lang/" 2>/dev/null || true; done
 
           # Stage everything else
           git add -A

@@ -12,11 +12,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import OpenAI from "openai";
-
-interface LanguageInfo {
-  name: string;
-  nativeName: string;
-}
+import { LANGUAGES } from "./languages";
 
 interface NavGroup {
   group: string;
@@ -46,17 +42,6 @@ interface DocsConfig {
   openapi?: string[];
   [key: string]: unknown;
 }
-
-const LANGUAGES: Record<string, LanguageInfo> = {
-  de: { name: "German", nativeName: "Deutsch" },
-  fr: { name: "French", nativeName: "Français" },
-  es: { name: "Spanish", nativeName: "Español" },
-  nl: { name: "Dutch", nativeName: "Nederlands" },
-  zh: { name: "Chinese (Simplified)", nativeName: "简体中文" },
-  it: { name: "Italian", nativeName: "Italiano" },
-  ja: { name: "Japanese", nativeName: "日本語" },
-  ru: { name: "Russian", nativeName: "Русский" },
-};
 
 const DOCS_ROOT = path.resolve(__dirname, "..");
 const DOCS_CONFIG_PATH = path.join(DOCS_ROOT, "docs.json");

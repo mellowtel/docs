@@ -10,22 +10,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import OpenAI from "openai";
-
-interface LanguageInfo {
-  name: string;
-  nativeName: string;
-}
-
-const LANGUAGES: Record<string, LanguageInfo> = {
-  de: { name: "German", nativeName: "Deutsch" },
-  fr: { name: "French", nativeName: "Français" },
-  es: { name: "Spanish", nativeName: "Español" },
-  nl: { name: "Dutch", nativeName: "Nederlands" },
-  zh: { name: "Chinese (Simplified)", nativeName: "简体中文" },
-  it: { name: "Italian", nativeName: "Italiano" },
-  ja: { name: "Japanese", nativeName: "日本語" },
-  ru: { name: "Russian", nativeName: "Русский" },
-};
+import { LANGUAGES } from "./languages";
 
 const DOCS_ROOT = path.resolve(__dirname, "..");
 const OPENAPI_DIR = path.join(DOCS_ROOT, "openapi");

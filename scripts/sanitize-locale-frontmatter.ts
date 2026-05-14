@@ -11,9 +11,10 @@
 import * as fs from "fs";
 import * as path from "path";
 import { sanitizeMdxFrontmatter, validateSanitizedMdx } from "./mdx-frontmatter-sanitize";
+import { LANGUAGES } from "./languages";
 
 const DOCS_ROOT = path.resolve(__dirname, "..");
-const LANGS = ["de", "fr", "es", "nl", "zh", "it", "ja", "ru"];
+const LANGS = Object.keys(LANGUAGES);
 
 function walkMdx(dir: string, out: string[]): void {
   if (!fs.existsSync(dir)) {
