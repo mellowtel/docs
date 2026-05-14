@@ -21,7 +21,7 @@ on:
 env:
   DEPLOY_BRANCH: prod
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-  LANGUAGES: "de fr es nl zh it ja ru"
+  LANGUAGES: "de fr es nl zh it ja ru ar lt pt-br hi ur uk"
 
 concurrency:
   group: translate-deploy
@@ -134,6 +134,12 @@ jobs:
             it/
             ja/
             ru/
+            ar/
+            lt/
+            pt-br/
+            hi/
+            ur/
+            uk/
           if-no-files-found: ignore
 
   # ============================================
@@ -186,6 +192,12 @@ jobs:
             it/
             ja/
             ru/
+            ar/
+            lt/
+            pt-br/
+            hi/
+            ur/
+            uk/
           if-no-files-found: ignore
 
   # ============================================
@@ -229,7 +241,7 @@ jobs:
       - name: Verify translations exist
         run: |
           echo "Checking for translations..."
-          for lang in de fr es nl zh it ja ru; do
+          for lang in $LANGUAGES; do
             if [ -d "$lang" ]; then
               count=$(find "$lang" -name "*.mdx" | wc -l)
               echo "  $lang: $count files"
