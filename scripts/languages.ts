@@ -13,9 +13,7 @@ export const LANGUAGES: Record<string, LanguageInfo> = {
   ja: { name: "Japanese", nativeName: "日本語" },
   ru: { name: "Russian", nativeName: "Русский" },
   ar: { name: "Algerian Arabic", nativeName: "الدارجة" },
-  lt: { name: "Lithuanian", nativeName: "Lietuvių" },
-  "pt-br": { name: "Portuguese (Brazil)", nativeName: "Português (Brasil)" },
+  "pt-BR": { name: "Portuguese (Brazil)", nativeName: "Português (Brasil)" },
   hi: { name: "Hindi", nativeName: "हिन्दी" },
-  ur: { name: "Urdu", nativeName: "اردو" },
   uk: { name: "Ukrainian", nativeName: "Українська" },
 };

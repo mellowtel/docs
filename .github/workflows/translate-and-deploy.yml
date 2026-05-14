@@ -21,7 +21,7 @@ on:
 env:
   DEPLOY_BRANCH: prod
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-  LANGUAGES: "de fr es nl zh it ja ru ar lt pt-br hi ur uk"
+  LANGUAGES: "de fr es nl zh it ja ru ar pt-BR hi uk"
 
 concurrency:
   group: translate-deploy
@@ -135,10 +135,8 @@ jobs:
             ja/
             ru/
             ar/
-            lt/
-            pt-br/
+            pt-BR/
             hi/
-            ur/
             uk/
           if-no-files-found: ignore
 
@@ -193,10 +191,8 @@ jobs:
             ja/
             ru/
             ar/
-            lt/
-            pt-br/
+            pt-BR/
             hi/
-            ur/
             uk/
           if-no-files-found: ignore
 
