@@ -253,6 +253,12 @@ jobs:
       - name: Validate locale SEO URLs
         run: npx ts-node scripts/update-locale-seo.ts --validate-only
 
+      - name: Generate hreflang sitemap
+        run: npx ts-node scripts/generate-hreflang-sitemap.ts
+
+      - name: Validate hreflang sitemap
+        run: npx ts-node scripts/generate-hreflang-sitemap.ts --validate-only
+
       - name: Translate OpenAPI specs (all locales)
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
