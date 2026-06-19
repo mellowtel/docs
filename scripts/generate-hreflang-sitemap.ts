@@ -23,7 +23,7 @@ const SITE_ROOT = "https://mellowtel.com/docs";
 const HREFLANG_CODES: Record<string, string> = {
   en: "en",
   zh: "zh-Hans",
-  ar: "ar-DZ",
+  ar: "ar",
 };
 
 interface NavGroup {
@@ -266,7 +266,29 @@ function validateSitemap(content: string): string[] {
   const urlCount = (content.match(/<url>/g) ?? []).length;
   const locCount = (content.match(/<loc>/g) ?? []).length;
   const hreflangCount = (content.match(/hreflang=/g) ?? []).length;
+  const entries = [...content.matchAll(/<url>\s*([\s\S]*?)\s*<\/url>/g)].map((match) => {
+    const body = match[1];
+    const loc = body.match(/<loc>([^<]+)<\/loc>/)?.[1];
+    const alternates = [...body.matchAll(
+      /<xhtml:link rel="alternate" hreflang="([^"]+)" href="([^"]+)" \/>/g
+    )].map((alternate) => ({
+      hreflang: alternate[1],
+      href: alternate[2],
+    }));
 
+    return { loc, alternates };
+  });
+  const entriesByLoc = new Map(
+    entries
+      .filter((entry): entry is { loc: string; alternates: typeof entry.alternates } =>
+        Boolean(entry.loc)
+      )
+      .map((entry) => [entry.loc, entry])
+  );
+
+  if (!content.startsWith('<?xml version="1.0" encoding="UTF-8"?>')) {
+    errors.push("XML declaration must be the first line with no leading whitespace or BOM");
+  }
   if (!content.includes('xmlns:xhtml="http://www.w3.org/1999/xhtml"')) {
     errors.push("missing xhtml namespace");
   }
@@ -281,6 +303,58 @@ function validateSitemap(content: string): string[] {
   }
   if (content.includes("https://www.mellowtel.com/docs")) {
     errors.push("contains www docs URLs");
+  }
+  if (content.includes('hreflang="ar-DZ"')) {
+    errors.push('contains Algeria-specific hreflang="ar-DZ"');
+  }
+
+  for (const entry of entries) {
+    if (!entry.loc) {
+      errors.push("URL entry is missing loc");
+      continue;
+    }
+
+    const labels = entry.alternates.map((alternate) => alternate.hreflang);
+    const duplicateLabels = labels.filter((label, index) => labels.indexOf(label) !== index);
+    if (duplicateLabels.length > 0) {
+      errors.push(
+        `${entry.loc} has duplicate hreflang values: ${[...new Set(duplicateLabels)].join(", ")}`
+      );
+    }
+
+    if (!entry.alternates.some((alternate) => alternate.hreflang === "x-default")) {
+      errors.push(`${entry.loc} is missing x-default`);
+    }
+    if (!entry.alternates.some(
+      (alternate) => alternate.hreflang !== "x-default" && alternate.href === entry.loc
+    )) {
+      errors.push(`${entry.loc} is missing its hreflang self-reference`);
+    }
+
+    const expectedSet = entry.alternates
+      .map((alternate) => `${alternate.hreflang}=${alternate.href}`)
+      .sort()
+      .join("\n");
+
+    for (const alternate of entry.alternates) {
+      if (alternate.hreflang === "x-default") {
+        continue;
+      }
+
+      const reciprocal = entriesByLoc.get(alternate.href);
+      if (!reciprocal) {
+        errors.push(`${entry.loc} links to missing reciprocal URL ${alternate.href}`);
+        continue;
+      }
+
+      const reciprocalSet = reciprocal.alternates
+        .map((item) => `${item.hreflang}=${item.href}`)
+        .sort()
+        .join("\n");
+      if (reciprocalSet !== expectedSet) {
+        errors.push(`${entry.loc} and ${alternate.href} have mismatched hreflang sets`);
+      }
+    }
   }
 
   return errors;
