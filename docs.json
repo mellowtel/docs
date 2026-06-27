@@ -3,11 +3,11 @@
   "theme": "mint",
   "name": "Mellowtel Docs",
   "colors": {
-    "primary": "#9563FF",
-    "light": "#AE87FF",
-    "dark": "#0D001D"
+    "primary": "#125e4b",
+    "light": "#bdf981",
+    "dark": "#125e4b"
   },
-  "favicon": "/favicon.png",
+  "favicon": "/favicon.svg",
   "navigation": {
     "tabs": [
       {
@@ -194,7 +194,7 @@
   },
   "background": {
     "color": {
-      "dark": "#090014"
+      "dark": "#0a0a0a"
     }
   },
   "navbar": {
