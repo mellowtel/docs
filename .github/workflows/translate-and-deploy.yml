@@ -247,6 +247,18 @@ jobs:
       - name: Sanitize MDX frontmatter (YAML-safe quoting, all locales)
         run: npx ts-node scripts/sanitize-locale-frontmatter.ts
 
+      - name: Set self-referencing canonical URLs for every locale
+        run: npx ts-node scripts/update-locale-seo.ts
+
+      - name: Validate locale SEO URLs
+        run: npx ts-node scripts/update-locale-seo.ts --validate-only
+
+      - name: Generate hreflang sitemap
+        run: npx ts-node scripts/generate-hreflang-sitemap.ts
+
+      - name: Validate hreflang sitemap
+        run: npx ts-node scripts/generate-hreflang-sitemap.ts --validate-only
+
       - name: Translate OpenAPI specs (all locales)
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
