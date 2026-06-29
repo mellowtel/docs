@@ -100,46 +100,32 @@ function getNavReferencedPages(): Set<string> {
 }
 
 /**
- * Validates the OpenAI API key by making a test request, with retries for
- * transient network errors (e.g. "Premature close" in CI environments).
+ * Validates the OpenAI API key. Hard-fails on auth errors (401/429).
+ * Warns and continues on network errors — the actual translation calls
+ * will surface a bad key with a proper error if validation was inconclusive.
  */
 async function validateApiKey(): Promise<void> {
   console.log("Validating OpenAI API key...");
 
-  for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
-    try {
-      // Use models.list (GET) instead of chat completions (POST) — more
-      // reliable in CI environments where chunked POST responses can drop.
-      await openai.models.list();
+  try {
+    await openai.models.list();
+    console.log("✓ OpenAI API key is valid and working\n");
+  } catch (err) {
+    const error = err as Error & { status?: number; code?: string };
 
-      console.log("✓ OpenAI API key is valid and working\n");
-      return;
-    } catch (err) {
-      const error = err as Error & { status?: number; code?: string };
-
-      if (error.status === 401) {
-        console.error("::error::OpenAI API key is invalid or expired");
-        process.exit(1);
-      }
-
-      if (error.status === 429) {
-        console.error("::error::OpenAI API rate limit exceeded or quota exhausted");
-        process.exit(1);
-      }
-
-      if (error.code === "ENOTFOUND" || error.code === "ECONNREFUSED") {
-        console.error("::error::Cannot connect to OpenAI API");
-        process.exit(1);
-      }
-
-      if (attempt < MAX_RETRIES) {
-        console.warn(`API validation attempt ${attempt} failed (${error.message}), retrying in ${RETRY_DELAY_MS}ms...`);
-        await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY_MS));
-      } else {
-        console.error(`::error::OpenAI API validation failed after ${MAX_RETRIES} attempts: ${error.message}`);
-        process.exit(1);
-      }
+    if (error.status === 401) {
+      console.error("::error::OpenAI API key is invalid or expired");
+      process.exit(1);
     }
+
+    if (error.status === 429) {
+      console.error("::error::OpenAI API rate limit exceeded or quota exhausted");
+      process.exit(1);
+    }
+
+    // Network errors (Premature close, ENOTFOUND, etc.) — don't block the run.
+    // Translation calls will fail with a clear error if the key is actually bad.
+    console.warn(`⚠ API key pre-check failed (${error.message}) — continuing anyway\n`);
   }
 }
 
