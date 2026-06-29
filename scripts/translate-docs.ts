@@ -100,43 +100,52 @@ function getNavReferencedPages(): Set<string> {
 }
 
 /**
- * Validates the OpenAI API key by making a test request
+ * Validates the OpenAI API key by making a test request, with retries for
+ * transient network errors (e.g. "Premature close" in CI environments).
  */
 async function validateApiKey(): Promise<void> {
   console.log("Validating OpenAI API key...");
 
-  try {
-    const response = await openai.chat.completions.create({
-      model: "gpt-4o",
-      messages: [{ role: "user", content: "Reply with OK" }],
-      max_tokens: 5,
-    });
+  for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+    try {
+      const response = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: [{ role: "user", content: "Reply with OK" }],
+        max_tokens: 5,
+      });
 
-    if (!response.choices[0]?.message?.content) {
-      throw new Error("API returned empty response");
+      if (!response.choices[0]?.message?.content) {
+        throw new Error("API returned empty response");
+      }
+
+      console.log("✓ OpenAI API key is valid and working\n");
+      return;
+    } catch (err) {
+      const error = err as Error & { status?: number; code?: string };
+
+      if (error.status === 401) {
+        console.error("::error::OpenAI API key is invalid or expired");
+        process.exit(1);
+      }
+
+      if (error.status === 429) {
+        console.error("::error::OpenAI API rate limit exceeded or quota exhausted");
+        process.exit(1);
+      }
+
+      if (error.code === "ENOTFOUND" || error.code === "ECONNREFUSED") {
+        console.error("::error::Cannot connect to OpenAI API");
+        process.exit(1);
+      }
+
+      if (attempt < MAX_RETRIES) {
+        console.warn(`API validation attempt ${attempt} failed (${error.message}), retrying in ${RETRY_DELAY_MS}ms...`);
+        await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY_MS));
+      } else {
+        console.error(`::error::OpenAI API validation failed after ${MAX_RETRIES} attempts: ${error.message}`);
+        process.exit(1);
+      }
     }
-
-    console.log("✓ OpenAI API key is valid and working\n");
-  } catch (err) {
-    const error = err as Error & { status?: number; code?: string };
-
-    if (error.status === 401) {
-      console.error("::error::OpenAI API key is invalid or expired");
-      process.exit(1);
-    }
-
-    if (error.status === 429) {
-      console.error("::error::OpenAI API rate limit exceeded or quota exhausted");
-      process.exit(1);
-    }
-
-    if (error.code === "ENOTFOUND" || error.code === "ECONNREFUSED") {
-      console.error("::error::Cannot connect to OpenAI API");
-      process.exit(1);
-    }
-
-    console.error(`::error::OpenAI API validation failed: ${error.message}`);
-    process.exit(1);
   }
 }
 
