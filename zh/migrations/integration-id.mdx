@@ -1,0 +1,63 @@
+---
+title: "迁移到集成 ID"
+description: "用新的每个集成标识符替换旧的配置密钥"
+icon: "arrow-right-arrow-left"
+robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+canonical: "https://mellowtel.com/docs/zh/migrations/integration-id"
+og:title: "Mellowtel 集成 ID 从配置密钥迁移"
+og:description: "Mellowtel 集成 ID 迁移解释了为什么配置密钥正在更改、每个应用的 ID 如何工作、在哪里找到它们以及需要更新哪些代码。"
+og:url: "https://mellowtel.com/docs/zh/migrations/integration-id"
+twitter:card: "summary"
+twitter:title: "Mellowtel 集成 ID 从配置密钥迁移"
+twitter:description: "Mellowtel 集成 ID 迁移解释了为什么配置密钥正在更改、每个应用的 ID 如何工作、在哪里找到它们以及需要更新哪些代码。"
+---
+
+我们正在用一个新的标识符 **集成 ID** 替换旧的 `configuration_key`。如果你已经在使用 Mellowtel，你需要更新传递给 SDK 的字符串。
+
+## 简要说明
+
+- 每个集成现在都有自己的 **集成 ID**，以 `intgr-` 为前缀。
+- 旧的 `configuration_key` 仍然有效，但将被弃用。
+- 唯一需要更改的代码是传递给 `new Mellowtel(...)` 的字符串。
+
+## 配置密钥与集成 ID
+
+| | 配置密钥（旧） | 集成 ID（新） |
+|---|---|---|
+| 范围 | 每个账户一个密钥 | 每个集成一个 ID |
+| 格式 | 不透明字符串 | `intgr-XXXXXXXXXX` |
+| 统计 | 所有应用程序汇总 | 每个应用程序单独统计 |
+
+## 我们为什么要进行此更改
+
+Mellowtel 现在支持浏览器扩展、桌面应用、移动应用和网站。使用一个共享密钥，团队无法判断哪个平台实际上在推动收入。
+
+每个应用一个集成 ID 解决了这个问题。一旦你迁移，你将解锁每个应用的统计数据、每个应用的收入，以及我们接下来要构建的仪表板功能，帮助你独立发展每个应用。
+
+## 你需要更改的内容
+
+仅需更改传递给 `new Mellowtel(...)` 的字符串。
+
+```javascript
+// 之前
+const mellowtel = new Mellowtel("<your_configuration_key>");
+
+// 之后
+const mellowtel = new Mellowtel("intgr-MG8tHhnkDN");
+```
+
+其他一切保持不变。
+
+## 获取你的集成 ID
+
+1. 打开仪表板中的[集成页面](https://www.mellowtel.com/dashboard/integrations)。
+2. 为每个应用创建一个集成，选择匹配的类型（扩展、桌面、移动、网站）。
+3. 复制集成 ID 并将其粘贴到你的 SDK 初始化中。
+
+## 向后兼容性
+
+现有代码将继续工作。在删除旧密钥之前，我们会提前通知弃用日期。尽早迁移可以解锁每个应用的功能，所以没有理由等待。
+
+## 需要帮助？
+
+在 [Discord](https://discord.com/invite/txAZp4MSDe) 上联系我们，我们会指导你完成整个过程。

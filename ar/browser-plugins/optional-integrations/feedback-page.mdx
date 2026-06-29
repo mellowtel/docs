@@ -1,0 +1,62 @@
+---
+sidebarTitle: "Feedback تاع المستخدم"
+title: "جمع feedback من المستخدمين تاعك"
+icon: "comment"
+robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+canonical: "https://mellowtel.com/docs/ar/browser-plugins/optional-integrations/feedback-page"
+og:title: "دليل صفحة Feedback تاع Mellowtel لملحقات المتصفح"
+og:description: "إعداد صفحة feedback تاع Mellowtel يوضح كيفاش ملحقات المتصفح تقدر تولد روابط feedback تاع الإلغاء، تفتح صفحة مستضافة، وتراجع الردود في لوحة التحكم."
+og:url: "https://mellowtel.com/docs/ar/browser-plugins/optional-integrations/feedback-page"
+twitter:card: "summary"
+twitter:title: "دليل صفحة Feedback تاع Mellowtel لملحقات المتصفح"
+twitter:description: "إعداد صفحة feedback تاع Mellowtel يوضح كيفاش ملحقات المتصفح تقدر تولد روابط feedback تاع الإلغاء، تفتح صفحة مستضافة، وتراجع الردود في لوحة التحكم."
+---
+
+Mellowtel توفر صفحة feedback جاهزة تقدر تستعملها باش تجمع feedback من المستخدمين تاعك باش تقدر تطور المنتج تاعك بسرعة. حاليا الصفحة متوفرة غير لملحقات المتصفح. صفحة feedback تشبه هذي [الصفحة](https://www.mellowtel.com/uninstall-feedback/?extension_id=testId&configuration_key=testConfiguration) بتمرير الأيقونة والاسم تاع الملحق تاعك بشكل ديناميكي.
+
+تقدر بعدين تقرا feedback من لوحة التحكم تاع Mellowtel وتستعمله باش تطور الملحق تاع المتصفح تاعك.
+
+مهم: تقدر تقرا feedback من لوحة التحكم تاع Mellowtel غير إذا كان عندك ملحق منشور في المتجر وماشي في وضع التطوير. إذا كنت ما زلت في التطوير وحاب تجرب صفحة feedback، تواصل معنا عبر الدردشة.
+
+ها كيفاش تقدر تضيف صفحة feedback لملحق المتصفح تاعك:
+
+## أضف صفحة feedback للملحق تاعك
+
+صفحة feedback مستضافة من طرف Mellowtel وتقدر توصلها عبر URL تقدر تولده باستعمال `generateFeedbackLink()` من حزمة Mellowtel JS.
+
+إذا حبيت تفتح صفحة feedback مباشرة في تبويب جديد، تقدر تستعمل `generateAndOpenFeedbackLink()` وراح تفتح صفحة تشبه هذي [الصفحة](https://www.mellowtel.com/uninstall-feedback/?extension_id=testId&configuration_key=testConfiguration) بتمرير الأيقونة والاسم تاع الملحق تاعك بشكل ديناميكي.
+
+تقدر تفتح صفحة feedback باستدعاء `generateFeedbackLink()` من السكريبت الخلفي تاع الملحق تاعك أو سكريبت المحتوى لما المستخدم يلغي تثبيت ملحق المتصفح تاعك.
+
+ها كيفاش تقدر تديرها.
+
+افتح ملف `service worker` تاعك (المعروف أيضا بالسكريبت الخلفي) وأضف الكود التالي:
+
+تذكر تبدل `<YOUR_CONFIGURATION_KEY>` بالمفتاح تاع التكوين تاع Mellowtel الحقيقي تاعك. إذا ما عندكش مفتاح تكوين، تقدر تحصل عليه بالتسجيل في [Mellowtel](https://www.mellowtel.com/mellowtel-auth/).
+
+```javascript
+import Mellowtel from "mellowtel";
+
+let mellowtel;
+
+(async () => {
+    mellowtel = new Mellowtel("<YOUR_CONFIGURATION_KEY>");
+    await mellowtel.initBackground();
+})();
+
+// افتح صفحة feedback لما المستخدم يلغي تثبيت الملحق
+chrome.runtime.onInstalled.addListener(async function(details) {
+    console.log("الملحق تثبت أو تحدّث");
+    // إذا حبيت تتعامل مع التثبيت والتحديث بشكل مختلف
+    /**
+    if(details.reason === "install"){
+        // استدعي دالة للتعامل مع التثبيت الأول
+    } else if(details.reason === "update") {
+        // استدعي دالة للتعامل مع التحديث
+    }
+    **/
+    // await mellowtel.generateAndOpenOptInLink(); للتعامل مع إعدادات المستخدمين. لمزيد من التفاصيل: وثائق opt-in-out
+    const uninstallURl = await mellowtel.generateFeedbackLink();
+    chrome.runtime.setUninstallURL(uninstallURl);
+});
+```

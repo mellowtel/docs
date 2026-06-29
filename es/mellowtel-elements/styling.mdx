@@ -1,0 +1,169 @@
+---
+sidebarTitle: "Estilizar Elementos"
+title: "Estilizar Elementos de Mellowtel"
+icon: "palette"
+robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+canonical: "https://mellowtel.com/docs/es/mellowtel-elements/styling"
+og:title: "Guía de Opciones de Estilización y Posicionamiento de Elementos de Mellowtel"
+og:description: "La estilización de elementos de Mellowtel cubre opciones de paquete para colores y tamaños, además de CSS de contenedores para posicionamiento, diseños responsivos y ejemplos completos."
+og:url: "https://mellowtel.com/docs/es/mellowtel-elements/styling"
+twitter:card: "summary"
+twitter:title: "Guía de Opciones de Estilización y Posicionamiento de Elementos de Mellowtel"
+twitter:description: "La estilización de elementos de Mellowtel cubre opciones de paquete para colores y tamaños, además de CSS de contenedores para posicionamiento, diseños responsivos y ejemplos completos."
+---
+
+Aquí verás cómo personalizar la apariencia de los Elementos de Mellowtel usando opciones de estilización integradas y posicionamiento de contenedores CSS. La estilización de contenedores te da control total sobre el diseño y el posicionamiento, mientras que las opciones de estilización del paquete controlan la apariencia del elemento.
+
+## Opciones de Estilización del Paquete
+
+El paquete de Elementos de Mellowtel proporciona opciones de estilización integradas que te permiten personalizar la apariencia de tus elementos sin escribir CSS personalizado. Puedes controlar colores, dimensiones y propiedades visuales directamente a través del objeto de configuración.
+
+```javascript
+const styles = {
+  textColor: '#FFFFFF',        // Color del texto (formato hex)
+  backgroundColor: '#4CAF50',  // Color de fondo (formato hex)
+  radius: 8,                   // Radio del borde en píxeles
+  width: 200,                  // Ancho en píxeles (rango 50-300)
+  height: 50                   // Altura en píxeles (rango 20-200)
+};
+```
+
+### Ejemplo
+
+```javascript
+// Crear un botón de suscripción verde
+await mellowtel.createElement('opt-in-container', {
+  type: 'opt-in',
+  styles: {
+    textColor: '#FFFFFF',
+    backgroundColor: '#10B981',
+    radius: 12,
+    width: 180,
+    height: 45
+  }
+});
+```
+
+## Posicionamiento de Contenedores
+
+Estiliza los divs contenedores para posicionar elementos:
+
+```css
+/* Posicionamiento básico */
+.mellowtel-container {
+  display: flex;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+/* Posicionamiento fijo */
+#opt-in-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+}
+
+/* Diseño responsivo */
+.mellowtel-elements {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  padding: 20px;
+}
+
+/* Responsivo para móviles */
+@media (max-width: 768px) {
+  .mellowtel-container {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+```
+
+### Ejemplo Completo de Estilización
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        .mellowtel-wrapper {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px;
+            border-radius: 12px;
+            margin: 20px;
+        }
+        
+        .mellowtel-elements {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .element-container {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+    <div class="mellowtel-wrapper">
+        <h2>Elementos de Mellowtel</h2>
+        <div class="mellowtel-elements">
+            <div class="element-container">
+                <div id="opt-in-container"></div>
+            </div>
+            <div class="element-container">
+                <div id="opt-out-container"></div>
+            </div>
+            <div class="element-container">
+                <div id="settings-container"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        import { MellowtelElements } from 'mellowtel-elements';
+        
+        const mellowtel = new MellowtelElements('your-extension-id', 'your-config-key');
+
+        // Crear elementos con estilización personalizada
+        mellowtel.createElement('opt-in-container', {
+            type: 'opt-in',
+            styles: {
+                backgroundColor: '#10B981',
+                textColor: '#FFFFFF',
+                radius: 12,
+                width: 180,
+                height: 45
+            }
+        });
+
+        mellowtel.createElement('opt-out-container', {
+            type: 'opt-out',
+            styles: {
+                backgroundColor: '#EF4444',
+                textColor: '#FFFFFF',
+                radius: 12,
+                width: 180,
+                height: 45
+            }
+        });
+
+        mellowtel.createElement('settings-container', {
+            type: 'settings',
+            styles: {
+                backgroundColor: '#3B82F6',
+                textColor: '#FFFFFF',
+                radius: 12,
+                width: 180,
+                height: 45
+            }
+        });
+    </script>
+</body>
+</html>
+```

@@ -1,0 +1,51 @@
+---
+sidebarTitle: "クイックスタート"
+title: "デスクトップアプリにMellowtelを統合する"
+icon: "rocket"
+robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+canonical: "https://mellowtel.com/docs/ja/desktop-app/quickstart"
+og:title: "Mellowtelデスクトップアプリ統合クイックスタートガイド"
+og:description: "Mellowtelデスクトップアプリ統合は、事前条件、同意要件、Windows .NETおよびElectron SDKの経路を説明し、帯域幅共有を追加します。"
+og:url: "https://mellowtel.com/docs/ja/desktop-app/quickstart"
+twitter:card: "summary"
+twitter:title: "Mellowtelデスクトップアプリ統合クイックスタートガイド"
+twitter:description: "Mellowtelデスクトップアプリ統合は、事前条件、同意要件、Windows .NETおよびElectron SDKの経路を説明し、帯域幅共有を追加します。"
+---
+
+Mellowtelは、ユーザーが未使用のインターネット帯域幅の小さな部分を信頼できるパートナー（スタートアップ、研究者、非営利団体）と共有することを選択できるようにします。これらのパートナーは、ウェブから公開されているデータを取得します。あなたは提供されたリクエストに対して報酬を受け取り、ユーザーは選択した報酬やプレミアム機能を受け取ります。個人データは収集、共有、販売されません。
+
+## 事前条件
+
+始める前に、以下を確認してください：
+
+- Mellowtelアカウントと**設定キー**。あなたのものを[Mellowtelダッシュボード](https://www.mellowtel.com/mellowtel-auth/)から生成してください。
+- サポートされているデスクトップフレームワーク（以下を参照）。各フレームワークガイドには、パッケージレジストリインストールトークンをワンクリックで表示する機能が含まれているため、事前にリクエストする必要はありません。
+
+<Warning>
+  **ユーザーの同意は必須です。** 両方のSDKはAPIレベルでオプトインを強制します。あなたのアプリは明確な同意ダイアログを表示し、ユーザーがいつでもオプトイン状態を管理できるようにしなければなりません。
+</Warning>
+
+## フレームワークを選ぶ
+
+使用しているフレームワークを選択し、指示に従ってください。
+
+<CardGroup cols={2}>
+  <Card title="Windows (.NET)" icon="windows" href="/desktop-app/windows">
+    .NET SDKを使用したコンソール、WPF、またはWindows Formsアプリケーション。Windowsのみ対応。
+  </Card>
+  <Card title="Electron" icon="bolt" href="/desktop-app/electron">
+    Electronで構築されたクロスプラットフォームのデスクトップアプリ。macOS、Windows、Linuxで動作します。
+  </Card>
+</CardGroup>
+
+{/*
+<Note>
+  **ネイティブmacOSおよびLinux SDKはまだ利用できません。** ネイティブCocoa、Swift、Qt、またはGTKアプリを提供し、Mellowtelのサポートを希望する場合は、需要を把握するために[Discord](https://discord.com/invite/txAZp4MSDe)でお知らせください。
+</Note>
+*/}
+
+---
+
+完了までの推定時間：フレームワークごとに10〜15分。
+
+サポートが必要な場合やフィードバックがある場合は、[info@mellowtel.com](mailto:info@mellowtel.com)までご連絡いただくか、[Discordコミュニティ](https://discord.com/invite/txAZp4MSDe)に参加してください。

@@ -1,0 +1,53 @@
+---
+title: "Confidentialité"
+description: "Ce que Mellowtel peut et ne peut pas voir à propos de vos utilisateurs"
+icon: "lock"
+robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+canonical: "https://mellowtel.com/docs/fr/concepts/privacy"
+og:title: "Confidentialité Mellowtel : Ce que le SDK Peut et Ne Peut Pas Voir"
+og:description: "Les conseils de confidentialité de Mellowtel expliquent les requêtes en sandbox sans identifiants et listent les données auxquelles le SDK ne peut pas accéder avant que les utilisateurs ne partagent leur bande passante en toute sécurité."
+og:url: "https://mellowtel.com/docs/fr/concepts/privacy"
+twitter:card: "summary"
+twitter:title: "Confidentialité Mellowtel : Ce que le SDK Peut et Ne Peut Pas Voir"
+twitter:description: "Les conseils de confidentialité de Mellowtel expliquent les requêtes en sandbox sans identifiants et listent les données auxquelles le SDK ne peut pas accéder avant que les utilisateurs ne partagent leur bande passante en toute sécurité."
+---
+
+## Ce que c'est
+
+Chaque requête Mellowtel s'exécute dans une fenêtre sandbox sans identifiants qui est créée à la demande et détruite immédiatement après. La fenêtre n'a aucun accès à la session de l'utilisateur, à son identité, ou à toute donnée que votre produit stocke sur l'appareil.
+
+## Pourquoi c'est important
+
+Tu demandes à tes utilisateurs de partager leur bande passante. Ils n'accepteront, et tu resteras conforme aux politiques des magasins de navigateurs, que si tu peux répondre "que voit réellement Mellowtel ?" avec une liste claire et précise. Cette page est cette liste.
+
+## Ce à quoi Mellowtel *n'a pas* accès
+
+Lorsqu'une requête s'exécute, la fenêtre sandbox ne peut pas lire :
+
+- Les cookies (de première ou de tierce partie)
+- `localStorage`, `sessionStorage`, ou IndexedDB
+- L'état d'authentification de l'utilisateur sur n'importe quel site
+- Toute donnée que ton extension ou application stocke
+- L'historique de navigation de l'utilisateur ou les onglets ouverts
+- Toute information personnellement identifiable
+
+Considère chaque requête comme s'exécutant dans une nouvelle fenêtre de navigation privée qui n'est pas liée à l'instance normale du navigateur de l'utilisateur.
+
+## Ce que Mellowtel *voit*
+
+- Un identifiant de nœud généré aléatoirement, attribué une fois par installation. Il n'est lié à aucune information personnelle et ne peut pas être utilisé pour identifier l'utilisateur.
+- L'URL que le partenaire de confiance a demandé de récupérer (qui est par définition du contenu web public).
+- La réponse HTTP de cette URL publique.
+
+## Vérifie-le toi-même
+
+La logique de sandbox est open source. Si toi ou ton équipe de sécurité souhaitez auditer le modèle d'isolation avant de le déployer, lisez le code source sur [GitHub](https://github.com/mellowtel-inc/).
+
+<Note>
+**À FAIRE :** Remplacer le lien de l'organisation ci-dessus par un lien direct vers le fichier spécifique qui crée la fenêtre sans identifiants, afin que les réviseurs puissent accéder directement au code pertinent.
+</Note>
+
+## Connexe
+
+- [Opt-in / Opt-out](/concepts/opt-in-out) : comment le consentement des utilisateurs est capturé avant que tout ce qui précède ne se produise.
+- [Limitation de Taux](/concepts/rate-limiting) : comment le volume de requêtes est maintenu invisible pour l'utilisateur.

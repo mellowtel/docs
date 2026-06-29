@@ -1,0 +1,51 @@
+---
+sidebarTitle: "Inicio Rápido"
+title: "Integra Mellowtel en tu Aplicación de Escritorio"
+icon: "rocket"
+robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+canonical: "https://mellowtel.com/docs/es/desktop-app/quickstart"
+og:title: "Guía de Inicio Rápido para la Integración de la Aplicación de Escritorio Mellowtel"
+og:description: "La integración de la aplicación de escritorio Mellowtel explica los requisitos previos, los requisitos de consentimiento y las rutas de los SDK de Windows .NET y Electron para añadir el uso compartido de ancho de banda."
+og:url: "https://mellowtel.com/docs/es/desktop-app/quickstart"
+twitter:card: "summary"
+twitter:title: "Guía de Inicio Rápido para la Integración de la Aplicación de Escritorio Mellowtel"
+twitter:description: "La integración de la aplicación de escritorio Mellowtel explica los requisitos previos, los requisitos de consentimiento y las rutas de los SDK de Windows .NET y Electron para añadir el uso compartido de ancho de banda."
+---
+
+Mellowtel permite que tus usuarios opten por compartir una pequeña fracción de su ancho de banda de internet no utilizado con socios de confianza (startups, investigadores y organizaciones sin fines de lucro) que recuperan datos disponibles públicamente de la web. Te pagan por las solicitudes atendidas, los usuarios reciben la recompensa o característica premium que elijas ofrecerles a cambio, y no se recopilan, comparten ni venden datos personales.
+
+## Requisitos Previos
+
+Antes de comenzar, asegúrate de tener:
+
+- Una cuenta de Mellowtel y una **clave de configuración**. Genera la tuya desde el [panel de Mellowtel](https://www.mellowtel.com/mellowtel-auth/).
+- Un marco de trabajo de escritorio compatible (ver abajo). Cada guía de marco incluye una revelación con un clic para el token de instalación del registro de paquetes, por lo que no necesitas solicitar uno con anticipación.
+
+<Warning>
+  **El consentimiento del usuario es obligatorio.** Ambos SDKs imponen la aceptación en el nivel de la API. Tu aplicación debe mostrar un diálogo de consentimiento claro y debe permitir a los usuarios gestionar su estado de aceptación en cualquier momento.
+</Warning>
+
+## Elige tu Marco
+
+Elige el marco que estás utilizando y sigue las instrucciones.
+
+<CardGroup cols={2}>
+  <Card title="Windows (.NET)" icon="windows" href="/desktop-app/windows">
+    Aplicaciones de consola, WPF o Windows Forms que utilizan el SDK de .NET. Solo Windows.
+  </Card>
+  <Card title="Electron" icon="bolt" href="/desktop-app/electron">
+    Aplicaciones de escritorio multiplataforma construidas con Electron. Funciona en macOS, Windows y Linux.
+  </Card>
+</CardGroup>
+
+{/*
+<Note>
+  **Los SDKs nativos para macOS y Linux aún no están disponibles.** Si distribuyes una aplicación nativa Cocoa, Swift, Qt o GTK y deseas soporte de Mellowtel, háznoslo saber en [Discord](https://discord.com/invite/txAZp4MSDe) para que podamos evaluar la demanda.
+</Note>
+*/}
+
+---
+
+Tiempo estimado para completar: 10-15 minutos por marco.
+
+Si necesitas ayuda o tienes comentarios, contáctanos en [info@mellowtel.com](mailto:info@mellowtel.com) o únete a nuestra [comunidad de Discord](https://discord.com/invite/txAZp4MSDe).

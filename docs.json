@@ -9,36 +9,111 @@
   },
   "favicon": "/favicon.svg",
   "navigation": {
-    "tabs": [
+    "languages": [
       {
-        "tab": "Welcome",
-        "groups": [
+        "language": "en",
+        "default": true,
+        "tabs": [
           {
-            "group": "Get Started",
-            "pages": [
-              "get-started/welcome"
+            "tab": "Welcome",
+            "groups": [
+              {
+                "group": "Get Started",
+                "pages": [
+                  "get-started/welcome"
+                ]
+              },
+              {
+                "group": "Concepts",
+                "pages": [
+                  "concepts/overview",
+                  "concepts/opt-in-out",
+                  "concepts/privacy",
+                  "concepts/rate-limiting"
+                ]
+              },
+              {
+                "group": "Desktop Apps",
+                "pages": [
+                  "desktop-app/quickstart",
+                  "desktop-app/windows",
+                  "desktop-app/electron"
+                ]
+              },
+              {
+                "group": "Browser Plugins",
+                "pages": [
+                  {
+                    "group": "Integrate",
+                    "pages": [
+                      "browser-plugins/quickstart",
+                      "browser-plugins/chrome_edge",
+                      "browser-plugins/static-to-webpack",
+                      "browser-plugins/mellowtel-without-bundlers"
+                    ]
+                  },
+                  {
+                    "group": "Submit to Stores",
+                    "pages": [
+                      "browser-plugins/submit-to-chrome-store",
+                      "browser-plugins/submit-to-edge-store",
+                      "browser-plugins/submit-to-safari-store",
+                      "browser-plugins/submit-to-firefox-store"
+                    ]
+                  },
+                  {
+                    "group": "Frameworks",
+                    "pages": [
+                      "browser-plugins/guides/plasmo",
+                      "browser-plugins/guides/web-extension-framework"
+                    ]
+                  },
+                  {
+                    "group": "Optional Integrations",
+                    "pages": [
+                      "browser-plugins/optional-integrations/feedback-page",
+                      "browser-plugins/optional-integrations/pascoli",
+                      "browser-plugins/optional-integrations/meucci"
+                    ]
+                  },
+                  {
+                    "group": "NPM",
+                    "pages": [
+                      "browser-plugins/npm/npm"
+                    ]
+                  }
+                ]
+              },
+              {
+                "group": "Website",
+                "pages": [
+                  "website/quickstart"
+                ]
+              },
+              {
+                "group": "Mobile App",
+                "pages": [
+                  "mobile-app/quickstart"
+                ]
+              }
             ]
           },
           {
-            "group": "Concepts",
-            "pages": [
-              "concepts/overview",
-              "concepts/opt-in-out",
-              "concepts/privacy",
-              "concepts/rate-limiting"
+            "tab": "Desktop Apps",
+            "groups": [
+              {
+                "group": "Integrate",
+                "pages": [
+                  "desktop-app/quickstart",
+                  "desktop-app/windows",
+                  "desktop-app/electron"
+                ]
+              }
             ]
           },
           {
-            "group": "Desktop Apps",
-            "pages": [
-              "desktop-app/quickstart",
-              "desktop-app/windows",
-              "desktop-app/electron"
-            ]
-          },
-          {
-            "group": "Browser Plugins",
-            "pages": [
+            "tab": "Browser Plugins",
+            "groups": [
               {
                 "group": "Integrate",
                 "pages": [
@@ -81,94 +156,2041 @@
             ]
           },
           {
-            "group": "Website",
-            "pages": [
-              "website/quickstart"
+            "tab": "Website",
+            "groups": [
+              {
+                "group": "Integrate",
+                "pages": [
+                  "website/quickstart"
+                ]
+              }
             ]
           },
           {
-            "group": "Mobile App",
-            "pages": [
-              "mobile-app/quickstart"
-            ]
-          }
-        ]
-      },
-            {
-        "tab": "Desktop Apps",
-        "groups": [
-          {
-            "group": "Integrate",
-            "pages": [
-              "desktop-app/quickstart",
-              "desktop-app/windows",
-              "desktop-app/electron"
-            ]
-          }
-        ]
-      },
-      {
-        "tab": "Browser Plugins",
-        "groups": [
-          {
-            "group": "Integrate",
-            "pages": [
-              "browser-plugins/quickstart",
-              "browser-plugins/chrome_edge",
-              "browser-plugins/static-to-webpack",
-              "browser-plugins/mellowtel-without-bundlers"
-            ]
-          },
-          {
-            "group": "Submit to Stores",
-            "pages": [
-              "browser-plugins/submit-to-chrome-store",
-              "browser-plugins/submit-to-edge-store",
-              "browser-plugins/submit-to-safari-store",
-              "browser-plugins/submit-to-firefox-store"
-            ]
-          },
-          {
-            "group": "Frameworks",
-            "pages": [
-              "browser-plugins/guides/plasmo",
-              "browser-plugins/guides/web-extension-framework"
-            ]
-          },
-          {
-            "group": "Optional Integrations",
-            "pages": [
-              "browser-plugins/optional-integrations/feedback-page",
-              "browser-plugins/optional-integrations/pascoli",
-              "browser-plugins/optional-integrations/meucci"
-            ]
-          },
-          {
-            "group": "NPM",
-            "pages": [
-              "browser-plugins/npm/npm"
+            "tab": "Mobile App",
+            "groups": [
+              {
+                "group": "Integrate",
+                "pages": [
+                  "mobile-app/quickstart"
+                ]
+              }
             ]
           }
         ]
       },
       {
-        "tab": "Website",
-        "groups": [
+        "language": "de",
+        "tabs": [
           {
-            "group": "Integrate",
-            "pages": [
-              "website/quickstart"
+            "tab": "Welcome",
+            "groups": [
+              {
+                "group": "Get Started",
+                "pages": [
+                  "de/get-started/welcome"
+                ]
+              },
+              {
+                "group": "Concepts",
+                "pages": [
+                  "de/concepts/overview",
+                  "de/concepts/opt-in-out",
+                  "de/concepts/privacy",
+                  "de/concepts/rate-limiting"
+                ]
+              },
+              {
+                "group": "Desktop Apps",
+                "pages": [
+                  "de/desktop-app/quickstart",
+                  "de/desktop-app/windows",
+                  "de/desktop-app/electron"
+                ]
+              },
+              {
+                "group": "Browser Plugins",
+                "pages": [
+                  {
+                    "group": "Integrate",
+                    "pages": [
+                      "de/browser-plugins/quickstart",
+                      "de/browser-plugins/chrome_edge",
+                      "de/browser-plugins/static-to-webpack",
+                      "de/browser-plugins/mellowtel-without-bundlers"
+                    ]
+                  },
+                  {
+                    "group": "Submit to Stores",
+                    "pages": [
+                      "de/browser-plugins/submit-to-chrome-store",
+                      "de/browser-plugins/submit-to-edge-store",
+                      "de/browser-plugins/submit-to-safari-store",
+                      "de/browser-plugins/submit-to-firefox-store"
+                    ]
+                  },
+                  {
+                    "group": "Frameworks",
+                    "pages": [
+                      "de/browser-plugins/guides/plasmo",
+                      "de/browser-plugins/guides/web-extension-framework"
+                    ]
+                  },
+                  {
+                    "group": "Optional Integrations",
+                    "pages": [
+                      "de/browser-plugins/optional-integrations/feedback-page",
+                      "de/browser-plugins/optional-integrations/pascoli",
+                      "de/browser-plugins/optional-integrations/meucci"
+                    ]
+                  },
+                  {
+                    "group": "NPM",
+                    "pages": [
+                      "de/browser-plugins/npm/npm"
+                    ]
+                  }
+                ]
+              },
+              {
+                "group": "Website",
+                "pages": [
+                  "de/website/quickstart"
+                ]
+              },
+              {
+                "group": "Mobile App",
+                "pages": [
+                  "de/mobile-app/quickstart"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "Desktop Apps",
+            "groups": [
+              {
+                "group": "Integrate",
+                "pages": [
+                  "de/desktop-app/quickstart",
+                  "de/desktop-app/windows",
+                  "de/desktop-app/electron"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "Browser Plugins",
+            "groups": [
+              {
+                "group": "Integrate",
+                "pages": [
+                  "de/browser-plugins/quickstart",
+                  "de/browser-plugins/chrome_edge",
+                  "de/browser-plugins/static-to-webpack",
+                  "de/browser-plugins/mellowtel-without-bundlers"
+                ]
+              },
+              {
+                "group": "Submit to Stores",
+                "pages": [
+                  "de/browser-plugins/submit-to-chrome-store",
+                  "de/browser-plugins/submit-to-edge-store",
+                  "de/browser-plugins/submit-to-safari-store",
+                  "de/browser-plugins/submit-to-firefox-store"
+                ]
+              },
+              {
+                "group": "Frameworks",
+                "pages": [
+                  "de/browser-plugins/guides/plasmo",
+                  "de/browser-plugins/guides/web-extension-framework"
+                ]
+              },
+              {
+                "group": "Optional Integrations",
+                "pages": [
+                  "de/browser-plugins/optional-integrations/feedback-page",
+                  "de/browser-plugins/optional-integrations/pascoli",
+                  "de/browser-plugins/optional-integrations/meucci"
+                ]
+              },
+              {
+                "group": "NPM",
+                "pages": [
+                  "de/browser-plugins/npm/npm"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "Website",
+            "groups": [
+              {
+                "group": "Integrate",
+                "pages": [
+                  "de/website/quickstart"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "Mobile App",
+            "groups": [
+              {
+                "group": "Integrate",
+                "pages": [
+                  "de/mobile-app/quickstart"
+                ]
+              }
             ]
           }
         ]
       },
       {
-        "tab": "Mobile App",
-        "groups": [
+        "language": "fr",
+        "tabs": [
           {
-            "group": "Integrate",
-            "pages": [
-              "mobile-app/quickstart"
+            "tab": "Welcome",
+            "groups": [
+              {
+                "group": "Get Started",
+                "pages": [
+                  "fr/get-started/welcome"
+                ]
+              },
+              {
+                "group": "Concepts",
+                "pages": [
+                  "fr/concepts/overview",
+                  "fr/concepts/opt-in-out",
+                  "fr/concepts/privacy",
+                  "fr/concepts/rate-limiting"
+                ]
+              },
+              {
+                "group": "Desktop Apps",
+                "pages": [
+                  "fr/desktop-app/quickstart",
+                  "fr/desktop-app/windows",
+                  "fr/desktop-app/electron"
+                ]
+              },
+              {
+                "group": "Browser Plugins",
+                "pages": [
+                  {
+                    "group": "Integrate",
+                    "pages": [
+                      "fr/browser-plugins/quickstart",
+                      "fr/browser-plugins/chrome_edge",
+                      "fr/browser-plugins/static-to-webpack",
+                      "fr/browser-plugins/mellowtel-without-bundlers"
+                    ]
+                  },
+                  {
+                    "group": "Submit to Stores",
+                    "pages": [
+                      "fr/browser-plugins/submit-to-chrome-store",
+                      "fr/browser-plugins/submit-to-edge-store",
+                      "fr/browser-plugins/submit-to-safari-store",
+                      "fr/browser-plugins/submit-to-firefox-store"
+                    ]
+                  },
+                  {
+                    "group": "Frameworks",
+                    "pages": [
+                      "fr/browser-plugins/guides/plasmo",
+                      "fr/browser-plugins/guides/web-extension-framework"
+                    ]
+                  },
+                  {
+                    "group": "Optional Integrations",
+                    "pages": [
+                      "fr/browser-plugins/optional-integrations/feedback-page",
+                      "fr/browser-plugins/optional-integrations/pascoli",
+                      "fr/browser-plugins/optional-integrations/meucci"
+                    ]
+                  },
+                  {
+                    "group": "NPM",
+                    "pages": [
+                      "fr/browser-plugins/npm/npm"
+                    ]
+                  }
+                ]
+              },
+              {
+                "group": "Website",
+                "pages": [
+                  "fr/website/quickstart"
+                ]
+              },
+              {
+                "group": "Mobile App",
+                "pages": [
+                  "fr/mobile-app/quickstart"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "Desktop Apps",
+            "groups": [
+              {
+                "group": "Integrate",
+                "pages": [
+                  "fr/desktop-app/quickstart",
+                  "fr/desktop-app/windows",
+                  "fr/desktop-app/electron"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "Browser Plugins",
+            "groups": [
+              {
+                "group": "Integrate",
+                "pages": [
+                  "fr/browser-plugins/quickstart",
+                  "fr/browser-plugins/chrome_edge",
+                  "fr/browser-plugins/static-to-webpack",
+                  "fr/browser-plugins/mellowtel-without-bundlers"
+                ]
+              },
+              {
+                "group": "Submit to Stores",
+                "pages": [
+                  "fr/browser-plugins/submit-to-chrome-store",
+                  "fr/browser-plugins/submit-to-edge-store",
+                  "fr/browser-plugins/submit-to-safari-store",
+                  "fr/browser-plugins/submit-to-firefox-store"
+                ]
+              },
+              {
+                "group": "Frameworks",
+                "pages": [
+                  "fr/browser-plugins/guides/plasmo",
+                  "fr/browser-plugins/guides/web-extension-framework"
+                ]
+              },
+              {
+                "group": "Optional Integrations",
+                "pages": [
+                  "fr/browser-plugins/optional-integrations/feedback-page",
+                  "fr/browser-plugins/optional-integrations/pascoli",
+                  "fr/browser-plugins/optional-integrations/meucci"
+                ]
+              },
+              {
+                "group": "NPM",
+                "pages": [
+                  "fr/browser-plugins/npm/npm"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "Website",
+            "groups": [
+              {
+                "group": "Integrate",
+                "pages": [
+                  "fr/website/quickstart"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "Mobile App",
+            "groups": [
+              {
+                "group": "Integrate",
+                "pages": [
+                  "fr/mobile-app/quickstart"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "language": "es",
+        "tabs": [
+          {
+            "tab": "Welcome",
+            "groups": [
+              {
+                "group": "Get Started",
+                "pages": [
+                  "es/get-started/welcome"
+                ]
+              },
+              {
+                "group": "Concepts",
+                "pages": [
+                  "es/concepts/overview",
+                  "es/concepts/opt-in-out",
+                  "es/concepts/privacy",
+                  "es/concepts/rate-limiting"
+                ]
+              },
+              {
+                "group": "Desktop Apps",
+                "pages": [
+                  "es/desktop-app/quickstart",
+                  "es/desktop-app/windows",
+                  "es/desktop-app/electron"
+                ]
+              },
+              {
+                "group": "Browser Plugins",
+                "pages": [
+                  {
+                    "group": "Integrate",
+                    "pages": [
+                      "es/browser-plugins/quickstart",
+                      "es/browser-plugins/chrome_edge",
+                      "es/browser-plugins/static-to-webpack",
+                      "es/browser-plugins/mellowtel-without-bundlers"
+                    ]
+                  },
+                  {
+                    "group": "Submit to Stores",
+                    "pages": [
+                      "es/browser-plugins/submit-to-chrome-store",
+                      "es/browser-plugins/submit-to-edge-store",
+                      "es/browser-plugins/submit-to-safari-store",
+                      "es/browser-plugins/submit-to-firefox-store"
+                    ]
+                  },
+                  {
+                    "group": "Frameworks",
+                    "pages": [
+                      "es/browser-plugins/guides/plasmo",
+                      "es/browser-plugins/guides/web-extension-framework"
+                    ]
+                  },
+                  {
+                    "group": "Optional Integrations",
+                    "pages": [
+                      "es/browser-plugins/optional-integrations/feedback-page",
+                      "es/browser-plugins/optional-integrations/pascoli",
+                      "es/browser-plugins/optional-integrations/meucci"
+                    ]
+                  },
+                  {
+                    "group": "NPM",
+                    "pages": [
+                      "es/browser-plugins/npm/npm"
+                    ]
+                  }
+                ]
+              },
+              {
+                "group": "Website",
+                "pages": [
+                  "es/website/quickstart"
+                ]
+              },
+              {
+                "group": "Mobile App",
+                "pages": [
+                  "es/mobile-app/quickstart"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "Desktop Apps",
+            "groups": [
+              {
+                "group": "Integrate",
+                "pages": [
+                  "es/desktop-app/quickstart",
+                  "es/desktop-app/windows",
+                  "es/desktop-app/electron"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "Browser Plugins",
+            "groups": [
+              {
+                "group": "Integrate",
+                "pages": [
+                  "es/browser-plugins/quickstart",
+                  "es/browser-plugins/chrome_edge",
+                  "es/browser-plugins/static-to-webpack",
+                  "es/browser-plugins/mellowtel-without-bundlers"
+                ]
+              },
+              {
+                "group": "Submit to Stores",
+                "pages": [
+                  "es/browser-plugins/submit-to-chrome-store",
+                  "es/browser-plugins/submit-to-edge-store",
+                  "es/browser-plugins/submit-to-safari-store",
+                  "es/browser-plugins/submit-to-firefox-store"
+                ]
+              },
+              {
+                "group": "Frameworks",
+                "pages": [
+                  "es/browser-plugins/guides/plasmo",
+                  "es/browser-plugins/guides/web-extension-framework"
+                ]
+              },
+              {
+                "group": "Optional Integrations",
+                "pages": [
+                  "es/browser-plugins/optional-integrations/feedback-page",
+                  "es/browser-plugins/optional-integrations/pascoli",
+                  "es/browser-plugins/optional-integrations/meucci"
+                ]
+              },
+              {
+                "group": "NPM",
+                "pages": [
+                  "es/browser-plugins/npm/npm"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "Website",
+            "groups": [
+              {
+                "group": "Integrate",
+                "pages": [
+                  "es/website/quickstart"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "Mobile App",
+            "groups": [
+              {
+                "group": "Integrate",
+                "pages": [
+                  "es/mobile-app/quickstart"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "language": "nl",
+        "tabs": [
+          {
+            "tab": "Welcome",
+            "groups": [
+              {
+                "group": "Get Started",
+                "pages": [
+                  "nl/get-started/welcome"
+                ]
+              },
+              {
+                "group": "Concepts",
+                "pages": [
+                  "nl/concepts/overview",
+                  "nl/concepts/opt-in-out",
+                  "nl/concepts/privacy",
+                  "nl/concepts/rate-limiting"
+                ]
+              },
+              {
+                "group": "Desktop Apps",
+                "pages": [
+                  "nl/desktop-app/quickstart",
+                  "nl/desktop-app/windows",
+                  "nl/desktop-app/electron"
+                ]
+              },
+              {
+                "group": "Browser Plugins",
+                "pages": [
+                  {
+                    "group": "Integrate",
+                    "pages": [
+                      "nl/browser-plugins/quickstart",
+                      "nl/browser-plugins/chrome_edge",
+                      "nl/browser-plugins/static-to-webpack",
+                      "nl/browser-plugins/mellowtel-without-bundlers"
+                    ]
+                  },
+                  {
+                    "group": "Submit to Stores",
+                    "pages": [
+                      "nl/browser-plugins/submit-to-chrome-store",
+                      "nl/browser-plugins/submit-to-edge-store",
+                      "nl/browser-plugins/submit-to-safari-store",
+                      "nl/browser-plugins/submit-to-firefox-store"
+                    ]
+                  },
+                  {
+                    "group": "Frameworks",
+                    "pages": [
+                      "nl/browser-plugins/guides/plasmo",
+                      "nl/browser-plugins/guides/web-extension-framework"
+                    ]
+                  },
+                  {
+                    "group": "Optional Integrations",
+                    "pages": [
+                      "nl/browser-plugins/optional-integrations/feedback-page",
+                      "nl/browser-plugins/optional-integrations/pascoli",
+                      "nl/browser-plugins/optional-integrations/meucci"
+                    ]
+                  },
+                  {
+                    "group": "NPM",
+                    "pages": [
+                      "nl/browser-plugins/npm/npm"
+                    ]
+                  }
+                ]
+              },
+              {
+                "group": "Website",
+                "pages": [
+                  "nl/website/quickstart"
+                ]
+              },
+              {
+                "group": "Mobile App",
+                "pages": [
+                  "nl/mobile-app/quickstart"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "Desktop Apps",
+            "groups": [
+              {
+                "group": "Integrate",
+                "pages": [
+                  "nl/desktop-app/quickstart",
+                  "nl/desktop-app/windows",
+                  "nl/desktop-app/electron"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "Browser Plugins",
+            "groups": [
+              {
+                "group": "Integrate",
+                "pages": [
+                  "nl/browser-plugins/quickstart",
+                  "nl/browser-plugins/chrome_edge",
+                  "nl/browser-plugins/static-to-webpack",
+                  "nl/browser-plugins/mellowtel-without-bundlers"
+                ]
+              },
+              {
+                "group": "Submit to Stores",
+                "pages": [
+                  "nl/browser-plugins/submit-to-chrome-store",
+                  "nl/browser-plugins/submit-to-edge-store",
+                  "nl/browser-plugins/submit-to-safari-store",
+                  "nl/browser-plugins/submit-to-firefox-store"
+                ]
+              },
+              {
+                "group": "Frameworks",
+                "pages": [
+                  "nl/browser-plugins/guides/plasmo",
+                  "nl/browser-plugins/guides/web-extension-framework"
+                ]
+              },
+              {
+                "group": "Optional Integrations",
+                "pages": [
+                  "nl/browser-plugins/optional-integrations/feedback-page",
+                  "nl/browser-plugins/optional-integrations/pascoli",
+                  "nl/browser-plugins/optional-integrations/meucci"
+                ]
+              },
+              {
+                "group": "NPM",
+                "pages": [
+                  "nl/browser-plugins/npm/npm"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "Website",
+            "groups": [
+              {
+                "group": "Integrate",
+                "pages": [
+                  "nl/website/quickstart"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "Mobile App",
+            "groups": [
+              {
+                "group": "Integrate",
+                "pages": [
+                  "nl/mobile-app/quickstart"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "language": "zh",
+        "tabs": [
+          {
+            "tab": "Welcome",
+            "groups": [
+              {
+                "group": "Get Started",
+                "pages": [
+                  "zh/get-started/welcome"
+                ]
+              },
+              {
+                "group": "Concepts",
+                "pages": [
+                  "zh/concepts/overview",
+                  "zh/concepts/opt-in-out",
+                  "zh/concepts/privacy",
+                  "zh/concepts/rate-limiting"
+                ]
+              },
+              {
+                "group": "Desktop Apps",
+                "pages": [
+                  "zh/desktop-app/quickstart",
+                  "zh/desktop-app/windows",
+                  "zh/desktop-app/electron"
+                ]
+              },
+              {
+                "group": "Browser Plugins",
+                "pages": [
+                  {
+                    "group": "Integrate",
+                    "pages": [
+                      "zh/browser-plugins/quickstart",
+                      "zh/browser-plugins/chrome_edge",
+                      "zh/browser-plugins/static-to-webpack",
+                      "zh/browser-plugins/mellowtel-without-bundlers"
+                    ]
+                  },
+                  {
+                    "group": "Submit to Stores",
+                    "pages": [
+                      "zh/browser-plugins/submit-to-chrome-store",
+                      "zh/browser-plugins/submit-to-edge-store",
+                      "zh/browser-plugins/submit-to-safari-store",
+                      "zh/browser-plugins/submit-to-firefox-store"
+                    ]
+                  },
+                  {
+                    "group": "Frameworks",
+                    "pages": [
+                      "zh/browser-plugins/guides/plasmo",
+                      "zh/browser-plugins/guides/web-extension-framework"
+                    ]
+                  },
+                  {
+                    "group": "Optional Integrations",
+                    "pages": [
+                      "zh/browser-plugins/optional-integrations/feedback-page",
+                      "zh/browser-plugins/optional-integrations/pascoli",
+                      "zh/browser-plugins/optional-integrations/meucci"
+                    ]
+                  },
+                  {
+                    "group": "NPM",
+                    "pages": [
+                      "zh/browser-plugins/npm/npm"
+                    ]
+                  }
+                ]
+              },
+              {
+                "group": "Website",
+                "pages": [
+                  "zh/website/quickstart"
+                ]
+              },
+              {
+                "group": "Mobile App",
+                "pages": [
+                  "zh/mobile-app/quickstart"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "Desktop Apps",
+            "groups": [
+              {
+                "group": "Integrate",
+                "pages": [
+                  "zh/desktop-app/quickstart",
+                  "zh/desktop-app/windows",
+                  "zh/desktop-app/electron"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "Browser Plugins",
+            "groups": [
+              {
+                "group": "Integrate",
+                "pages": [
+                  "zh/browser-plugins/quickstart",
+                  "zh/browser-plugins/chrome_edge",
+                  "zh/browser-plugins/static-to-webpack",
+                  "zh/browser-plugins/mellowtel-without-bundlers"
+                ]
+              },
+              {
+                "group": "Submit to Stores",
+                "pages": [
+                  "zh/browser-plugins/submit-to-chrome-store",
+                  "zh/browser-plugins/submit-to-edge-store",
+                  "zh/browser-plugins/submit-to-safari-store",
+                  "zh/browser-plugins/submit-to-firefox-store"
+                ]
+              },
+              {
+                "group": "Frameworks",
+                "pages": [
+                  "zh/browser-plugins/guides/plasmo",
+                  "zh/browser-plugins/guides/web-extension-framework"
+                ]
+              },
+              {
+                "group": "Optional Integrations",
+                "pages": [
+                  "zh/browser-plugins/optional-integrations/feedback-page",
+                  "zh/browser-plugins/optional-integrations/pascoli",
+                  "zh/browser-plugins/optional-integrations/meucci"
+                ]
+              },
+              {
+                "group": "NPM",
+                "pages": [
+                  "zh/browser-plugins/npm/npm"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "Website",
+            "groups": [
+              {
+                "group": "Integrate",
+                "pages": [
+                  "zh/website/quickstart"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "Mobile App",
+            "groups": [
+              {
+                "group": "Integrate",
+                "pages": [
+                  "zh/mobile-app/quickstart"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "language": "it",
+        "tabs": [
+          {
+            "tab": "Welcome",
+            "groups": [
+              {
+                "group": "Get Started",
+                "pages": [
+                  "it/get-started/welcome"
+                ]
+              },
+              {
+                "group": "Concepts",
+                "pages": [
+                  "it/concepts/overview",
+                  "it/concepts/opt-in-out",
+                  "it/concepts/privacy",
+                  "it/concepts/rate-limiting"
+                ]
+              },
+              {
+                "group": "Desktop Apps",
+                "pages": [
+                  "it/desktop-app/quickstart",
+                  "it/desktop-app/windows",
+                  "it/desktop-app/electron"
+                ]
+              },
+              {
+                "group": "Browser Plugins",
+                "pages": [
+                  {
+                    "group": "Integrate",
+                    "pages": [
+                      "it/browser-plugins/quickstart",
+                      "it/browser-plugins/chrome_edge",
+                      "it/browser-plugins/static-to-webpack",
+                      "it/browser-plugins/mellowtel-without-bundlers"
+                    ]
+                  },
+                  {
+                    "group": "Submit to Stores",
+                    "pages": [
+                      "it/browser-plugins/submit-to-chrome-store",
+                      "it/browser-plugins/submit-to-edge-store",
+                      "it/browser-plugins/submit-to-safari-store",
+                      "it/browser-plugins/submit-to-firefox-store"
+                    ]
+                  },
+                  {
+                    "group": "Frameworks",
+                    "pages": [
+                      "it/browser-plugins/guides/plasmo",
+                      "it/browser-plugins/guides/web-extension-framework"
+                    ]
+                  },
+                  {
+                    "group": "Optional Integrations",
+                    "pages": [
+                      "it/browser-plugins/optional-integrations/feedback-page",
+                      "it/browser-plugins/optional-integrations/pascoli",
+                      "it/browser-plugins/optional-integrations/meucci"
+                    ]
+                  },
+                  {
+                    "group": "NPM",
+                    "pages": [
+                      "it/browser-plugins/npm/npm"
+                    ]
+                  }
+                ]
+              },
+              {
+                "group": "Website",
+                "pages": [
+                  "it/website/quickstart"
+                ]
+              },
+              {
+                "group": "Mobile App",
+                "pages": [
+                  "it/mobile-app/quickstart"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "Desktop Apps",
+            "groups": [
+              {
+                "group": "Integrate",
+                "pages": [
+                  "it/desktop-app/quickstart",
+                  "it/desktop-app/windows",
+                  "it/desktop-app/electron"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "Browser Plugins",
+            "groups": [
+              {
+                "group": "Integrate",
+                "pages": [
+                  "it/browser-plugins/quickstart",
+                  "it/browser-plugins/chrome_edge",
+                  "it/browser-plugins/static-to-webpack",
+                  "it/browser-plugins/mellowtel-without-bundlers"
+                ]
+              },
+              {
+                "group": "Submit to Stores",
+                "pages": [
+                  "it/browser-plugins/submit-to-chrome-store",
+                  "it/browser-plugins/submit-to-edge-store",
+                  "it/browser-plugins/submit-to-safari-store",
+                  "it/browser-plugins/submit-to-firefox-store"
+                ]
+              },
+              {
+                "group": "Frameworks",
+                "pages": [
+                  "it/browser-plugins/guides/plasmo",
+                  "it/browser-plugins/guides/web-extension-framework"
+                ]
+              },
+              {
+                "group": "Optional Integrations",
+                "pages": [
+                  "it/browser-plugins/optional-integrations/feedback-page",
+                  "it/browser-plugins/optional-integrations/pascoli",
+                  "it/browser-plugins/optional-integrations/meucci"
+                ]
+              },
+              {
+                "group": "NPM",
+                "pages": [
+                  "it/browser-plugins/npm/npm"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "Website",
+            "groups": [
+              {
+                "group": "Integrate",
+                "pages": [
+                  "it/website/quickstart"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "Mobile App",
+            "groups": [
+              {
+                "group": "Integrate",
+                "pages": [
+                  "it/mobile-app/quickstart"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "language": "ja",
+        "tabs": [
+          {
+            "tab": "Welcome",
+            "groups": [
+              {
+                "group": "Get Started",
+                "pages": [
+                  "ja/get-started/welcome"
+                ]
+              },
+              {
+                "group": "Concepts",
+                "pages": [
+                  "ja/concepts/overview",
+                  "ja/concepts/opt-in-out",
+                  "ja/concepts/privacy",
+                  "ja/concepts/rate-limiting"
+                ]
+              },
+              {
+                "group": "Desktop Apps",
+                "pages": [
+                  "ja/desktop-app/quickstart",
+                  "ja/desktop-app/windows",
+                  "ja/desktop-app/electron"
+                ]
+              },
+              {
+                "group": "Browser Plugins",
+                "pages": [
+                  {
+                    "group": "Integrate",
+                    "pages": [
+                      "ja/browser-plugins/quickstart",
+                      "ja/browser-plugins/chrome_edge",
+                      "ja/browser-plugins/static-to-webpack",
+                      "ja/browser-plugins/mellowtel-without-bundlers"
+                    ]
+                  },
+                  {
+                    "group": "Submit to Stores",
+                    "pages": [
+                      "ja/browser-plugins/submit-to-chrome-store",
+                      "ja/browser-plugins/submit-to-edge-store",
+                      "ja/browser-plugins/submit-to-safari-store",
+                      "ja/browser-plugins/submit-to-firefox-store"
+                    ]
+                  },
+                  {
+                    "group": "Frameworks",
+                    "pages": [
+                      "ja/browser-plugins/guides/plasmo",
+                      "ja/browser-plugins/guides/web-extension-framework"
+                    ]
+                  },
+                  {
+                    "group": "Optional Integrations",
+                    "pages": [
+                      "ja/browser-plugins/optional-integrations/feedback-page",
+                      "ja/browser-plugins/optional-integrations/pascoli",
+                      "ja/browser-plugins/optional-integrations/meucci"
+                    ]
+                  },
+                  {
+                    "group": "NPM",
+                    "pages": [
+                      "ja/browser-plugins/npm/npm"
+                    ]
+                  }
+                ]
+              },
+              {
+                "group": "Website",
+                "pages": [
+                  "ja/website/quickstart"
+                ]
+              },
+              {
+                "group": "Mobile App",
+                "pages": [
+                  "ja/mobile-app/quickstart"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "Desktop Apps",
+            "groups": [
+              {
+                "group": "Integrate",
+                "pages": [
+                  "ja/desktop-app/quickstart",
+                  "ja/desktop-app/windows",
+                  "ja/desktop-app/electron"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "Browser Plugins",
+            "groups": [
+              {
+                "group": "Integrate",
+                "pages": [
+                  "ja/browser-plugins/quickstart",
+                  "ja/browser-plugins/chrome_edge",
+                  "ja/browser-plugins/static-to-webpack",
+                  "ja/browser-plugins/mellowtel-without-bundlers"
+                ]
+              },
+              {
+                "group": "Submit to Stores",
+                "pages": [
+                  "ja/browser-plugins/submit-to-chrome-store",
+                  "ja/browser-plugins/submit-to-edge-store",
+                  "ja/browser-plugins/submit-to-safari-store",
+                  "ja/browser-plugins/submit-to-firefox-store"
+                ]
+              },
+              {
+                "group": "Frameworks",
+                "pages": [
+                  "ja/browser-plugins/guides/plasmo",
+                  "ja/browser-plugins/guides/web-extension-framework"
+                ]
+              },
+              {
+                "group": "Optional Integrations",
+                "pages": [
+                  "ja/browser-plugins/optional-integrations/feedback-page",
+                  "ja/browser-plugins/optional-integrations/pascoli",
+                  "ja/browser-plugins/optional-integrations/meucci"
+                ]
+              },
+              {
+                "group": "NPM",
+                "pages": [
+                  "ja/browser-plugins/npm/npm"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "Website",
+            "groups": [
+              {
+                "group": "Integrate",
+                "pages": [
+                  "ja/website/quickstart"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "Mobile App",
+            "groups": [
+              {
+                "group": "Integrate",
+                "pages": [
+                  "ja/mobile-app/quickstart"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "language": "ru",
+        "tabs": [
+          {
+            "tab": "Welcome",
+            "groups": [
+              {
+                "group": "Get Started",
+                "pages": [
+                  "ru/get-started/welcome"
+                ]
+              },
+              {
+                "group": "Concepts",
+                "pages": [
+                  "ru/concepts/overview",
+                  "ru/concepts/opt-in-out",
+                  "ru/concepts/privacy",
+                  "ru/concepts/rate-limiting"
+                ]
+              },
+              {
+                "group": "Desktop Apps",
+                "pages": [
+                  "ru/desktop-app/quickstart",
+                  "ru/desktop-app/windows",
+                  "ru/desktop-app/electron"
+                ]
+              },
+              {
+                "group": "Browser Plugins",
+                "pages": [
+                  {
+                    "group": "Integrate",
+                    "pages": [
+                      "ru/browser-plugins/quickstart",
+                      "ru/browser-plugins/chrome_edge",
+                      "ru/browser-plugins/static-to-webpack",
+                      "ru/browser-plugins/mellowtel-without-bundlers"
+                    ]
+                  },
+                  {
+                    "group": "Submit to Stores",
+                    "pages": [
+                      "ru/browser-plugins/submit-to-chrome-store",
+                      "ru/browser-plugins/submit-to-edge-store",
+                      "ru/browser-plugins/submit-to-safari-store",
+                      "ru/browser-plugins/submit-to-firefox-store"
+                    ]
+                  },
+                  {
+                    "group": "Frameworks",
+                    "pages": [
+                      "ru/browser-plugins/guides/plasmo",
+                      "ru/browser-plugins/guides/web-extension-framework"
+                    ]
+                  },
+                  {
+                    "group": "Optional Integrations",
+                    "pages": [
+                      "ru/browser-plugins/optional-integrations/feedback-page",
+                      "ru/browser-plugins/optional-integrations/pascoli",
+                      "ru/browser-plugins/optional-integrations/meucci"
+                    ]
+                  },
+                  {
+                    "group": "NPM",
+                    "pages": [
+                      "ru/browser-plugins/npm/npm"
+                    ]
+                  }
+                ]
+              },
+              {
+                "group": "Website",
+                "pages": [
+                  "ru/website/quickstart"
+                ]
+              },
+              {
+                "group": "Mobile App",
+                "pages": [
+                  "ru/mobile-app/quickstart"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "Desktop Apps",
+            "groups": [
+              {
+                "group": "Integrate",
+                "pages": [
+                  "ru/desktop-app/quickstart",
+                  "ru/desktop-app/windows",
+                  "ru/desktop-app/electron"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "Browser Plugins",
+            "groups": [
+              {
+                "group": "Integrate",
+                "pages": [
+                  "ru/browser-plugins/quickstart",
+                  "ru/browser-plugins/chrome_edge",
+                  "ru/browser-plugins/static-to-webpack",
+                  "ru/browser-plugins/mellowtel-without-bundlers"
+                ]
+              },
+              {
+                "group": "Submit to Stores",
+                "pages": [
+                  "ru/browser-plugins/submit-to-chrome-store",
+                  "ru/browser-plugins/submit-to-edge-store",
+                  "ru/browser-plugins/submit-to-safari-store",
+                  "ru/browser-plugins/submit-to-firefox-store"
+                ]
+              },
+              {
+                "group": "Frameworks",
+                "pages": [
+                  "ru/browser-plugins/guides/plasmo",
+                  "ru/browser-plugins/guides/web-extension-framework"
+                ]
+              },
+              {
+                "group": "Optional Integrations",
+                "pages": [
+                  "ru/browser-plugins/optional-integrations/feedback-page",
+                  "ru/browser-plugins/optional-integrations/pascoli",
+                  "ru/browser-plugins/optional-integrations/meucci"
+                ]
+              },
+              {
+                "group": "NPM",
+                "pages": [
+                  "ru/browser-plugins/npm/npm"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "Website",
+            "groups": [
+              {
+                "group": "Integrate",
+                "pages": [
+                  "ru/website/quickstart"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "Mobile App",
+            "groups": [
+              {
+                "group": "Integrate",
+                "pages": [
+                  "ru/mobile-app/quickstart"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "language": "ar",
+        "tabs": [
+          {
+            "tab": "Welcome",
+            "groups": [
+              {
+                "group": "Get Started",
+                "pages": [
+                  "ar/get-started/welcome"
+                ]
+              },
+              {
+                "group": "Concepts",
+                "pages": [
+                  "ar/concepts/overview",
+                  "ar/concepts/opt-in-out",
+                  "ar/concepts/privacy",
+                  "ar/concepts/rate-limiting"
+                ]
+              },
+              {
+                "group": "Desktop Apps",
+                "pages": [
+                  "ar/desktop-app/quickstart",
+                  "ar/desktop-app/windows",
+                  "ar/desktop-app/electron"
+                ]
+              },
+              {
+                "group": "Browser Plugins",
+                "pages": [
+                  {
+                    "group": "Integrate",
+                    "pages": [
+                      "ar/browser-plugins/quickstart",
+                      "ar/browser-plugins/chrome_edge",
+                      "ar/browser-plugins/static-to-webpack",
+                      "ar/browser-plugins/mellowtel-without-bundlers"
+                    ]
+                  },
+                  {
+                    "group": "Submit to Stores",
+                    "pages": [
+                      "ar/browser-plugins/submit-to-chrome-store",
+                      "ar/browser-plugins/submit-to-edge-store",
+                      "ar/browser-plugins/submit-to-safari-store",
+                      "ar/browser-plugins/submit-to-firefox-store"
+                    ]
+                  },
+                  {
+                    "group": "Frameworks",
+                    "pages": [
+                      "ar/browser-plugins/guides/plasmo",
+                      "ar/browser-plugins/guides/web-extension-framework"
+                    ]
+                  },
+                  {
+                    "group": "Optional Integrations",
+                    "pages": [
+                      "ar/browser-plugins/optional-integrations/feedback-page",
+                      "ar/browser-plugins/optional-integrations/pascoli",
+                      "ar/browser-plugins/optional-integrations/meucci"
+                    ]
+                  },
+                  {
+                    "group": "NPM",
+                    "pages": [
+                      "ar/browser-plugins/npm/npm"
+                    ]
+                  }
+                ]
+              },
+              {
+                "group": "Website",
+                "pages": [
+                  "ar/website/quickstart"
+                ]
+              },
+              {
+                "group": "Mobile App",
+                "pages": [
+                  "ar/mobile-app/quickstart"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "Desktop Apps",
+            "groups": [
+              {
+                "group": "Integrate",
+                "pages": [
+                  "ar/desktop-app/quickstart",
+                  "ar/desktop-app/windows",
+                  "ar/desktop-app/electron"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "Browser Plugins",
+            "groups": [
+              {
+                "group": "Integrate",
+                "pages": [
+                  "ar/browser-plugins/quickstart",
+                  "ar/browser-plugins/chrome_edge",
+                  "ar/browser-plugins/static-to-webpack",
+                  "ar/browser-plugins/mellowtel-without-bundlers"
+                ]
+              },
+              {
+                "group": "Submit to Stores",
+                "pages": [
+                  "ar/browser-plugins/submit-to-chrome-store",
+                  "ar/browser-plugins/submit-to-edge-store",
+                  "ar/browser-plugins/submit-to-safari-store",
+                  "ar/browser-plugins/submit-to-firefox-store"
+                ]
+              },
+              {
+                "group": "Frameworks",
+                "pages": [
+                  "ar/browser-plugins/guides/plasmo",
+                  "ar/browser-plugins/guides/web-extension-framework"
+                ]
+              },
+              {
+                "group": "Optional Integrations",
+                "pages": [
+                  "ar/browser-plugins/optional-integrations/feedback-page",
+                  "ar/browser-plugins/optional-integrations/pascoli",
+                  "ar/browser-plugins/optional-integrations/meucci"
+                ]
+              },
+              {
+                "group": "NPM",
+                "pages": [
+                  "ar/browser-plugins/npm/npm"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "Website",
+            "groups": [
+              {
+                "group": "Integrate",
+                "pages": [
+                  "ar/website/quickstart"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "Mobile App",
+            "groups": [
+              {
+                "group": "Integrate",
+                "pages": [
+                  "ar/mobile-app/quickstart"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "language": "pt-BR",
+        "tabs": [
+          {
+            "tab": "Welcome",
+            "groups": [
+              {
+                "group": "Get Started",
+                "pages": [
+                  "pt-BR/get-started/welcome"
+                ]
+              },
+              {
+                "group": "Concepts",
+                "pages": [
+                  "pt-BR/concepts/overview",
+                  "pt-BR/concepts/opt-in-out",
+                  "pt-BR/concepts/privacy",
+                  "pt-BR/concepts/rate-limiting"
+                ]
+              },
+              {
+                "group": "Desktop Apps",
+                "pages": [
+                  "pt-BR/desktop-app/quickstart",
+                  "pt-BR/desktop-app/windows",
+                  "pt-BR/desktop-app/electron"
+                ]
+              },
+              {
+                "group": "Browser Plugins",
+                "pages": [
+                  {
+                    "group": "Integrate",
+                    "pages": [
+                      "pt-BR/browser-plugins/quickstart",
+                      "pt-BR/browser-plugins/chrome_edge",
+                      "pt-BR/browser-plugins/static-to-webpack",
+                      "pt-BR/browser-plugins/mellowtel-without-bundlers"
+                    ]
+                  },
+                  {
+                    "group": "Submit to Stores",
+                    "pages": [
+                      "pt-BR/browser-plugins/submit-to-chrome-store",
+                      "pt-BR/browser-plugins/submit-to-edge-store",
+                      "pt-BR/browser-plugins/submit-to-safari-store",
+                      "pt-BR/browser-plugins/submit-to-firefox-store"
+                    ]
+                  },
+                  {
+                    "group": "Frameworks",
+                    "pages": [
+                      "pt-BR/browser-plugins/guides/plasmo",
+                      "pt-BR/browser-plugins/guides/web-extension-framework"
+                    ]
+                  },
+                  {
+                    "group": "Optional Integrations",
+                    "pages": [
+                      "pt-BR/browser-plugins/optional-integrations/feedback-page",
+                      "pt-BR/browser-plugins/optional-integrations/pascoli",
+                      "pt-BR/browser-plugins/optional-integrations/meucci"
+                    ]
+                  },
+                  {
+                    "group": "NPM",
+                    "pages": [
+                      "pt-BR/browser-plugins/npm/npm"
+                    ]
+                  }
+                ]
+              },
+              {
+                "group": "Website",
+                "pages": [
+                  "pt-BR/website/quickstart"
+                ]
+              },
+              {
+                "group": "Mobile App",
+                "pages": [
+                  "pt-BR/mobile-app/quickstart"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "Desktop Apps",
+            "groups": [
+              {
+                "group": "Integrate",
+                "pages": [
+                  "pt-BR/desktop-app/quickstart",
+                  "pt-BR/desktop-app/windows",
+                  "pt-BR/desktop-app/electron"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "Browser Plugins",
+            "groups": [
+              {
+                "group": "Integrate",
+                "pages": [
+                  "pt-BR/browser-plugins/quickstart",
+                  "pt-BR/browser-plugins/chrome_edge",
+                  "pt-BR/browser-plugins/static-to-webpack",
+                  "pt-BR/browser-plugins/mellowtel-without-bundlers"
+                ]
+              },
+              {
+                "group": "Submit to Stores",
+                "pages": [
+                  "pt-BR/browser-plugins/submit-to-chrome-store",
+                  "pt-BR/browser-plugins/submit-to-edge-store",
+                  "pt-BR/browser-plugins/submit-to-safari-store",
+                  "pt-BR/browser-plugins/submit-to-firefox-store"
+                ]
+              },
+              {
+                "group": "Frameworks",
+                "pages": [
+                  "pt-BR/browser-plugins/guides/plasmo",
+                  "pt-BR/browser-plugins/guides/web-extension-framework"
+                ]
+              },
+              {
+                "group": "Optional Integrations",
+                "pages": [
+                  "pt-BR/browser-plugins/optional-integrations/feedback-page",
+                  "pt-BR/browser-plugins/optional-integrations/pascoli",
+                  "pt-BR/browser-plugins/optional-integrations/meucci"
+                ]
+              },
+              {
+                "group": "NPM",
+                "pages": [
+                  "pt-BR/browser-plugins/npm/npm"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "Website",
+            "groups": [
+              {
+                "group": "Integrate",
+                "pages": [
+                  "pt-BR/website/quickstart"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "Mobile App",
+            "groups": [
+              {
+                "group": "Integrate",
+                "pages": [
+                  "pt-BR/mobile-app/quickstart"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "language": "hi",
+        "tabs": [
+          {
+            "tab": "Welcome",
+            "groups": [
+              {
+                "group": "Get Started",
+                "pages": [
+                  "hi/get-started/welcome"
+                ]
+              },
+              {
+                "group": "Concepts",
+                "pages": [
+                  "hi/concepts/overview",
+                  "hi/concepts/opt-in-out",
+                  "hi/concepts/privacy",
+                  "hi/concepts/rate-limiting"
+                ]
+              },
+              {
+                "group": "Desktop Apps",
+                "pages": [
+                  "hi/desktop-app/quickstart",
+                  "hi/desktop-app/windows",
+                  "hi/desktop-app/electron"
+                ]
+              },
+              {
+                "group": "Browser Plugins",
+                "pages": [
+                  {
+                    "group": "Integrate",
+                    "pages": [
+                      "hi/browser-plugins/quickstart",
+                      "hi/browser-plugins/chrome_edge",
+                      "hi/browser-plugins/static-to-webpack",
+                      "hi/browser-plugins/mellowtel-without-bundlers"
+                    ]
+                  },
+                  {
+                    "group": "Submit to Stores",
+                    "pages": [
+                      "hi/browser-plugins/submit-to-chrome-store",
+                      "hi/browser-plugins/submit-to-edge-store",
+                      "hi/browser-plugins/submit-to-safari-store",
+                      "hi/browser-plugins/submit-to-firefox-store"
+                    ]
+                  },
+                  {
+                    "group": "Frameworks",
+                    "pages": [
+                      "hi/browser-plugins/guides/plasmo",
+                      "hi/browser-plugins/guides/web-extension-framework"
+                    ]
+                  },
+                  {
+                    "group": "Optional Integrations",
+                    "pages": [
+                      "hi/browser-plugins/optional-integrations/feedback-page",
+                      "hi/browser-plugins/optional-integrations/pascoli",
+                      "hi/browser-plugins/optional-integrations/meucci"
+                    ]
+                  },
+                  {
+                    "group": "NPM",
+                    "pages": [
+                      "hi/browser-plugins/npm/npm"
+                    ]
+                  }
+                ]
+              },
+              {
+                "group": "Website",
+                "pages": [
+                  "hi/website/quickstart"
+                ]
+              },
+              {
+                "group": "Mobile App",
+                "pages": [
+                  "hi/mobile-app/quickstart"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "Desktop Apps",
+            "groups": [
+              {
+                "group": "Integrate",
+                "pages": [
+                  "hi/desktop-app/quickstart",
+                  "hi/desktop-app/windows",
+                  "hi/desktop-app/electron"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "Browser Plugins",
+            "groups": [
+              {
+                "group": "Integrate",
+                "pages": [
+                  "hi/browser-plugins/quickstart",
+                  "hi/browser-plugins/chrome_edge",
+                  "hi/browser-plugins/static-to-webpack",
+                  "hi/browser-plugins/mellowtel-without-bundlers"
+                ]
+              },
+              {
+                "group": "Submit to Stores",
+                "pages": [
+                  "hi/browser-plugins/submit-to-chrome-store",
+                  "hi/browser-plugins/submit-to-edge-store",
+                  "hi/browser-plugins/submit-to-safari-store",
+                  "hi/browser-plugins/submit-to-firefox-store"
+                ]
+              },
+              {
+                "group": "Frameworks",
+                "pages": [
+                  "hi/browser-plugins/guides/plasmo",
+                  "hi/browser-plugins/guides/web-extension-framework"
+                ]
+              },
+              {
+                "group": "Optional Integrations",
+                "pages": [
+                  "hi/browser-plugins/optional-integrations/feedback-page",
+                  "hi/browser-plugins/optional-integrations/pascoli",
+                  "hi/browser-plugins/optional-integrations/meucci"
+                ]
+              },
+              {
+                "group": "NPM",
+                "pages": [
+                  "hi/browser-plugins/npm/npm"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "Website",
+            "groups": [
+              {
+                "group": "Integrate",
+                "pages": [
+                  "hi/website/quickstart"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "Mobile App",
+            "groups": [
+              {
+                "group": "Integrate",
+                "pages": [
+                  "hi/mobile-app/quickstart"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "language": "uk",
+        "tabs": [
+          {
+            "tab": "Welcome",
+            "groups": [
+              {
+                "group": "Get Started",
+                "pages": [
+                  "uk/get-started/welcome"
+                ]
+              },
+              {
+                "group": "Concepts",
+                "pages": [
+                  "uk/concepts/overview",
+                  "uk/concepts/opt-in-out",
+                  "uk/concepts/privacy",
+                  "uk/concepts/rate-limiting"
+                ]
+              },
+              {
+                "group": "Desktop Apps",
+                "pages": [
+                  "uk/desktop-app/quickstart",
+                  "uk/desktop-app/windows",
+                  "uk/desktop-app/electron"
+                ]
+              },
+              {
+                "group": "Browser Plugins",
+                "pages": [
+                  {
+                    "group": "Integrate",
+                    "pages": [
+                      "uk/browser-plugins/quickstart",
+                      "uk/browser-plugins/chrome_edge",
+                      "uk/browser-plugins/static-to-webpack",
+                      "uk/browser-plugins/mellowtel-without-bundlers"
+                    ]
+                  },
+                  {
+                    "group": "Submit to Stores",
+                    "pages": [
+                      "uk/browser-plugins/submit-to-chrome-store",
+                      "uk/browser-plugins/submit-to-edge-store",
+                      "uk/browser-plugins/submit-to-safari-store",
+                      "uk/browser-plugins/submit-to-firefox-store"
+                    ]
+                  },
+                  {
+                    "group": "Frameworks",
+                    "pages": [
+                      "uk/browser-plugins/guides/plasmo",
+                      "uk/browser-plugins/guides/web-extension-framework"
+                    ]
+                  },
+                  {
+                    "group": "Optional Integrations",
+                    "pages": [
+                      "uk/browser-plugins/optional-integrations/feedback-page",
+                      "uk/browser-plugins/optional-integrations/pascoli",
+                      "uk/browser-plugins/optional-integrations/meucci"
+                    ]
+                  },
+                  {
+                    "group": "NPM",
+                    "pages": [
+                      "uk/browser-plugins/npm/npm"
+                    ]
+                  }
+                ]
+              },
+              {
+                "group": "Website",
+                "pages": [
+                  "uk/website/quickstart"
+                ]
+              },
+              {
+                "group": "Mobile App",
+                "pages": [
+                  "uk/mobile-app/quickstart"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "Desktop Apps",
+            "groups": [
+              {
+                "group": "Integrate",
+                "pages": [
+                  "uk/desktop-app/quickstart",
+                  "uk/desktop-app/windows",
+                  "uk/desktop-app/electron"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "Browser Plugins",
+            "groups": [
+              {
+                "group": "Integrate",
+                "pages": [
+                  "uk/browser-plugins/quickstart",
+                  "uk/browser-plugins/chrome_edge",
+                  "uk/browser-plugins/static-to-webpack",
+                  "uk/browser-plugins/mellowtel-without-bundlers"
+                ]
+              },
+              {
+                "group": "Submit to Stores",
+                "pages": [
+                  "uk/browser-plugins/submit-to-chrome-store",
+                  "uk/browser-plugins/submit-to-edge-store",
+                  "uk/browser-plugins/submit-to-safari-store",
+                  "uk/browser-plugins/submit-to-firefox-store"
+                ]
+              },
+              {
+                "group": "Frameworks",
+                "pages": [
+                  "uk/browser-plugins/guides/plasmo",
+                  "uk/browser-plugins/guides/web-extension-framework"
+                ]
+              },
+              {
+                "group": "Optional Integrations",
+                "pages": [
+                  "uk/browser-plugins/optional-integrations/feedback-page",
+                  "uk/browser-plugins/optional-integrations/pascoli",
+                  "uk/browser-plugins/optional-integrations/meucci"
+                ]
+              },
+              {
+                "group": "NPM",
+                "pages": [
+                  "uk/browser-plugins/npm/npm"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "Website",
+            "groups": [
+              {
+                "group": "Integrate",
+                "pages": [
+                  "uk/website/quickstart"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "Mobile App",
+            "groups": [
+              {
+                "group": "Integrate",
+                "pages": [
+                  "uk/mobile-app/quickstart"
+                ]
+              }
             ]
           }
         ]

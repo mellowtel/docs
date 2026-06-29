@@ -1,0 +1,163 @@
+---
+sidebarTitle: "التكامل مع Firefox"
+title: "إعداد Mellowtel مع إضافات Firefox"
+icon: "firefox"
+robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+canonical: "https://mellowtel.com/docs/ar/browser-plugins/quickstart_firefox"
+og:title: "تكامل Mellowtel مع إضافة Firefox باستخدام Lite SDK"
+og:description: "يشرح إعداد إضافة Mellowtel لـ Firefox حزمة mellowtel-lite، أذونات Manifest V2 و V3، السكريبتات الخلفية، السكريبتات المحتوى، والإعدادات."
+og:url: "https://mellowtel.com/docs/ar/browser-plugins/quickstart_firefox"
+twitter:card: "summary"
+twitter:title: "تكامل Mellowtel مع إضافة Firefox باستخدام Lite SDK"
+twitter:description: "يشرح إعداد إضافة Mellowtel لـ Firefox حزمة mellowtel-lite، أذونات Manifest V2 و V3، السكريبتات الخلفية، السكريبتات المحتوى، والإعدادات."
+---
+
+هاد الدليل غادي يوريك كيفاش تدمج Mellowtel في إضافة Firefox ديالك، وكي يدعم كل من Manifest V2 و V3.
+
+## التثبيت
+
+أول حاجة، ثبّت حزمة Mellowtel Lite (`mellowtel-lite`) باستخدام npm. راه من المهم تعرف بلي فـ Firefox تقدر غير تستورد حزمة `mellowtel-lite` باش تبقى متوافق مع سياسات المتصفح بخصوص بيانات المستخدم الثانوية:
+
+```bash
+npm install mellowtel-lite
+```
+
+## إعدادات Manifest
+
+الملف `manifest.json` خاصو إعدادات معينة باش Mellowtel يخدم مزيان. ها الأجزاء المطلوبة لكل من Manifest V2 و V3:
+
+### Manifest V2
+
+```json
+{
+  "manifest_version": 2,
+  "permissions": [
+    "storage",
+    "<all_urls>",
+    "declarativeNetRequestWithHostAccess",
+  ],
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": true
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content_start_mellowtel.js"],
+      "run_at": "document_start",
+      "all_frames": true
+    }
+  ],
+  "browser_action": {
+    "default_popup": "popup.html"
+  }
+}
+```
+
+### Manifest V3
+
+```json
+{
+  "manifest_version": 3,
+  "permissions": [
+    "storage",
+    "declarativeNetRequestWithHostAccess"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "scripts": ["background.js"],
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content_start_mellowtel.js"],
+      "run_at": "document_start",
+      "all_frames": true
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html"
+  }
+}
+```
+
+## إعداد السكريبت الخلفي
+
+صايب ملف سميتو `background.js` وحط فيه هاد المحتوى:
+
+```javascript
+import Mellowtel from "mellowtel-lite";
+
+let mellowtel;
+
+(async () => {
+    mellowtel = new Mellowtel("<your_configuration_key>");
+    await mellowtel.initBackground();
+})();
+
+browser.runtime.onInstalled.addListener(async function(details) {
+    console.log("Extension Installed or Updated");
+    await mellowtel.generateAndOpenOptInLink();
+});
+```
+
+بدّل `<your_configuration_key>` بمفتاح الإعدادات الحقيقي ديالك لـ Mellowtel.
+
+## إعداد سكريبت المحتوى
+
+صايب ملف سميتو `content_start_mellowtel.js` وحط فيه هاد المحتوى:
+
+```javascript
+import Mellowtel from "mellowtel-lite";
+
+(async () => {
+    const mellowtel = new Mellowtel("<your_configuration_key>");
+    await mellowtel.initContentScript();
+})();
+```
+
+مرة أخرى، بدّل `<your_configuration_key>` بمفتاح الإعدادات الحقيقي ديالك لـ Mellowtel.
+
+## النافذة المنبثقة لإعدادات Mellowtel
+
+باش تخلي المستخدمين يوصلو بسهولة لإعدادات Mellowtel، خاصك تصايب نافذة منبثقة. ها كيفاش تديرها:
+
+1. صايب ملف `popup.html`:
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <title>إعدادات Mellowtel</title>
+</head>
+<body>
+  <h1>إعدادات Mellowtel</h1>
+  <button id="openSettings">فتح إعدادات Mellowtel</button>
+  <script src="popup.js"></script>
+</body>
+</html>
+```
+
+2. صايب ملف `popup.js`:
+
+```javascript
+import Mellowtel from "mellowtel-lite";
+
+const mellowtel = new Mellowtel("<your_configuration_key>");
+
+async function openSettings() {
+    try {
+        const settingsLink = await mellowtel.generateSettingsLink();
+        browser.tabs.create({ url: settingsLink });
+    } catch (error) {
+        console.error("Error generating settings link:", error);
+    }
+}
+
+document.getElementById('openSettings').addEventListener('click', openSettings);
+```
+
+تذكر تبدّل `<your_configuration_key>` بمفتاح الإعدادات الحقيقي ديالك لـ Mellowtel. إذا ما عندكش مفتاح الإعدادات، تقدر تحصل عليه بالتسجيل في [Mellowtel](https://www.mellowtel.com/mellowtel-auth/).

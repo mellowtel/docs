@@ -1,0 +1,163 @@
+---
+sidebarTitle: "Інтеграція з Firefox"
+title: "Налаштування Mellowtel з розширеннями Firefox"
+icon: "firefox"
+robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+canonical: "https://mellowtel.com/docs/uk/browser-plugins/quickstart_firefox"
+og:title: "Інтеграція розширення Mellowtel Firefox з Lite SDK"
+og:description: "Налаштування розширення Mellowtel Firefox пояснює пакет mellowtel-lite, дозволи Manifest V2 та V3, фонові скрипти, контент-скрипти та налаштування."
+og:url: "https://mellowtel.com/docs/uk/browser-plugins/quickstart_firefox"
+twitter:card: "summary"
+twitter:title: "Інтеграція розширення Mellowtel Firefox з Lite SDK"
+twitter:description: "Налаштування розширення Mellowtel Firefox пояснює пакет mellowtel-lite, дозволи Manifest V2 та V3, фонові скрипти, контент-скрипти та налаштування."
+---
+
+Цей посібник проведе тебе через процес інтеграції Mellowtel у твоє розширення Firefox, підтримуючи як Manifest V2, так і V3.
+
+## Встановлення
+
+Спочатку встанови npm-пакет Mellowtel Lite (`mellowtel-lite`). Зверни увагу, що для Firefox ти можеш імпортувати лише пакет `mellowtel-lite`, щоб відповідати політикам браузера щодо додаткових даних користувача:
+
+```bash
+npm install mellowtel-lite
+```
+
+## Конфігурація Manifest
+
+Файл `manifest.json` потребує специфічних конфігурацій, щоб Mellowtel працював належним чином. Ось необхідні частини для обох Manifest V2 та V3:
+
+### Manifest V2
+
+```json
+{
+  "manifest_version": 2,
+  "permissions": [
+    "storage",
+    "<all_urls>",
+    "declarativeNetRequestWithHostAccess",
+  ],
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": true
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content_start_mellowtel.js"],
+      "run_at": "document_start",
+      "all_frames": true
+    }
+  ],
+  "browser_action": {
+    "default_popup": "popup.html"
+  }
+}
+```
+
+### Manifest V3
+
+```json
+{
+  "manifest_version": 3,
+  "permissions": [
+    "storage",
+    "declarativeNetRequestWithHostAccess"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "scripts": ["background.js"],
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content_start_mellowtel.js"],
+      "run_at": "document_start",
+      "all_frames": true
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html"
+  }
+}
+```
+
+## Налаштування фонового скрипту
+
+Створи файл з назвою `background.js` з наступним вмістом:
+
+```javascript
+import Mellowtel from "mellowtel-lite";
+
+let mellowtel;
+
+(async () => {
+    mellowtel = new Mellowtel("<your_configuration_key>");
+    await mellowtel.initBackground();
+})();
+
+browser.runtime.onInstalled.addListener(async function(details) {
+    console.log("Розширення встановлено або оновлено");
+    await mellowtel.generateAndOpenOptInLink();
+});
+```
+
+Замініть `<your_configuration_key>` на свій фактичний ключ конфігурації Mellowtel.
+
+## Налаштування контент-скрипту
+
+Створи файл з назвою `content_start_mellowtel.js` з наступним вмістом:
+
+```javascript
+import Mellowtel from "mellowtel-lite";
+
+(async () => {
+    const mellowtel = new Mellowtel("<your_configuration_key>");
+    await mellowtel.initContentScript();
+})();
+```
+
+Знову замініть `<your_configuration_key>` на свій фактичний ключ конфігурації Mellowtel.
+
+## Спливаюче вікно для налаштувань Mellowtel
+
+Щоб дозволити користувачам легко отримати доступ до налаштувань Mellowtel, ти повинен створити спливаюче вікно. Ось як його налаштувати:
+
+1. Створи файл `popup.html`:
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Налаштування Mellowtel</title>
+</head>
+<body>
+  <h1>Налаштування Mellowtel</h1>
+  <button id="openSettings">Відкрити налаштування Mellowtel</button>
+  <script src="popup.js"></script>
+</body>
+</html>
+```
+
+2. Створи файл `popup.js`:
+
+```javascript
+import Mellowtel from "mellowtel-lite";
+
+const mellowtel = new Mellowtel("<your_configuration_key>");
+
+async function openSettings() {
+    try {
+        const settingsLink = await mellowtel.generateSettingsLink();
+        browser.tabs.create({ url: settingsLink });
+    } catch (error) {
+        console.error("Помилка при генерації посилання на налаштування:", error);
+    }
+}
+
+document.getElementById('openSettings').addEventListener('click', openSettings);
+```
+
+Не забудь замінити `<your_configuration_key>` на свій фактичний ключ конфігурації Mellowtel. Якщо у тебе ще немає ключа конфігурації, ти можеш отримати його, зареєструвавшись на [Mellowtel](https://www.mellowtel.com/mellowtel-auth/).

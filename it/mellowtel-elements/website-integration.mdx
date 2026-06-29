@@ -1,0 +1,70 @@
+---
+sidebarTitle: "Integrazione del Sito Web"
+title: "Implementare Mellowtel Elements nei Siti Web"
+icon: "globe"
+robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+canonical: "https://mellowtel.com/docs/it/mellowtel-elements/website-integration"
+og:title: "Integrazione del Sito Web di Mellowtel Elements con NPM e CDN"
+og:description: "L’integrazione del sito web di Mellowtel Elements mostra come utilizzare il pacchetto npm o il CDN per creare rapidamente componenti di opt-in, opt-out e impostazioni sul tuo sito."
+og:url: "https://mellowtel.com/docs/it/mellowtel-elements/website-integration"
+twitter:card: "summary"
+twitter:title: "Integrazione del Sito Web di Mellowtel Elements con NPM e CDN"
+twitter:description: "L’integrazione del sito web di Mellowtel Elements mostra come utilizzare il pacchetto npm o il CDN per creare rapidamente componenti di opt-in, opt-out e impostazioni sul tuo sito."
+---
+
+Qui vedrai come integrare Mellowtel Elements nel tuo sito web utilizzando il pacchetto NPM o il CDN per una configurazione rapida.
+
+## Opzione 1: Pacchetto NPM
+
+### Installazione
+
+```bash
+npm install mellowtel-elements
+```
+
+### Implementazione
+
+```javascript
+import { MellowtelElements } from 'mellowtel-elements';
+
+// Inizializza con il tuo ID estensione e chiave di configurazione
+const mellowtel = new MellowtelElements('your-extension-id', 'your-config-key');
+
+// Crea elementi
+await mellowtel.createElement('opt-in-container', { type: 'opt-in' });
+await mellowtel.createElement('opt-out-container', { type: 'opt-out' });
+await mellowtel.createElement('settings-container', { type: 'settings' });
+```
+
+## Opzione 2: CDN
+
+### Configurazione HTML
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Esempio di MellowTel Elements</title>
+</head>
+<body>
+    <!-- Div container per gli elementi -->
+    <div id="opt-in-container"></div>
+    <div id="opt-out-container"></div>
+    <div id="settings-container"></div>
+
+    <!-- Carica dal CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/mellowtel-elements@latest/dist/index.global.js"></script>
+    <script>
+        // Inizializza MellowTel Elements
+        const mellowtel = new window.MellowtelElements.default('your-extension-id', 'your-config-key');
+
+        // Crea elementi
+        mellowtel.createElement('opt-in-container', { type: 'opt-in' });
+        mellowtel.createElement('opt-out-container', { type: 'opt-out' });
+        mellowtel.createElement('settings-container', { type: 'settings' });
+    </script>
+</body>
+</html>
+```
+
+Perfetto! Ora il tuo sito web è pronto per utilizzare Mellowtel Elements per un'integrazione fluida di opt-in, opt-out e gestione delle impostazioni.

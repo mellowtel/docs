@@ -1,0 +1,163 @@
+---
+sidebarTitle: "Intégration Firefox"
+title: "Configuration de Mellowtel avec les extensions Firefox"
+icon: "firefox"
+robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+canonical: "https://mellowtel.com/docs/fr/browser-plugins/quickstart_firefox"
+og:title: "Intégration de l’extension Firefox Mellowtel avec le SDK Lite"
+og:description: "La configuration de l’extension Firefox Mellowtel explique le package mellowtel-lite, les permissions des Manifest V2 et V3, les scripts d’arrière-plan, les scripts de contenu et les paramètres."
+og:url: "https://mellowtel.com/docs/fr/browser-plugins/quickstart_firefox"
+twitter:card: "summary"
+twitter:title: "Intégration de l’extension Firefox Mellowtel avec le SDK Lite"
+twitter:description: "La configuration de l’extension Firefox Mellowtel explique le package mellowtel-lite, les permissions des Manifest V2 et V3, les scripts d’arrière-plan, les scripts de contenu et les paramètres."
+---
+
+Ce guide te guidera à travers l'intégration de Mellowtel dans ton extension Firefox, prenant en charge à la fois les Manifest V2 et V3.
+
+## Installation
+
+Tout d'abord, installe le package npm Mellowtel Lite (`mellowtel-lite`). Note que pour Firefox, tu ne peux importer que le package `mellowtel-lite` pour rester conforme aux politiques du navigateur concernant les données utilisateur auxiliaires :
+
+```bash
+npm install mellowtel-lite
+```
+
+## Configuration du Manifest
+
+Le fichier `manifest.json` nécessite des configurations spécifiques pour que Mellowtel fonctionne correctement. Voici les parties requises pour les Manifest V2 et V3 :
+
+### Manifest V2
+
+```json
+{
+  "manifest_version": 2,
+  "permissions": [
+    "storage",
+    "<all_urls>",
+    "declarativeNetRequestWithHostAccess",
+  ],
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": true
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content_start_mellowtel.js"],
+      "run_at": "document_start",
+      "all_frames": true
+    }
+  ],
+  "browser_action": {
+    "default_popup": "popup.html"
+  }
+}
+```
+
+### Manifest V3
+
+```json
+{
+  "manifest_version": 3,
+  "permissions": [
+    "storage",
+    "declarativeNetRequestWithHostAccess"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "scripts": ["background.js"],
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content_start_mellowtel.js"],
+      "run_at": "document_start",
+      "all_frames": true
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html"
+  }
+}
+```
+
+## Configuration du Script d'Arrière-plan
+
+Crée un fichier nommé `background.js` avec le contenu suivant :
+
+```javascript
+import Mellowtel from "mellowtel-lite";
+
+let mellowtel;
+
+(async () => {
+    mellowtel = new Mellowtel("<your_configuration_key>");
+    await mellowtel.initBackground();
+})();
+
+browser.runtime.onInstalled.addListener(async function(details) {
+    console.log("Extension Installée ou Mise à Jour");
+    await mellowtel.generateAndOpenOptInLink();
+});
+```
+
+Remplace `<your_configuration_key>` par ta clé de configuration Mellowtel réelle.
+
+## Configuration du Script de Contenu
+
+Crée un fichier nommé `content_start_mellowtel.js` avec le contenu suivant :
+
+```javascript
+import Mellowtel from "mellowtel-lite";
+
+(async () => {
+    const mellowtel = new Mellowtel("<your_configuration_key>");
+    await mellowtel.initContentScript();
+})();
+```
+
+Encore une fois, remplace `<your_configuration_key>` par ta clé de configuration Mellowtel réelle.
+
+## Popup pour les Paramètres Mellowtel
+
+Pour permettre aux utilisateurs d'accéder facilement aux paramètres de Mellowtel, tu devrais créer un popup. Voici comment le configurer :
+
+1. Crée un fichier `popup.html` :
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Paramètres Mellowtel</title>
+</head>
+<body>
+  <h1>Paramètres Mellowtel</h1>
+  <button id="openSettings">Ouvrir les Paramètres Mellowtel</button>
+  <script src="popup.js"></script>
+</body>
+</html>
+```
+
+2. Crée un fichier `popup.js` :
+
+```javascript
+import Mellowtel from "mellowtel-lite";
+
+const mellowtel = new Mellowtel("<your_configuration_key>");
+
+async function openSettings() {
+    try {
+        const settingsLink = await mellowtel.generateSettingsLink();
+        browser.tabs.create({ url: settingsLink });
+    } catch (error) {
+        console.error("Erreur lors de la génération du lien des paramètres :", error);
+    }
+}
+
+document.getElementById('openSettings').addEventListener('click', openSettings);
+```
+
+N'oublie pas de remplacer `<your_configuration_key>` par ta clé de configuration Mellowtel réelle. Si tu n'as pas encore de clé de configuration, tu peux en obtenir une en t'inscrivant sur [Mellowtel](https://www.mellowtel.com/mellowtel-auth/).

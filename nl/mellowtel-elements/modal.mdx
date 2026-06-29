@@ -1,0 +1,122 @@
+---
+sidebarTitle: "Support Modal"
+title: "Mellowtel Support Modal"
+icon: "window-maximize"
+robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+canonical: "https://mellowtel.com/docs/nl/mellowtel-elements/modal"
+og:title: "Mellowtel Support Modal voor Extensies en Websites"
+og:description: "Mellowtel Support Modal setup legt uit hoe je een niet-opdringerige support prompt maakt met aangepaste tekst, snooze-gedrag, opslag fallback en API-gebruik."
+og:url: "https://mellowtel.com/docs/nl/mellowtel-elements/modal"
+twitter:card: "summary"
+twitter:title: "Mellowtel Support Modal voor Extensies en Websites"
+twitter:description: "Mellowtel Support Modal setup legt uit hoe je een niet-opdringerige support prompt maakt met aangepaste tekst, snooze-gedrag, opslag fallback en API-gebruik."
+---
+
+De Mellowtel Support Modal is een niet-opdringerige modal die gebruikers aanmoedigt om je extensie of website te ondersteunen via de Support met Mellowtel extensie.
+
+## Vereisten
+
+Voordat je de modal gebruikt, zorg ervoor dat je Mellowtel Elements hebt ingesteld in je project:
+
+<CardGroup cols={2}>
+    <Card title="Extensie-integratie" icon="puzzle-piece" href="/mellowtel-elements/extension-integration">
+        Setup voor browserextensies
+    </Card>
+    <Card title="Website-integratie" icon="atom" href="/mellowtel-elements/website-integration">
+        Setup voor websites met NPM of CDN
+    </Card>
+</CardGroup>
+
+## Belangrijkste Kenmerken
+
+- **Cross-Platform** - Werkt op websites en in extensie-content-scripts
+- **Slim Snoozen** - Gebruikers kunnen snoozen voor 1 week, 2 weken, of permanent uitschakelen
+- **Chrome Opslag** - Gebruikt Chrome opslag-API indien beschikbaar, valt terug op localStorage
+- **Shadow DOM** - Stijlisolatie voorkomt conflicten met stijlen van de hostpagina
+- **Mobiel Responsief** - Geoptimaliseerd voor alle schermformaten
+- **Extensie Details** - Haalt automatisch de naam en het pictogram van de extensie op en toont deze
+
+## De Modal Maken
+
+Zodra je Mellowtel Elements hebt geïnitieerd (zie integratiegidsen hierboven), kun je de support modal maken en weergeven:
+
+### Basisgebruik
+
+```javascript
+// Basisgebruik met standaardtitel en -tekst
+await mellowtel.createModal('your-invite-id-here');
+
+// Aangepaste titel en tekst
+await mellowtel.createModal(
+  'your-invite-id-here',
+  'Ondersteun Onze Extensie!',
+  'Help ons deze gratis dienst te onderhouden door onze extensie toe te voegen.'
+);
+```
+
+### Gebruiksvoorbeelden
+
+#### In Content Scripts
+
+```javascript
+// Toon modal nadat de gebruiker 30 seconden op de pagina is geweest
+setTimeout(async () => {
+    await mellowtel.createModal(
+        'content-script-invite-456',
+        'Bedankt voor het gebruiken van onze extensie!',
+        'Help ons verbeteren door de ontwikkeling van deze extensie te ondersteunen.'
+    );
+}, 30000);
+```
+
+#### Op Websites
+
+```javascript
+// Toon modal nadat de pagina is geladen
+window.addEventListener('load', async () => {
+    await mellowtel.createModal(
+        'website-invite-123',
+        'Ondersteun Onze Dienst',
+        'Installeer onze extensie om deze website gratis en advertentievrij te houden.'
+    );
+});
+```
+
+#### Voorwaardelijke Weergave
+
+```javascript
+// Alleen tonen op bepaalde domeinen
+const allowedDomains = ['github.com', 'stackoverflow.com', 'reddit.com'];
+const currentDomain = window.location.hostname;
+
+if (allowedDomains.some(domain => currentDomain.includes(domain))) {
+    await mellowtel.createModal(
+        'conditional-invite-789',
+        'Geniet je van onze extensie?',
+        'Toon je support en help ons deze gratis tool te blijven verbeteren.'
+    );
+}
+```
+
+## API Referentie
+
+### `createModal(inviteId, title?, body?)`
+
+Maakt en toont de support modal.
+
+**Parameters:**
+- `inviteId` (string, verplicht): Unieke identificatie voor het bijhouden van modal-interacties
+- `title` (string, optioneel): Aangepaste modaltitel (standaard "Support met Mellowtel")
+- `body` (string, optioneel): Aangepaste modaltekst
+
+**Retourneert:** `Promise<void>`
+
+## Modal Gedrag
+
+### Snooze Opties
+
+Gebruikers kunnen kiezen uit drie snooze-opties:
+
+- **1 week**: Modal verschijnt 7 dagen niet
+- **2 weken**: Modal verschijnt 14 dagen niet  
+- **Uitschakelen**: Modal verschijnt nooit meer

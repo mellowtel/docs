@@ -1,0 +1,97 @@
+---
+title: "Opt-In / Opt-Out"
+description: "Benutzer müssen ausdrücklich zustimmen, bevor Bandbreite geteilt wird, und können die Zustimmung jederzeit widerrufen"
+icon: "signature"
+robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+canonical: "https://mellowtel.com/docs/de/concepts/opt-in-out"
+og:title: "Mellowtel Opt-In und Opt-Out Benutzerzustimmungs-API-Leitfaden"
+og:description: "Die Mellowtel Opt-In und Opt-Out Anleitung behandelt Zustimmungsanforderungen, gehostete Einstellungslinks, benutzerdefinierte UI-Methoden und Update-Ankündigungen für Benutzer."
+og:url: "https://mellowtel.com/docs/de/concepts/opt-in-out"
+twitter:card: "summary"
+twitter:title: "Mellowtel Opt-In und Opt-Out Benutzerzustimmungs-API-Leitfaden"
+twitter:description: "Die Mellowtel Opt-In und Opt-Out Anleitung behandelt Zustimmungsanforderungen, gehostete Einstellungslinks, benutzerdefinierte UI-Methoden und Update-Ankündigungen für Benutzer."
+---
+
+## Was es ist
+
+Mellowtel wird keinen einzigen Byte Bandbreite teilen, bis der Benutzer ausdrücklich zugestimmt hat, und der Benutzer muss immer eine offensichtliche Möglichkeit haben, sich wieder abzumelden. Dies ist eine strikte Anforderung des SDK und eine strikte Anforderung jeder Browser-Store-Richtlinie, die Mellowtel-basierte Erweiterungen zulässt.
+
+## Warum es wichtig ist
+
+Es ist die Bandbreite des Benutzers. Alles andere als eine ausdrückliche, widerrufbare Zustimmung ist sowohl unethisch als auch ein Grund für die Entfernung aus dem Store. Das SDK ist so konzipiert, dass der *einfache* Weg auch der *konforme* Weg ist. Wenn du die empfohlene Implementierung befolgst, kannst du nicht versehentlich eine Version veröffentlichen, die ohne Zustimmung aktiviert wird.
+
+## Wie es funktioniert
+
+Bei der ersten Installation (und bei jedem Update, das Mellowtel neu einführt) musst du dem Benutzer einen nicht abweisbaren Disclaimer anzeigen, der erklärt, was Mellowtel tut, und dann seine Wahl erfassen. Von da an muss ein Einstellungslink von irgendwo offensichtlich in deiner UI erreichbar sein, damit sie ihre Meinung ändern können.
+
+<Frame caption="Beispiel für einen Disclaimer">
+    <img src="/images/mellowtel_disclaimer.png" />
+</Frame>
+
+Du hast zwei Implementierungsoptionen:
+
+1. **Empfohlen:** Öffne die vorgefertigte Mellowtel Opt-In-Seite mit `generateAndOpenOptInLink()`. Ein Methodenaufruf, vollständig konform, maximiert die Opt-In-Konversion.
+2. **Benutzerdefinierte UI:** Baue deine eigene Zustimmungsoberfläche und rufe `optIn()` / `optOut()` selbst auf.
+
+## API-Oberfläche
+
+| Methode | Rückgabewert | Verwende es, um |
+|---|---|---|
+| `generateAndOpenOptInLink()` | `Promise<void>` | Öffne die gehostete Opt-In-Seite (empfohlener Weg). |
+| `getOptInStatus()` | `Promise<boolean>` | Überprüfe, ob der Benutzer bereits zugestimmt hat. |
+| `optIn()` | `Promise<void>` | Zustimmung aus deiner eigenen UI erfassen. |
+| `optOut()` | `Promise<void>` | Zustimmung aus deiner eigenen UI widerrufen. |
+| `start()` | `Promise<void>` | Beginne mit der Bearbeitung von Anfragen nach der Zustimmung. |
+| `generateSettingsLink()` | `Promise<string>` | URL zur gehosteten Einstellungsseite, damit Benutzer ihre Wahl später ändern können. |
+
+Alle Methoden sind von jedem Teil deiner Erweiterung aus zugänglich: Popup, Inhaltsskript oder Hintergrundskript.
+
+## Empfohlene Implementierung
+
+Die vollständige Integrationsanleitung befindet sich in den Plattform-Quickstarts. Sie zeigen, wo das SDK platziert werden muss, wie es in den Installations-/Update-Lebenszyklus integriert wird und wie es getestet wird:
+
+- [Schnellstart für Browser-Plugins](/browser-plugins/quickstart)
+- [Schnellstart für Desktop-Apps](/desktop-app/quickstart)
+- [Schnellstart für Websites](/website/quickstart)
+- [Schnellstart für mobile Apps](/mobile-app/quickstart)
+
+Kurz gesagt, nach `new Mellowtel(...)` und `initBackground()`, rufe `generateAndOpenOptInLink()` aus deinem Installations-/Update-Handler auf. Das war's.
+
+## Benutzerdefinierte UI
+
+Wenn du die volle Kontrolle über die Zustimmungsoberfläche haben möchtest, erfasse die Wahl des Benutzers in deiner eigenen UI und leite sie an das SDK weiter:
+
+```javascript
+// Benutzer hat zugestimmt
+await mellowtel.optIn();
+await mellowtel.start();
+
+// Benutzer hat abgelehnt oder später widerrufen
+await mellowtel.optOut();
+
+// Status überprüfen (z.B. um einen Schalter darzustellen)
+const hasOptedIn = await mellowtel.getOptInStatus();
+```
+
+Welche UI du auch immer baust, sie muss:
+
+1. Bei der ersten Installation nicht abweisbar sein.
+2. Standardmäßig auf *abgemeldet* stehen, bis der Benutzer aktiv zustimmt.
+3. Von irgendwo offensichtlich in deinem Produkt wieder geöffnet werden können, damit Benutzer ihre Wahl ändern können.
+
+## Einstellungslink
+
+Benutzer müssen immer eine einfache Möglichkeit haben, ihre Einstellungen zu ändern. Verwende `generateSettingsLink()`, um eine URL zur gehosteten Einstellungsseite zu erhalten und platziere sie an einem dauerhaften Ort: dein Popup, eine Optionsseite, ein Kontobildschirm.
+
+```javascript
+const settingsUrl = await mellowtel.generateSettingsLink();
+```
+
+## Ankündigung von Mellowtel an bestehende Benutzer
+
+Wenn du Mellowtel zu einer Erweiterung hinzufügst, die bereits Benutzer hat, musst du ihnen mitteilen, was sich geändert hat, bevor du um Zustimmung bittest. Wir bieten eine [Kopier-und-Einfügen-Ankündigungsvorlage](/concepts/update-announcement), die du anpassen kannst.
+
+## Verwandte Themen
+
+- [Datenschutz](/concepts/privacy): was Benutzer tatsächlich zu teilen zustimmen.
+- [Rate Limiting](/concepts/rate-limiting): wie das SDK Benutzer schützt, die zustimmen.

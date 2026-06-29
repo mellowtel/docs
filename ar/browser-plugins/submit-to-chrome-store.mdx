@@ -1,0 +1,41 @@
+---
+sidebarTitle: "تقديم للـ CWS"
+title: "تقديم الإضافة لمتجر Chrome Web"
+icon: "chrome"
+robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+canonical: "https://mellowtel.com/docs/ar/browser-plugins/submit-to-chrome-store"
+og:title: "دليل تقديم إضافات Mellowtel لمتجر Chrome Web"
+og:description: "إرشادات تقديم لمتجر Chrome Web تشمل نسخة تبرير الأذونات لـ Mellowtel مثل declarativeNetRequest، أذونات المضيف، التخزين، والمراجعة."
+og:url: "https://mellowtel.com/docs/ar/browser-plugins/submit-to-chrome-store"
+twitter:card: "summary"
+twitter:title: "دليل تقديم إضافات Mellowtel لمتجر Chrome Web"
+twitter:description: "إرشادات تقديم لمتجر Chrome Web تشمل نسخة تبرير الأذونات لـ Mellowtel مثل declarativeNetRequest، أذونات المضيف، التخزين، والمراجعة."
+---
+
+من بعد ما تكمل تتبع التعليمات باش تدخل Mellowtel في الإضافة تاعك اللي مشروحة في [البدء السريع](/browser-plugins/quickstart) راك جاهز باش تقدم الإضافة تاعك للمتجر.
+هاد الدليل راح يساعدك باش تقدم الإضافة تاعك لمتجر Chrome Web.
+
+الوقت المتوقع للإكمال: 3-5 دقائق.
+
+### تبرير المتجر
+المتجر يطلب منك تبرير الأذونات اللي راك تطلبها. هنا قالب تقدر تستعمله (يشرح كيفاش Mellowtel تستعمل الأذونات):
+
+**DeclarativeNetRequest**:
+```txt
+الإذن declarativeNetRequest مطلوب باش نحيدو بعض الهيدرز (مثلاً X-Frame headers) من بعض الردود في مستوى sub_frame. هادا يسمح بعرض المواقع في iframe بلا مشاكل متعلقة بمشاركة الموارد عبر الأصل (CORS). هاد الهيدرز يتم استرجاعهم مباشرة بعد معالجة الرد.
+```
+
+**أذونات المضيف**:
+```txt
+أذونات المضيف على all_urls مطلوبة باش declarativeNetRequest يقدر يعدل هيدرز الردود على جميع الروابط. هادا ضروري باش نحيدو بعض الهيدرز (مثلاً X-Frame headers) من بعض الردود في مستوى sub_frame. هادا يسمح بعرض المواقع في iframe بلا مشاكل متعلقة بمشاركة الموارد عبر الأصل (CORS). هاد الهيدرز يتم استرجاعهم مباشرة بعد معالجة الرد.
+```
+
+**التخزين**:
+```txt
+إذن التخزين مطلوب باش نحافظو على الحالة الخاصة بالإضافة ونكونو عندنا منطق محلي باش نسهل التواصل بين الأجزاء المختلفة للإضافة.
+```
+
+### قدم الإضافة تاعك
+تقدر تتبع التعليمات هنا حسب واش راك تقدم إضافة جديدة ولا تحدث وحدة موجودة:
+- [قدم إضافة جديدة](https://developer.chrome.com/docs/webstore/publish/)
+- [حدث إضافة موجودة](https://developer.chrome.com/docs/webstore/update)

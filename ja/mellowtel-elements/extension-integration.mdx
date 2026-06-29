@@ -1,0 +1,65 @@
+---
+sidebarTitle: "拡張機能の統合"
+title: "Mellowtel Elementsをブラウザー拡張機能に実装する"
+icon: "puzzle-piece"
+robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+canonical: "https://mellowtel.com/docs/ja/mellowtel-elements/extension-integration"
+og:title: "Mellowtel Elementsブラウザー拡張機能統合ガイド"
+og:description: "Mellowtel Elementsのブラウザー拡張機能統合は、パッケージのインストール、オプトインコンテナの追加、IDでの初期化、同意要素の作成方法を示します。"
+og:url: "https://mellowtel.com/docs/ja/mellowtel-elements/extension-integration"
+twitter:card: "summary"
+twitter:title: "Mellowtel Elementsブラウザー拡張機能統合ガイド"
+twitter:description: "Mellowtel Elementsのブラウザー拡張機能統合は、パッケージのインストール、オプトインコンテナの追加、IDでの初期化、同意要素の作成方法を示します。"
+---
+
+ここでは、Mellowtel Elementsをブラウザー拡張機能に統合し、シームレスなユーザー同意管理を実現する方法を紹介します。
+
+## インストール
+
+拡張機能プロジェクトにパッケージをインストールします：
+
+```bash
+npm install mellowtel-elements
+```
+
+## 実装
+
+### 1. HTML Divコンテナを作成する
+
+拡張機能のHTMLにコンテナdivを追加します：
+
+```html
+<!-- popup.htmlまたはオプションページに -->
+<div id="opt-in-container"></div>
+<div id="opt-out-container"></div>
+<div id="settings-container"></div>
+```
+
+### 2. Mellowtel Elementsを初期化する
+
+```javascript
+import { MellowtelElements } from 'mellowtel-elements';
+
+// 拡張機能IDと設定キーでインスタンスを作成
+const mellowtel = new MellowtelElements(
+  'your-extension-id-here',    // 拡張機能ID
+  'your-config-key-here'       // 設定キー
+);
+```
+
+### 3. 要素を作成する
+
+拡張機能のポップアップやオプションページに要素を追加します：
+
+```javascript
+// オプトイン要素を作成
+await mellowtel.createElement('opt-in-container', { type: 'opt-in' });
+
+// オプトアウト要素を作成
+await mellowtel.createElement('opt-out-container', { type: 'opt-out' });
+
+// 設定要素を作成
+await mellowtel.createElement('settings-container', { type: 'settings' });
+```
+
+完璧です！これで、あなたの拡張機能はMellowtel Elementsを使用して、シームレスなオプトイン、オプトアウト、設定管理が可能になりました。

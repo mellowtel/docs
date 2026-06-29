@@ -1,0 +1,159 @@
+---
+sidebarTitle: "من ستاتيك لـ Webpack"
+title: "إعداد Webpack لبلاجن المتصفح"
+icon: "cube"
+robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+canonical: "https://mellowtel.com/docs/ar/browser-plugins/static-to-webpack"
+og:title: "إعداد Webpack لبلاجن المتصفح و Mellowtel"
+og:description: "إعداد Webpack لبلاجن المتصفح يشمل هيكلة المشروع، تبعيات npm، نقاط الدخول، نسخ الأصول، سكريبتات الحزم، البناء، والاختبار المحلي."
+og:url: "https://mellowtel.com/docs/ar/browser-plugins/static-to-webpack"
+twitter:card: "summary"
+twitter:title: "إعداد Webpack لبلاجن المتصفح و Mellowtel"
+twitter:description: "إعداد Webpack لبلاجن المتصفح يشمل هيكلة المشروع، تبعيات npm، نقاط الدخول، نسخ الأصول، سكريبتات الحزم، البناء، والاختبار المحلي."
+---
+
+هاد الدليل يشرح كيفاش تهيأ مشروع بلاجن المتصفح ديالك مع Webpack، مركز على إعداد يدعم نقاط دخول متعددة لجافاسكريبت وتسيير الأصول الثابتة.
+
+### الخطوة 1: إعداد المشروع الأولي
+
+بدا بتنظيم المشروع ديالك باش يستوعب ملفات المصدر، الأصول الثابتة، والنتيجة النهائية اللي غادي تتجمع. الدليل ديال المشروع ديالك خاصو يكون بحال هكا:
+
+```
+your-extension/
+├── public/            # يحتوي على ملفات ثابتة بحال HTML، CSS، و manifest
+│   ├── images/
+│   ├── icons/
+│   ├── manifest.json
+│   └── popup.html
+├── src/               # يحتوي على كود المصدر ديال جافاسكريبت
+│   ├── background.js
+│   ├── popup.js
+│   ├── content_script.js
+│   └── ... (أي ملفات JS أخرى)
+└── package.json       # ملف حزمة NPM
+```
+
+### الخطوة 2: إعداد Node.js و NPM
+
+تأكد بلي Node.js و NPM متبثين في النظام ديالك. Node.js ضروري باش تشغل نظام الحزم، و NPM كيتستخدم باش تدير إدارة التبعيات ديال المشروع ديالك.
+
+### الخطوة 3: تثبيت Webpack وتبعيات أخرى
+
+تنقل لدليل الجذر ديال المشروع ديالك في التيرمينال وبدى مشروع NPM جديد إلا ما كانش عندك من قبل:
+
+```bash
+npm init -y
+```
+
+من بعد، ثبت Webpack واللودرز والبلوجينز الضرورية:
+
+```bash
+npm install --save-dev webpack webpack-cli babel-loader @babel/core @babel/preset-env copy-webpack-plugin file-loader
+```
+
+- **Webpack** كيجمع جافاسكريبت والأصول ديالك.
+- **Babel** كيخليك تستخدم ميزات جافاسكريبت الحديثة.
+- **CopyPlugin** كينسخ الملفات والدلائل لدليل البناء ديالك.
+- **File Loader** كيتعامل مع import/require() على ملف ويحولها لـ url وكيصدر الملف لدليل الخرج.
+
+### الخطوة 4: إعداد Webpack
+
+صايب ملف `webpack.config.js` في جذر المشروع ديالك. هاد الملف خاصو يحدد نقاط الدخول ديالك، إعداد الخرج، قواعد الموديل لتحميل أنواع الملفات المختلفة، وبلوجينز لوظائف إضافية. ها كيفاش خاص `webpack.config.js` يبان مع الإعداد المعطى:
+
+```javascript
+const path = require('path');
+const CopyPlugin = require('copy-webpack-plugin');
+
+module.exports = {
+    mode: 'development', // استخدم 'production' للبناءات الإنتاجية
+    entry: {
+        background: path.join(__dirname, 'src', 'background.js'),
+        popup: path.join(__dirname, 'src', 'popup.js'),
+        content_script: path.join(__dirname, 'src', 'content_script.js'),
+    },
+    output: {
+        path: path.join(__dirname, 'dist'),
+        filename: '[name].js',
+        publicPath: ""
+    },
+    module: {
+        rules: [
+            {
+                test: /\.js$/,
+                exclude: /node_modules/,
+                use: {
+                    loader: 'babel-loader',
+                    options: {
+                        presets: ['@babel/preset-env']
+                    }
+                }
+            },
+            {
+                test: /\.js$/,
+                exclude: /node_modules/
+            },
+            {
+                test: /\.(png|svg|jpg|gif)$/,
+                use: [
+                    'file-loader',
+                ],
+            },
+        ]
+    },
+    plugins: [
+        new CopyPlugin({
+            patterns: [
+                { from: 'public', to: '' } // نسخ جميع الأصول و manifest.json من 'public' لـ 'dist'
+            ],
+        }),
+    ]
+};
+```
+
+### الخطوة 5: تعديل ملفات الـManifest و HTML
+
+تأكد بلي `manifest.json` وأي ملفات HTML كيشيروا للسكريبتات والأصول بشكل صحيح. مثلا، السكريبتات غادي تخرج لـ `dist`، فحدث المسارات على هاد الأساس.
+
+### الخطوة 6: دمج سكريبتات البناء في `package.json`
+
+من بعد ما تهيأ المشروع ديالك مع Webpack وتعده بحال ما شرحنا في الخطوات السابقة، غادي تبغي تأتمت عملية البناء والمراقبة باستخدام سكريبتات `npm`. فتح ملف `package.json` ديالك وزيد السكريبتات التالية داخل كائن `scripts`:
+
+```json
+"scripts": {
+  "test": "echo \"Error: no test specified\" && exit 1",
+  "build": "webpack --mode production",
+  "watch": "webpack --mode development --watch"
+},
+```
+
+ها شنو كيدير كل سكريبت:
+- `"build"`: كيجمع البلاجن ديالك في وضع الإنتاج، كيحسن الخرج للنشر. هاد الوضع كيمكن من تحسينات بحال التصغير وإزالة الكود الميت.
+- `"watch"`: كيشغل Webpack في وضع التطوير وكيراقب الملفات ديالك للتغييرات، كيعاود يجمع المشروع تلقائيا ملي يتبدل شي ملف. هادشي مفيد خلال التطوير باش تاخد ردود فعل فورية على التغييرات.
+
+### الخطوة 7: اختبار وبناء البلاجن
+
+باش تبني البلاجن ديالك للإنتاج، استخدم:
+
+```bash
+npm run build
+```
+
+هاد الأمر كيشغل Webpack مع العلمة `--mode production`، كيحسن المشروع ديالك للنشر.
+
+للتطوير، تقدر تخلي Webpack يراقب الملفات ديالك ويعاود يجمع ملي يكتشف تغييرات:
+
+```bash
+npm run watch
+```
+
+هادشي كيخلي عملية التطوير أسهل، حيث ما خاصكش تعاود تبني المشروع يدويا بعد كل تغيير.
+
+### الخطوة 7: اختبار البلاجن
+
+باش تختبر البلاجن ديالك في Chrome:
+
+1. سير لـ `chrome://extensions/` في متصفح Chrome.
+2. فعل "وضع المطور" في الأعلى على اليمين.
+3. كليك على "تحميل غير معبأ" واختار دليل `dist` ديالك.
+
+هادشي غادي يثبت البلاجن محليا للاختبار وأغراض التطوير.

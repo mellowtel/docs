@@ -1,0 +1,110 @@
+---
+title: "Gebruikers Toestemming"
+description: "Gebruikers kunnen op elk moment beslissen of ze deel willen uitmaken van het Mellowtel-netwerk of niet."
+icon: "toggle-on"
+robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+canonical: "https://mellowtel.com/docs/nl/flutter/user-consent"
+og:title: "Mellowtel Flutter Gebruikers Toestemming en Instellingen Setup Gids"
+og:description: "Mellowtel Flutter gebruikers toestemming setup behandelt dialoogconfiguratie, startgedrag, toestemmingsinstellingen pagina’s, handmatige opt-in methoden en statuscontroles."
+og:url: "https://mellowtel.com/docs/nl/flutter/user-consent"
+twitter:card: "summary"
+twitter:title: "Mellowtel Flutter Gebruikers Toestemming en Instellingen Setup Gids"
+twitter:description: "Mellowtel Flutter gebruikers toestemming setup behandelt dialoogconfiguratie, startgedrag, toestemmingsinstellingen pagina’s, handmatige opt-in methoden en statuscontroles."
+---
+
+## Introductie
+
+Om Mellowtel te activeren, moeten gebruikers hun expliciete toestemming geven. Het pakket biedt een manier om in of uit te schakelen. Het kernidee is dat, aangezien het hun internetbandbreedte is, zij moeten beslissen of ze deze willen delen of niet.
+
+Gebruikers kunnen hun toestemming geven via een toestemmingsinstellingen dialoog.
+
+### Configuratie van Toestemmingsdialoog
+
+De toestemmingsdialoog is een cruciaal onderdeel van de Mellowtel-integratie. Het zorgt ervoor dat gebruikers volledig geïnformeerd zijn en expliciete toestemming geven voordat ze hun internetbandbreedte delen.
+
+Je kunt de configuratie van de toestemmingsdialoog definiëren bij het aanmaken van een instantie van `Mellowtel`
+
+```dart
+import 'package:mellowtel/mellowtel.dart';
+
+final Mellowtel mellowtel = Mellowtel(
+    "your_configuration_key",
+    dialogConfiguration: const ConsentDialogConfiguration(
+        appName: 'Je App Naam',
+        incentive: 'Verdien beloningen door je internet te delen'
+        appIcon: 'assets/logo.png', // Optioneel app-icoon dat wordt weergegeven in de toestemmingsdialoog. Helpt vertrouwen op te bouwen.
+        acceptButtonText: "Ja, laten we gaan!", // Optionele tekst voor de accepteerknop ("Ja" standaard).
+        declineButtonText: 'Niet nu', // Optionele tekst voor de weigerknop ("Nee" standaard).
+        dialogTextOverride: 'Aangepast toestemmingsbericht', // Optioneel aangepast of gelokaliseerd toestemmingsdialoogbericht.
+    ),
+);
+```
+
+#### Het openen van de toestemmingsdialoog
+
+De toestemmingsdialoog opent standaard wanneer de `start()` methode wordt aangeroepen als de gebruiker zijn voorkeur nog niet heeft gegeven.
+
+```dart
+await mellowtel.start(
+    ... // andere configuratie
+    onOptIn: () async {
+        // Schakel de incentives in als de gebruiker toestemming heeft gegeven. 
+    }, 
+    onOptOut: () async {
+        // Schakel de incentives uit als de gebruiker toestemming heeft geweigerd/herroepen.
+    },
+    showConsentDialog: true
+);
+```
+
+Je kunt `showConsentDialog` op false zetten als je wilt beheren waar de dialoog verschijnt. We raden aan om de `start` methode op twee verschillende locaties aan te roepen:
+
+1. **Bij App Start** met `showConsentDialog: false` om te beginnen met opereren als toestemming al is gegeven.
+2. **Na de Eerste "Aha" Moment:** met `showConsentDialog: true` om toestemming te vragen nadat gebruikers de waarde van de app hebben ervaren.
+
+Deze aanpak zorgt ervoor dat Mellowtel onmiddellijk begint te werken terwijl gebruikers op een optimaal moment toestemming krijgen.
+
+### Toestemmingsinstellingen Dialoog
+
+Mellowtel zorgt voor volledige controle en privacy voor je gebruikers. Je gebruikers kunnen hun toestemming op elk moment wijzigen via de Toestemmingsinstellingen Pagina. Je kunt dit als een optie binnen de instellingenpagina van je app aanbieden.
+
+#### Toon Toestemmingsinstellingen Pagina
+
+Gebruik de `showConsentSettingsPage()` methode om de toestemmingsinstellingen dialoog te openen.
+
+```dart
+await mellowtel.showConsentSettingsPage(
+    context,
+    onOptIn: () async {
+        // Schakel de incentives in als de gebruiker toestemming heeft gegeven. 
+    }, 
+    onOptOut: () async {
+        // Schakel de incentives uit als de gebruiker toestemming heeft geweigerd/herroepen.
+    },
+);
+```
+
+<img src="https://raw.githubusercontent.com/mellowtel-inc/mellowtel-flutter/main/assets/settings-popup.png" width="300px" alt="Toestemmingsinstellingen Dialoog" />
+
+### Handmatige Methoden (Niet Aanbevolen)
+
+Naast de toestemmingsdialoog en instellingenpagina kun je de toestemming van de gebruiker handmatig beheren met de `optIn()` en `optOut()` methoden.
+
+#### Opt-In
+
+Markeer de gebruiker handmatig als ingeschreven.
+```dart
+await mellowtel.optIn();
+```
+#### Opt-Out
+
+Markeer de gebruiker handmatig als uitgeschreven.
+```dart
+await mellowtel.optOut();
+```
+#### Controleer Toestemmingsstatus
+
+Je kunt de huidige toestemmingsstatus van de gebruiker controleren met de `checkConsent()` methode.
+```dart
+bool? hasOptedIn = await mellowtel.checkConsent();
+```

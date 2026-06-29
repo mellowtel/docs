@@ -1,0 +1,204 @@
+---
+sidebarTitle: "Electron"
+title: "دمج Mellowtel في تطبيق Electron تاوعك"
+icon: "bolt"
+platforms:
+  - desktop app
+robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+canonical: "https://mellowtel.com/docs/ar/desktop-app/electron"
+og:title: "دليل دمج Mellowtel Electron SDK والموافقة"
+og:description: "إعداد Mellowtel Electron SDK يغطي مصادقة npm registry، التثبيت، حوارات الموافقة، الإعدادات، عدادات الطلبات، سلوك دورة الحياة، وحل المشاكل."
+og:url: "https://mellowtel.com/docs/ar/desktop-app/electron"
+twitter:card: "summary"
+twitter:title: "دليل دمج Mellowtel Electron SDK والموافقة"
+twitter:description: "إعداد Mellowtel Electron SDK يغطي مصادقة npm registry، التثبيت، حوارات الموافقة، الإعدادات، عدادات الطلبات، سلوك دورة الحياة، وحل المشاكل."
+---
+
+دمج Mellowtel في تطبيق Electron عبر المنصات تاوعك باش تخلي المستخدمين يشاركو النطاق الترددي للإنترنت اللي ما يستعملوش مقابل مكافآت أو ميزات بريميوم. الـ SDK تاع Electron يخدم وين ما يخدم Electron (macOS، Windows، وLinux).
+
+<Warning>
+  **موافقة المستخدم ضرورية.** الـ SDK يخدم غير كي المستخدم يوافق صراحة. `init()` ترجع بصمت كي ما تكونش الموافقة موجودة، يعني إذا شفت الـ SDK يبدأ بلا أخطاء وما يرسلش حركة مرور، السبب المحتمل هو أن المستخدم ما وافقش بعد.
+</Warning>
+
+## المتطلبات الأساسية
+
+- حساب Mellowtel ومفتاح التكوين (تحصل عليه من [لوحة التحكم](https://www.mellowtel.com/mellowtel-auth/)).
+- تطبيق Electron عندو وصول للعملية الرئيسية.
+
+---
+
+## التثبيت
+
+### 1. إعداد مصادقة npm
+
+دير ملف `.npmrc` في الدليل الجذري للمشروع تاوعك باش توجه npm نحو سجل Mellowtel GitHub Packages وصادق على التثبيت:
+
+```bash
+@mellowtel-inc:registry=https://npm.pkg.github.com/
+//npm.pkg.github.com/:_authToken=YOUR_NPM_TOKEN
+```
+
+بدل `YOUR_NPM_TOKEN` برمز التثبيت اللي تحت. اضغط باش تكشف، واستعمل أيقونة النسخ في كتلة الكود باش تنسخها للحافظة تاوعك.
+
+<Accordion title="كشف رمز التثبيت">
+  ```
+  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
+  ```
+</Accordion>
+
+### 2. تثبيت الحزمة
+
+من جذر المشروع تاوعك، ثبّت الـ SDK تاع Electron:
+
+```bash
+npm install @mellowtel-inc/mellowtel-electron
+```
+
+### 3. أضف للكود تاوعك
+
+في ملف العملية الرئيسية تاع Electron (عادةً `main.ts` أو `main.js`)، استورد الـ SDK، أنشئه بمفتاح التكوين تاوعك، اطلب الموافقة من المستخدم، ومن بعد ناد `init()` باش تبدأ الخدمة.
+
+```typescript
+import { app, BrowserWindow } from 'electron';
+import Mellowtel from '@mellowtel-inc/mellowtel-electron';
+
+
+// كي تكون التطبيق جاهز، أنشئ النافذة
+app.whenReady().then(async () => {
+  let win = createWindow();
+  
+  const mellowtel: Mellowtel = new Mellowtel('YOUR_CONFIGURATION_KEY');
+
+  await mellowtel.requestConsent(win, "احصل على 3 أشهر مجانًا")
+  await mellowtel.init()
+});
+```
+
+<Note>
+  بدل `YOUR_CONFIGURATION_KEY` بالمفتاح من لوحة التحكم تاع Mellowtel.
+</Note>
+
+**وش يدير كل نداء:**
+
+- `new Mellowtel(configurationKey, options?)` ينشئ الـ SDK. الخيار الوحيد المتاح اليوم هو `disableLogs`، اللي الافتراضي تاعو `true`. خليه `false` وأنت تدمج باش تشوف حالة الاتصال ونشاط الطلبات في المحطة تاعك.
+- `requestConsent(window, incentive)` يعرض **صندوق رسالة Electron أصلي** مربوط بالـ `BrowserWindow` اللي تمرره. الحجة الثانية هي العنوان البارز للحوار (مثلاً، `"احصل على 3 أشهر مجانًا"`)، يظهر فوق شرح ثابت لوش يدير Mellowtel. يرجع `true` إذا قبل المستخدم، `false` إذا رفض أو غلق الحوار، و`undefined` إذا كانت الموافقة موجودة بالفعل. الـ SDK يحفظ قرار الاشتراك تلقائيًا، يعني ما تحتاجش تنادي `optIn()` بعدها.
+- `init()` يرمي خطأ غير كي يكون `configurationKey` فارغ. إذا ما وافقش المستخدم، يسجل ويرجع بصمت. وإلا يفتح WebSocket للواجهة الخلفية تاع Mellowtel. النداء غير حاصر لواجهة المستخدم، يعني النوافذ تبقى مستجيبة بينما يتم إنشاء الاتصال.
+
+### منع مقاطعات حوارات النظام (موصى به)
+
+الـ SDK يجي مع مساعد اختياري، `setupMellowtelApp()`، اللي يضبط أعلام سطر أوامر Electron باش يقمع حوارات النظام (نوافذ التعبئة التلقائية، أشرطة الترجمة، مطالبات مصادقة NTLM / Kerberos، تكامل مدير كلمات المرور، تراكبات الوسائط، حوارات التشغيل الأول) اللي رح تقاطع المستخدمين تاوعك بينما نوافذ Mellowtel المخفية تعالج الطلبات في الخلفية.
+
+نادها في أعلى ملف العملية الرئيسية تاوعك، **قبل** `app.whenReady()`، واستوردها جنب التصدير الافتراضي من `@mellowtel-inc/mellowtel-electron`. شوف [README الأصلي](https://github.com/mellowtel-inc/mellowtel-electron#setupmellowtelapp-optional) للاستعمال الرسمي.
+
+---
+
+## موافقة المستخدم
+
+<Warning>
+  عرض حوار الموافقة **ضروري**. لازم تخلي المستخدمين يوافقو صراحة قبل ما تنادي `init()`، ولازم توفر طريقة لهم باش يديرو إدارة لحالة الاشتراك تاوعهم في أي وقت.
+</Warning>
+
+عندك زوج طرق للتعامل مع الموافقة:
+
+1. **استعمل الحوار الأصلي المدمج** عبر `requestConsent(window, incentive)`. هذي هي أسرع طريقة وهي اللي يظهرها الكود أعلاه. يعرض `dialog.showMessageBox` أصلي تاع Electron مع نص الحافز تاوعك كعنوان ويحفظ قرار المستخدم تلقائيًا.
+2. **بني واجهة موافقة خاصة بيك** ووجه الـ SDK عبر `optIn()`، `optOut()`، و`getOptInStatus()`. استعملها إذا كنت حابب علامة تجارية مخصصة، شروحات أغنى، أو توطين يتجاوز اللي يقدمه الحوار الأصلي.
+
+### وش لازم يتضمنه حوار الموافقة تاوعك
+
+<Steps>
+  <Step title="اشرح وش يدير Mellowtel">
+    استعمل لغة بسيطة. مثال: *"هذا التطبيق يستعمل Mellowtel لمشاركة النطاق الترددي للإنترنت اللي ما تستعملوش. في المقابل، تحصل على [ميزة/خاصية]. تقدر تلغي الاشتراك في أي وقت من الإعدادات."*
+  </Step>
+  <Step title="اعطي المستخدمين اختيار واضح">
+    ضمّن خيارات قبول ورفض واضحة.
+  </Step>
+  <Step title="رابط للسياسات">
+    ضمّن روابط لـ [شروط الخدمة](https://www.mellowtel.com/terms-and-conditions) و[سياسة الخصوصية](https://www.mellowtel.com/privacy-policy).
+  </Step>
+</Steps>
+
+### خلي المستخدمين يغيرو موافقتهم لاحقًا
+
+Mellowtel يوفر حوار إعدادات مدمج عبر `showConsentSettings(window)`. يعرض حوار أصلي مع أزرار اشتراك/إلغاء اشتراك اللي تتماشى مع الحالة الحالية للمستخدم، وداخليًا ينادي `optIn()` أو `optOut()` (بالإضافة لإعادة توصيل WebSocket عند الاشتراك) كي يبدل المستخدم. اربطها بعنصر قائمة أو زر إعدادات في التطبيق تاوعك باش يقدر المستخدم يراجع اختياره.
+
+إذا كنت تفضل بناء شاشة إعدادات خاصة بيك، ناد `getOptInStatus()` باش تقرأ الحالة الحالية و`optIn()` / `optOut()` باش تغيرها.
+
+---
+
+## مرجع الطرق
+
+الفئة `Mellowtel` تعرض الطرق العامة التالية. كلهم متاحين على الكائن اللي أنشأته بـ `new Mellowtel(configurationKey, options?)`.
+
+**دورة الحياة**
+
+- `init(): Promise<void>` يبدأ الخدمة إذا كان المستخدم مشترك، أو يرجع بصمت إذا لا. يرمي خطأ غير كي يكون مفتاح التكوين فارغ.
+- `requestConsent(window: BrowserWindow, incentive: string): Promise<boolean | undefined>` يعرض حوار الموافقة الأصلي المدمج ويحفظ النتيجة. يرجع `true` عند القبول، `false` عند الرفض أو الإغلاق، `undefined` إذا كانت الموافقة موجودة بالفعل.
+- `showConsentSettings(window: BrowserWindow): Promise<void>` يعرض حوار إدارة الموافقة المدمج. الـ SDK يتعامل مع انتقالات الاشتراك/إلغاء الاشتراك داخليًا كي يبدل المستخدم اختياره.
+
+**التحكم اليدوي في الاشتراك**
+
+- `optIn(): Promise<void>` يعلّم المستخدم كمشترك بدون عرض حوار. استعملها فقط بعد جمع الموافقة عبر واجهتك الخاصة.
+- `optOut(): Promise<void>` يعلّم المستخدم كمشترك ملغي ويغلق اتصال WebSocket النشط.
+- `getOptInStatus(): boolean | undefined` يرجع حالة الاشتراك الحالية، أو `undefined` إذا ما دارش المستخدم اختيار.
+- `getNodeId(): string` يرجع معرف عقدة Mellowtel لهذا التثبيت. مفيد عند تقديم تذاكر الدعم.
+
+**عدادات الطلبات**
+
+عدادات الطلبات تُحفظ محليًا عبر `electron-store` وتبقى بعد إعادة تشغيل التطبيق. اعرضها في واجهتك الخاصة إذا كنت حابب تبين للمستخدمين تأثير اشتراكهم.
+
+- `getTotalRequestCount(): number` يرجع إجمالي الطلبات المعالجة منذ التثبيت.
+- `getDailyRequestCount(): number` يرجع عدد الطلبات المعالجة اليوم.
+- `getRequestCountForDate(date: string): number` يرجع العدد لتاريخ `YYYY-MM-DD` محدد.
+- `getDailyRequestsHistory(): { [date: string]: number }` يرجع كل عدد يومي كخريطة.
+- `getRequestCountsInRange(startDate: string, endDate: string): { [date: string]: number }` يرجع الأعداد لفترة زمنية.
+- `getRequestCounts(): { total: number; daily: number; dailyHistory: { [date: string]: number } }` يرجع كل الثلاثة عدادات في نداء واحد.
+
+---
+
+## الإيقاف ودورة الحياة
+
+الـ SDK تاع Electron ما يسجلش معالجات `before-quit` أو `will-quit` الخاصة به. كي يخرج عملية Electron تاوعك، اتصال WebSocket الخلفي يتمزق معاه، وما تحتاجش تنظيف صريح من جهتك.
+
+إذا كنت حابب تقطع اتصال Mellowtel في منتصف الجلسة (مثلاً، كي المستخدم يبدل إعداد "توقف" في التطبيق تاوعك)، ناد `optOut()`. هذا يمسح علامة الاشتراك ويغلق الاتصال النشط. باش تعاود توصل، ناد `optIn()` متبوعًا بـ `init()`.
+
+## حفظ الموافقة
+
+حالة الاشتراك تتخزن في مسار تكوين `electron-store` الافتراضي للمنصة:
+
+- macOS: `~/Library/Application Support/<YourAppName>/config.json`
+- Windows: `%APPDATA%\<YourAppName>\config.json`
+- Linux: `~/.config/<YourAppName>/config.json`
+
+الحالة تبقى بعد تحديثات التطبيق. إلغاء تثبيت التطبيق تاوعك ما يمسحهاش تلقائيًا إلا إذا كان برنامج إلغاء التثبيت تاوعك يزيل صراحة دليل التكوين تاع التطبيق.
+
+---
+
+## حل المشاكل
+
+<AccordionGroup>
+  <Accordion title='خطأ "Package not found" أثناء التثبيت'>
+    1. تحقق أن `.npmrc` في جذر المشروع، جنب `package.json` تاوعك.
+    2. تأكد أن الرمز ما عندوش مسافات بيضاء في البداية أو النهاية.
+    3. امسح ذاكرة التخزين المؤقت لـ npm وأعد المحاولة بتشغيل `npm cache clean --force` متبوعًا بـ `npm install`.
+  </Accordion>
+  <Accordion title='خطأ "Unauthorized" أو 401 أثناء التثبيت'>
+    1. تحقق أن الرمز في `.npmrc` صحيح ونشط. إذا كنت مش متأكد، اطلب رمز جديد من [info@mellowtel.com](mailto:info@mellowtel.com).
+    2. تأكد أن السطر `@mellowtel-inc:registry` موجود ويوجه إلى `https://npm.pkg.github.com/`.
+  </Accordion>
+  <Accordion title="حوار الموافقة ما يظهرش">
+    1. تأكد أنك تنادي `requestConsent` **بعد** ما `app.whenReady()` تحل وتكون عندك مرجع `BrowserWindow` صالح وغير مدمر.
+    2. إذا كنت تستعمل `setupMellowtelApp()`, تحقق أنه يتم استدعاؤه **قبل** `app.whenReady()`, مش بعد.
+  </Accordion>
+  <Accordion title='"init() يشتغل بلا أخطاء لكن ما يصرا والو"'>
+    هذا عن قصد. `init()` ترجع بصمت كي المستخدم ما وافقش. تحقق `getOptInStatus()` باش تأكد. إذا رجعت `undefined` أو `false`, ناد `requestConsent` أولاً. لاحظ أن السجل الداخلي "المستخدم ما وافقش" يتم ابتلاعه كي `disableLogs` يبقى على الافتراضي (شوف "السجلات صامتة" تحت), يعني المحطة ما تعطيكش إشارة في أي اتجاه حتى تقلب ذاك العلم.
+  </Accordion>
+  <Accordion title="السجلات صامتة">
+    خيار المنشئ `disableLogs` الافتراضي هو `true`. مرر `{ disableLogs: false }` كالحجة الثانية للمنشئ أثناء الدمج باش تظهر حالة الاتصال ونشاط الطلبات في المحطة تاعك. هذي هي أسرع طريقة لتمييز "ما وافقش" الصامت (شوف فوق) من فشل الاتصال الحقيقي.
+  </Accordion>
+</AccordionGroup>
+
+---
+
+الوقت المتوقع للإكمال: 10-15 دقيقة.
+
+إذا كنت تحتاج مساعدة أو عندك ملاحظات، تواصل معنا على [info@mellowtel.com](mailto:info@mellowtel.com) أو انضم لمجتمعنا على [Discord](https://discord.com/invite/txAZp4MSDe).

@@ -1,0 +1,44 @@
+---
+title: "Verzoeklimitering"
+description: "Hoe Mellowtel zichzelf onzichtbaar houdt voor de eindgebruiker"
+icon: "stopwatch"
+robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+canonical: "https://mellowtel.com/docs/nl/concepts/rate-limiting"
+og:title: "Mellowtel Verzoeklimitering: Hoe Verzoekbeperking Werkt"
+og:description: "Mellowtel verzoeklimitering legt uit hoe de SDK verzoeken beperkt per apparaat, bandbreedte, locatie en netwerkbeschikbaarheid om de gebruikerservaring te beschermen terwijl het actief is."
+og:url: "https://mellowtel.com/docs/nl/concepts/rate-limiting"
+twitter:card: "summary"
+twitter:title: "Mellowtel Verzoeklimitering: Hoe Verzoekbeperking Werkt"
+twitter:description: "Mellowtel verzoeklimitering legt uit hoe de SDK verzoeken beperkt per apparaat, bandbreedte, locatie en netwerkbeschikbaarheid om de gebruikerservaring te beschermen terwijl het actief is."
+---
+
+## Wat het is
+
+Mellowtel beperkt automatisch hoeveel verzoeken een enkel apparaat (een "node") zal accepteren en verwerken. De limiet wordt afgedwongen binnen de SDK. Je hoeft het niet te configureren, en een slecht functionerende partner kan het niet van buitenaf verhogen.
+
+## Waarom het belangrijk is
+
+Het hele product hangt ervan af dat gebruikers niet merken dat Mellowtel draait. Als een node onbeperkte verzoeken zou verwerken, zou een gebruiker met een trage verbinding dit merken in hun browser. Verzoeklimitering is het mechanisme dat die belofte beschermt, en het is de reden waarom je Mellowtel naar echte gebruikers kunt verzenden zonder je zorgen te maken over supporttickets over "de browser voelt traag aan."
+
+## Hoe het werkt
+
+Elk verzoek wordt uitgevoerd in een gesandboxed venster dat voor het verzoek wordt aangemaakt en onmiddellijk daarna wordt afgebroken. Dit is hetzelfde isolatiemodel dat wordt gebruikt door advertentienetwerken zoals Google AdSense, met de extra garantie dat het venster *credentialless* is (zie [Privacy](/concepts/privacy)). Omdat elk verzoek kortstondig en geïsoleerd is, is de enige knop die van belang is voor de gebruikerservaring *hoeveel* er worden uitgevoerd, en dat is wat verzoeklimitering regelt.
+
+De huidige limiet varieert op basis van:
+
+- **Bandbreedtesnelheid**: tragere verbindingen ontvangen minder verzoeken.
+- **Geolocatie**: capaciteit wordt regionaal gebalanceerd.
+- **Algemene netwerkbeschikbaarheid**: de SDK trekt zich terug wanneer de wereldwijde vraag laag is.
+
+<Note>
+**TODO:** Documenteer concrete cijfers (verzoeken/min plafonds, geo-niveaus, bandbreedtedrempels) zodra ze zijn afgerond. Voor nu zijn de limieten opzettelijk adaptief en niet openbaar toegankelijk via de publieke API.
+</Note>
+
+## API-oppervlak
+
+Er is geen verzoeklimiterings-API om aan te roepen. De beperking is intern en altijd actief. Je kunt het niet uitschakelen, en je zou het niet hoeven te inspecteren. Als je denkt dat verzoeklimitering een probleem veroorzaakt in je integratie, [open een issue op GitHub](https://github.com/mellowtel-inc/) of stuur ons een bericht op [Discord](https://discord.com/invite/txAZp4MSDe).
+
+## Gerelateerd
+
+- [Privacy](/concepts/privacy): wat het gesandboxde venster wel en niet kan benaderen.
+- [Opt-in / Opt-out](/concepts/opt-in-out): de toestemmingslaag die hieraan voorafgaat.

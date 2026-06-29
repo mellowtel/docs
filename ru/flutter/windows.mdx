@@ -1,0 +1,31 @@
+---
+title: "Настройка Windows"
+description: "Инструкции по настройке Windows"
+icon: "windows"
+robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+canonical: "https://mellowtel.com/docs/ru/flutter/windows"
+og:title: "Настройка Mellowtel Flutter Windows NuGet CLI для приложений"
+og:description: "Настройка Mellowtel Flutter Windows объясняет, как установить nuget.exe, добавить его в PATH, проверить CLI и найти ресурсы для устранения неполадок перед интеграцией."
+og:url: "https://mellowtel.com/docs/ru/flutter/windows"
+twitter:card: "summary"
+twitter:title: "Настройка Mellowtel Flutter Windows NuGet CLI для приложений"
+twitter:description: "Настройка Mellowtel Flutter Windows объясняет, как установить nuget.exe, добавить его в PATH, проверить CLI и найти ресурсы для устранения неполадок перед интеграцией."
+---
+
+## Настройка NuGet CLI
+
+Чтобы интегрировать Mellowtel в ваши Flutter приложения на Windows, вам понадобится инструмент NuGet CLI. Следуйте этим шагам:
+
+1. Скачайте `nuget.exe` с [страницы загрузки NuGet CLI](https://www.nuget.org/downloads)
+2. Создайте папку (например, `C:\Tools\NuGet`) и поместите туда `nuget.exe`
+3. Добавьте папку в PATH Windows:
+   - Откройте Свойства системы > Дополнительно > Переменные среды
+   - В разделе Системные переменные, отредактируйте Path
+   - Добавьте путь к папке (например, `C:\Tools\NuGet`)
+4. Проверьте установку, запустив `nuget` в новом терминале
+
+Для подробных инструкций посетите [официальную документацию NuGet CLI](https://learn.microsoft.com/en-us/nuget/install-nuget-client-tools?tabs=windows#nugetexe-cli).
+
+## Проблемы?
+
+Если у вас возникли проблемы, пожалуйста, обратитесь к [документации NuGet CLI](https://learn.microsoft.com/en-us/nuget/install-nuget-client-tools?tabs=windows#nugetexe-cli) для советов по устранению неполадок или свяжитесь с нашей службой поддержки на [Discord](https://discord.com/invite/txAZp4MSDe).

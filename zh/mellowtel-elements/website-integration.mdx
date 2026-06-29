@@ -1,0 +1,70 @@
+---
+sidebarTitle: "网站集成"
+title: "在网站中实现 Mellowtel 元素"
+icon: "globe"
+robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+canonical: "https://mellowtel.com/docs/zh/mellowtel-elements/website-integration"
+og:title: "Mellowtel 元素网站集成（通过 NPM 和 CDN）"
+og:description: "Mellowtel 元素网站集成展示了如何使用 npm 包或 CDN 快速在您的网站上创建选择加入、选择退出和设置组件。"
+og:url: "https://mellowtel.com/docs/zh/mellowtel-elements/website-integration"
+twitter:card: "summary"
+twitter:title: "Mellowtel 元素网站集成（通过 NPM 和 CDN）"
+twitter:description: "Mellowtel 元素网站集成展示了如何使用 npm 包或 CDN 快速在您的网站上创建选择加入、选择退出和设置组件。"
+---
+
+在这里，你将看到如何使用 NPM 包或 CDN 将 Mellowtel 元素集成到你的网站中，以便快速设置。
+
+## 选项 1：NPM 包
+
+### 安装
+
+```bash
+npm install mellowtel-elements
+```
+
+### 实现
+
+```javascript
+import { MellowtelElements } from 'mellowtel-elements';
+
+// 使用你的扩展 ID 和配置密钥进行初始化
+const mellowtel = new MellowtelElements('your-extension-id', 'your-config-key');
+
+// 创建元素
+await mellowtel.createElement('opt-in-container', { type: 'opt-in' });
+await mellowtel.createElement('opt-out-container', { type: 'opt-out' });
+await mellowtel.createElement('settings-container', { type: 'settings' });
+```
+
+## 选项 2：CDN
+
+### HTML 设置
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MellowTel 元素示例</title>
+</head>
+<body>
+    <!-- 元素的容器 div -->
+    <div id="opt-in-container"></div>
+    <div id="opt-out-container"></div>
+    <div id="settings-container"></div>
+
+    <!-- 从 CDN 加载 -->
+    <script src="https://cdn.jsdelivr.net/npm/mellowtel-elements@latest/dist/index.global.js"></script>
+    <script>
+        // 初始化 MellowTel 元素
+        const mellowtel = new window.MellowtelElements.default('your-extension-id', 'your-config-key');
+
+        // 创建元素
+        mellowtel.createElement('opt-in-container', { type: 'opt-in' });
+        mellowtel.createElement('opt-out-container', { type: 'opt-out' });
+        mellowtel.createElement('settings-container', { type: 'settings' });
+    </script>
+</body>
+</html>
+```
+
+完美！现在你的网站已经准备好使用 Mellowtel 元素，实现无缝的选择加入、选择退出和设置管理。

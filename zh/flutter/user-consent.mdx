@@ -1,0 +1,110 @@
+---
+title: "用户同意"
+description: "用户可以随时决定是否加入Mellowtel网络。"
+icon: "toggle-on"
+robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+canonical: "https://mellowtel.com/docs/zh/flutter/user-consent"
+og:title: "Mellowtel Flutter用户同意和设置指南"
+og:description: "Mellowtel Flutter用户同意设置涵盖对话框配置、启动行为、同意设置页面、手动选择加入方法和状态检查。"
+og:url: "https://mellowtel.com/docs/zh/flutter/user-consent"
+twitter:card: "summary"
+twitter:title: "Mellowtel Flutter用户同意和设置指南"
+twitter:description: "Mellowtel Flutter用户同意设置涵盖对话框配置、启动行为、同意设置页面、手动选择加入方法和状态检查。"
+---
+
+## 介绍
+
+为了激活Mellowtel，用户必须给予明确的同意。该包提供了一种选择加入或退出的方式。核心理念是，由于这是他们的互联网带宽，他们应该决定是否愿意分享。
+
+用户可以通过同意设置对话框提供他们的同意。
+
+### 同意对话框配置
+
+同意对话框是Mellowtel集成的重要组成部分。它确保用户在分享他们的互联网带宽之前得到充分的信息并给予明确的同意。
+
+你可以在创建`Mellowtel`实例时定义同意对话框配置。
+
+```dart
+import 'package:mellowtel/mellowtel.dart';
+
+final Mellowtel mellowtel = Mellowtel(
+    "your_configuration_key",
+    dialogConfiguration: const ConsentDialogConfiguration(
+        appName: '你的应用名称',
+        incentive: '通过分享你的互联网赚取奖励'
+        appIcon: 'assets/logo.png', // 在同意对话框中显示的可选应用图标。帮助建立信任。
+        acceptButtonText: "好的，开始吧！", // 接受按钮的可选文本（默认是"Yes"）。
+        declineButtonText: '暂时不', // 拒绝按钮的可选文本（默认是"No"）。
+        dialogTextOverride: '自定义同意信息', // 可选的自定义或本地化同意对话框信息。
+    ),
+);
+```
+
+#### 打开同意对话框
+
+如果用户尚未提供他们的偏好，默认情况下，当调用`start()`方法时，同意对话框会打开。
+
+```dart
+await mellowtel.start(
+    ... // 其他配置
+    onOptIn: () async {
+        // 如果用户提供了同意，则启用奖励。
+    }, 
+    onOptOut: () async {
+        // 如果用户拒绝/撤销同意，则禁用奖励。
+    },
+    showConsentDialog: true
+);
+```
+
+如果你想管理对话框的显示位置，可以将`showConsentDialog`设置为false。我们建议你在两个不同的位置调用`start`方法：
+
+1. **应用启动时** 使用`showConsentDialog: false`，如果已经获得许可，则开始操作。
+2. **第一次“啊哈”时刻之后：** 使用`showConsentDialog: true`，在用户体验到应用价值后请求同意。
+
+这种方法确保Mellowtel立即开始操作，同时在最佳时间获得用户同意。
+
+### 同意设置对话框
+
+Mellowtel确保为你的用户提供完全的控制和隐私。你的用户可以随时从同意设置页面更改他们的同意。你可以在你的应用设置页面中提供此选项。
+
+#### 显示同意设置页面
+
+使用`showConsentSettingsPage()`方法打开同意设置对话框。
+
+```dart
+await mellowtel.showConsentSettingsPage(
+    context,
+    onOptIn: () async {
+        // 如果用户提供了同意，则启用奖励。
+    }, 
+    onOptOut: () async {
+        // 如果用户拒绝/撤销同意，则禁用奖励。
+    },
+);
+```
+
+<img src="https://raw.githubusercontent.com/mellowtel-inc/mellowtel-flutter/main/assets/settings-popup.png" width="300px" />
+
+### 手动方法（不推荐）
+
+除了同意对话框和设置页面，你还可以使用`optIn()`和`optOut()`方法手动管理用户的同意。
+
+#### 选择加入
+
+手动标记用户为已加入。
+```dart
+await mellowtel.optIn();
+```
+#### 选择退出
+
+手动标记用户为已退出。
+```dart
+await mellowtel.optOut();
+```
+#### 检查同意状态
+
+你可以使用`checkConsent()`方法检查用户当前的同意状态。
+```dart
+bool? hasOptedIn = await mellowtel.checkConsent();
+```

@@ -1,0 +1,63 @@
+---
+title: "Migreren naar Integratie-ID"
+description: "Vervang je oude configuratiesleutel door de nieuwe per-integratie identifier"
+icon: "arrow-right-arrow-left"
+robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+canonical: "https://mellowtel.com/docs/nl/migrations/integration-id"
+og:title: "Mellowtel Integratie-ID Migratie Van Configuratiesleutel"
+og:description: "Mellowtel Integratie-ID migratie legt uit waarom configuratiesleutels veranderen, hoe per-app IDs werken, waar je ze kunt vinden, en welke code je moet bijwerken."
+og:url: "https://mellowtel.com/docs/nl/migrations/integration-id"
+twitter:card: "summary"
+twitter:title: "Mellowtel Integratie-ID Migratie Van Configuratiesleutel"
+twitter:description: "Mellowtel Integratie-ID migratie legt uit waarom configuratiesleutels veranderen, hoe per-app IDs werken, waar je ze kunt vinden, en welke code je moet bijwerken."
+---
+
+We vervangen de oude `configuration_key` door een nieuwe identifier genaamd de **Integratie-ID**. Als je al Mellowtel gebruikt, moet je de string die je aan de SDK doorgeeft bijwerken.
+
+## TL;DR
+
+- Elke integratie heeft nu zijn eigen **Integratie-ID**, voorafgegaan door `intgr-`.
+- De oude `configuration_key` werkt vandaag nog, maar zal worden uitgefaseerd.
+- De enige codewijziging is de string die wordt doorgegeven aan `new Mellowtel(...)`.
+
+## Configuratiesleutel vs Integratie-ID
+
+| | Configuratiesleutel (oud) | Integratie-ID (nieuw) |
+|---|---|---|
+| Bereik | Eén sleutel per account | Eén ID per integratie |
+| Formaat | Ondoorzichtige string | `intgr-XXXXXXXXXX` |
+| Statistieken | Gecombineerd over alle apps | Per app |
+
+## Waarom we deze verandering doorvoeren
+
+Mellowtel wordt nu geleverd via browserextensies, desktopapps, mobiele apps en websites. Met één gedeelde sleutel konden teams niet zien welke interface daadwerkelijk inkomsten genereerde.
+
+Eén Integratie-ID per app lost dat op. Zodra je migreert, krijg je toegang tot per-app statistieken, per-app inkomsten en de dashboardfuncties die we aan het ontwikkelen zijn om je te helpen elke app onafhankelijk te laten groeien.
+
+## Wat je moet veranderen
+
+Alleen de string die je doorgeeft aan `new Mellowtel(...)`.
+
+```javascript
+// Voorheen
+const mellowtel = new Mellowtel("<your_configuration_key>");
+
+// Daarna
+const mellowtel = new Mellowtel("intgr-MG8tHhnkDN");
+```
+
+Alles blijft verder hetzelfde.
+
+## Je Integratie-ID verkrijgen
+
+1. Open de [Integraties pagina](https://www.mellowtel.com/dashboard/integrations) in je dashboard.
+2. Maak één integratie per app aan, kies het bijpassende type (extensie, desktop, mobiel, website).
+3. Kopieer de Integratie-ID en plak deze in je SDK-initialisatie.
+
+## Achterwaartse compatibiliteit
+
+Bestaande code blijft werken. We zullen een uitfaseringsdatum aankondigen met voldoende kennisgeving voordat de oude sleutel wordt verwijderd. Eerder migreren ontgrendelt de per-app functies, dus er is geen reden om te wachten.
+
+## Hulp nodig?
+
+Stuur ons een bericht op [Discord](https://discord.com/invite/txAZp4MSDe) en we helpen je erdoorheen.

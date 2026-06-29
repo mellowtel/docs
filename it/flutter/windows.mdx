@@ -1,0 +1,31 @@
+---
+title: "Configurazione di Windows"
+description: "Istruzioni per la configurazione di Windows"
+icon: "windows"
+robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+canonical: "https://mellowtel.com/docs/it/flutter/windows"
+og:title: "Configurazione Mellowtel Flutter Windows NuGet CLI per App"
+og:description: "La configurazione di Mellowtel Flutter Windows spiega come installare nuget.exe, aggiungerlo al PATH, verificare la CLI e trovare risorse per la risoluzione dei problemi prima dell’integrazione."
+og:url: "https://mellowtel.com/docs/it/flutter/windows"
+twitter:card: "summary"
+twitter:title: "Configurazione Mellowtel Flutter Windows NuGet CLI per App"
+twitter:description: "La configurazione di Mellowtel Flutter Windows spiega come installare nuget.exe, aggiungerlo al PATH, verificare la CLI e trovare risorse per la risoluzione dei problemi prima dell’integrazione."
+---
+
+## Configurazione della CLI di NuGet
+
+Per integrare Mellowtel nelle tue applicazioni Flutter su Windows, hai bisogno dello strumento CLI di NuGet. Segui questi passaggi:
+
+1. Scarica `nuget.exe` dalla [pagina di download di NuGet CLI](https://www.nuget.org/downloads)
+2. Crea una cartella (ad esempio, `C:\Tools\NuGet`) e posiziona `nuget.exe` lì
+3. Aggiungi la cartella al PATH di Windows:
+   - Apri Proprietà del sistema > Avanzate > Variabili d'ambiente
+   - Sotto Variabili di sistema, modifica Path
+   - Aggiungi il percorso della cartella (ad esempio, `C:\Tools\NuGet`)
+4. Verifica l'installazione eseguendo `nuget` in un nuovo terminale
+
+Per istruzioni dettagliate, visita la [documentazione ufficiale di NuGet CLI](https://learn.microsoft.com/en-us/nuget/install-nuget-client-tools?tabs=windows#nugetexe-cli).
+
+## Problemi?
+
+Se incontri problemi, fai riferimento alla [documentazione di NuGet CLI](https://learn.microsoft.com/en-us/nuget/install-nuget-client-tools?tabs=windows#nugetexe-cli) per suggerimenti sulla risoluzione dei problemi o contatta il nostro team di supporto su [Discord](https://discord.com/invite/txAZp4MSDe).

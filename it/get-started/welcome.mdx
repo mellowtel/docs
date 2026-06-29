@@ -1,0 +1,69 @@
+---
+sidebarTitle: "Benvenuto"
+title: "Benvenuto 👋"
+icon: "hand-wave"
+robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+canonical: "https://mellowtel.com/docs/it/get-started/welcome"
+og:title: "Mellowtel Docs: Monetizza Estensioni, App e Siti Web"
+og:description: "I documenti di Mellowtel mostrano come aggiungere la condivisione della larghezza di banda basata sul consenso a estensioni del browser, app desktop, siti web e app mobili con avviamenti rapidi e concetti."
+og:url: "https://mellowtel.com/docs/it/get-started/welcome"
+twitter:card: "summary"
+twitter:title: "Mellowtel Docs: Monetizza Estensioni, App e Siti Web"
+twitter:description: "I documenti di Mellowtel mostrano come aggiungere la condivisione della larghezza di banda basata sul consenso a estensioni del browser, app desktop, siti web e app mobili con avviamenti rapidi e concetti."
+---
+
+**Mellowtel è la piattaforma di monetizzazione open-source per sviluppatori e creatori nel mondo dell'AI.** Inserisci l'SDK nella tua estensione del browser, app desktop, sito web o app mobile e i tuoi utenti possono scegliere di condividere una frazione della loro larghezza di banda internet inutilizzata con partner fidati. Tu guadagni una parte dei ricavi.
+
+## Come appare l'integrazione
+
+```bash
+npm install mellowtel
+```
+
+```javascript
+import Mellowtel from "mellowtel";
+
+const mellowtel = new Mellowtel("<YOUR_CONFIGURATION_KEY>");
+await mellowtel.initBackground();
+await mellowtel.generateAndOpenOptInLink();
+```
+
+Questa è l'intera integrazione per un'estensione del browser. Altre piattaforme sono simili. Vedi gli avviamenti rapidi qui sotto.
+
+## Scegli la tua piattaforma
+
+<CardGroup cols={2}>
+    <Card title="Plugin del browser" icon="puzzle-piece" href="/browser-plugins/quickstart">
+        Integra Mellowtel in un'estensione Chrome, Edge, Firefox o Safari in circa 5 minuti.
+    </Card>
+    <Card title="App desktop" icon="desktop" href="/desktop-app/quickstart">
+        Monetizza un'app desktop Electron, Windows o macOS.
+    </Card>
+    <Card title="Siti web" icon="atom" href="/website/quickstart">
+        Aggiungi Mellowtel a qualsiasi sito web con un singolo script.
+    </Card>
+    <Card title="App mobili" icon="mobile" href="/mobile-app/quickstart">
+        Monetizza un'app mobile iOS o Android.
+    </Card>
+</CardGroup>
+
+## Prima di pubblicare, leggi i concetti
+
+Queste quattro pagine spiegano i principi che ogni integrazione Mellowtel deve rispettare: consenso, privacy e limitazione della velocità. Leggile una volta e il resto dei documenti avrà senso.
+
+<CardGroup cols={2}>
+    <Card title="Panoramica dei concetti" icon="compass" href="/concepts/overview">
+        Le quattro idee dietro Mellowtel in una pagina.
+    </Card>
+    <Card title="Opt-in / Opt-out" icon="signature" href="/concepts/opt-in-out">
+        Come acquisire (e revocare) il consenso degli utenti nel modo giusto.
+    </Card>
+</CardGroup>
+
+## Come funzionano i ricavi
+
+La divisione è **55% agli sviluppatori, 45% a Mellowtel**. Man mano che cresciamo saremo in grado di offrire più servizi e aumentare la quota per gli sviluppatori. In futuro potrebbero esserci funzionalità che ti permettono di condividere parte di questi ricavi direttamente con i tuoi utenti; nel frattempo puoi premiare gli utenti che hanno aderito con funzionalità o contenuti esclusivi.
+
+## Hai bisogno di aiuto?
+
+Questo sito è la fonte di verità per tutto ciò che è tecnico. Per qualsiasi altra cosa (domande, feedback o semplicemente per passare del tempo con altri sviluppatori Mellowtel), unisciti a noi su [Discord](https://discord.com/invite/txAZp4MSDe).

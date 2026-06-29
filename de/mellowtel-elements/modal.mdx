@@ -1,0 +1,122 @@
+---
+sidebarTitle: "Support-Modal"
+title: "Mellowtel Support-Modal"
+icon: "window-maximize"
+robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+canonical: "https://mellowtel.com/docs/de/mellowtel-elements/modal"
+og:title: "Mellowtel Support-Modal für Erweiterungen und Websites"
+og:description: "Die Einrichtung des Mellowtel Support-Modals erklärt, wie man ein unaufdringliches Support-Prompt mit benutzerdefiniertem Text, Schlummerverhalten, Speicher-Backup und API-Nutzung erstellt."
+og:url: "https://mellowtel.com/docs/de/mellowtel-elements/modal"
+twitter:card: "summary"
+twitter:title: "Mellowtel Support-Modal für Erweiterungen und Websites"
+twitter:description: "Die Einrichtung des Mellowtel Support-Modals erklärt, wie man ein unaufdringliches Support-Prompt mit benutzerdefiniertem Text, Schlummerverhalten, Speicher-Backup und API-Nutzung erstellt."
+---
+
+Das Mellowtel Support-Modal ist ein unaufdringliches Modal, das Benutzer dazu ermutigt, deine Erweiterung oder Website durch die Support mit Mellowtel-Erweiterung zu unterstützen.
+
+## Voraussetzungen
+
+Bevor du das Modal verwendest, stelle sicher, dass du Mellowtel Elements in deinem Projekt eingerichtet hast:
+
+<CardGroup cols={2}>
+    <Card title="Erweiterungsintegration" icon="puzzle-piece" href="/mellowtel-elements/extension-integration">
+        Einrichtung für Browser-Erweiterungen
+    </Card>
+    <Card title="Website-Integration" icon="atom" href="/mellowtel-elements/website-integration">
+        Einrichtung für Websites mit NPM oder CDN
+    </Card>
+</CardGroup>
+
+## Hauptmerkmale
+
+- **Plattformübergreifend** - Funktioniert auf Websites und in Erweiterungsinhalts-Skripten
+- **Intelligentes Schlummern** - Benutzer können für 1 Woche, 2 Wochen schlummern oder dauerhaft deaktivieren
+- **Chrome-Speicher** - Verwendet die Chrome-Speicher-API, wenn verfügbar, fällt auf localStorage zurück
+- **Shadow DOM** - Stil-Isolation verhindert Konflikte mit den Stilen der Host-Seite
+- **Mobil anpassbar** - Optimiert für alle Bildschirmgrößen
+- **Erweiterungsdetails** - Ruft automatisch den Namen und das Symbol der Erweiterung ab und zeigt sie an
+
+## Erstellen des Modals
+
+Sobald du Mellowtel Elements initialisiert hast (siehe Integrationsanleitungen oben), kannst du das Support-Modal erstellen und anzeigen:
+
+### Grundlegende Verwendung
+
+```javascript
+// Grundlegende Verwendung mit Standardtitel und -text
+await mellowtel.createModal('your-invite-id-here');
+
+// Benutzerdefinierter Titel und Text
+await mellowtel.createModal(
+  'your-invite-id-here',
+  'Unterstütze unsere Erweiterung!',
+  'Hilf uns, diesen kostenlosen Service aufrechtzuerhalten, indem du unsere Erweiterung hinzufügst.'
+);
+```
+
+### Verwendungsbeispiele
+
+#### In Inhalts-Skripten
+
+```javascript
+// Modal anzeigen, nachdem der Benutzer 30 Sekunden auf der Seite war
+setTimeout(async () => {
+    await mellowtel.createModal(
+        'content-script-invite-456',
+        'Danke, dass du unsere Erweiterung nutzt!',
+        'Hilf uns, indem du die Entwicklung dieser Erweiterung unterstützt.'
+    );
+}, 30000);
+```
+
+#### Auf Websites
+
+```javascript
+// Modal anzeigen, nachdem die Seite geladen wurde
+window.addEventListener('load', async () => {
+    await mellowtel.createModal(
+        'website-invite-123',
+        'Unterstütze unseren Service',
+        'Installiere unsere Erweiterung, um diese Website kostenlos und werbefrei zu halten.'
+    );
+});
+```
+
+#### Bedingte Anzeige
+
+```javascript
+// Nur auf bestimmten Domains anzeigen
+const allowedDomains = ['github.com', 'stackoverflow.com', 'reddit.com'];
+const currentDomain = window.location.hostname;
+
+if (allowedDomains.some(domain => currentDomain.includes(domain))) {
+    await mellowtel.createModal(
+        'conditional-invite-789',
+        'Gefällt dir unsere Erweiterung?',
+        'Zeige deine Unterstützung und hilf uns, dieses kostenlose Tool weiter zu verbessern.'
+    );
+}
+```
+
+## API-Referenz
+
+### `createModal(inviteId, title?, body?)`
+
+Erstellt und zeigt das Support-Modal an.
+
+**Parameter:**
+- `inviteId` (string, erforderlich): Eindeutiger Bezeichner zur Nachverfolgung von Modal-Interaktionen
+- `title` (string, optional): Benutzerdefinierter Modaltitel (Standard ist "Support mit Mellowtel")
+- `body` (string, optional): Benutzerdefinierter Modaltext
+
+**Rückgabewert:** `Promise<void>`
+
+## Modalverhalten
+
+### Schlummeroptionen
+
+Benutzer können aus drei Schlummeroptionen wählen:
+
+- **1 Woche**: Modal erscheint 7 Tage lang nicht
+- **2 Wochen**: Modal erscheint 14 Tage lang nicht  
+- **Deaktivieren**: Modal erscheint nie wieder

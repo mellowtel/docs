@@ -1,0 +1,65 @@
+---
+sidebarTitle: "扩展集成"
+title: "在浏览器扩展中实现 Mellowtel Elements"
+icon: "puzzle-piece"
+robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+canonical: "https://mellowtel.com/docs/zh/mellowtel-elements/extension-integration"
+og:title: "Mellowtel Elements 浏览器扩展集成指南"
+og:description: "Mellowtel Elements 浏览器扩展集成展示如何安装包、添加选择加入容器、使用 ID 初始化以及创建同意元素。"
+og:url: "https://mellowtel.com/docs/zh/mellowtel-elements/extension-integration"
+twitter:card: "summary"
+twitter:title: "Mellowtel Elements 浏览器扩展集成指南"
+twitter:description: "Mellowtel Elements 浏览器扩展集成展示如何安装包、添加选择加入容器、使用 ID 初始化以及创建同意元素。"
+---
+
+在这里，你将看到如何将 Mellowtel Elements 集成到你的浏览器扩展中，以实现无缝的用户同意管理。
+
+## 安装
+
+在你的扩展项目中安装包：
+
+```bash
+npm install mellowtel-elements
+```
+
+## 实现
+
+### 1. 创建 HTML Div 容器
+
+在你的扩展的 HTML 中添加容器 div：
+
+```html
+<!-- 在 popup.html 或选项页面中 -->
+<div id="opt-in-container"></div>
+<div id="opt-out-container"></div>
+<div id="settings-container"></div>
+```
+
+### 2. 初始化 Mellowtel Elements
+
+```javascript
+import { MellowtelElements } from 'mellowtel-elements';
+
+// 使用扩展 ID 和配置键创建实例
+const mellowtel = new MellowtelElements(
+  'your-extension-id-here',    // 扩展 ID
+  'your-config-key-here'       // 配置键
+);
+```
+
+### 3. 创建元素
+
+在你的扩展的弹出窗口或选项页面中添加元素：
+
+```javascript
+// 创建选择加入元素
+await mellowtel.createElement('opt-in-container', { type: 'opt-in' });
+
+// 创建选择退出元素
+await mellowtel.createElement('opt-out-container', { type: 'opt-out' });
+
+// 创建设置元素
+await mellowtel.createElement('settings-container', { type: 'settings' });
+```
+
+完美！现在你的扩展已准备好使用 Mellowtel Elements 实现无缝的选择加入、选择退出和设置管理。

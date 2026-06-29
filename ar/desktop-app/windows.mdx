@@ -1,0 +1,357 @@
+---
+sidebarTitle: "Windows (.NET)"
+title: "دمج Mellowtel في تطبيق سطح المكتب تاعك على Windows"
+icon: "windows"
+platforms:
+  - desktop app
+robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+canonical: "https://mellowtel.com/docs/ar/desktop-app/windows"
+og:title: "دليل دمج Mellowtel في تطبيق سطح المكتب على Windows .NET"
+og:description: "دمج Mellowtel في Windows .NET يشمل تثبيت NuGet، إعداد Integration ID، معالجة الموافقة، إعدادات الاشتراك، أمثلة، وخطوات استكشاف الأخطاء."
+og:url: "https://mellowtel.com/docs/ar/desktop-app/windows"
+twitter:card: "summary"
+twitter:title: "دليل دمج Mellowtel في تطبيق سطح المكتب على Windows .NET"
+twitter:description: "دمج Mellowtel في Windows .NET يشمل تثبيت NuGet، إعداد Integration ID، معالجة الموافقة، إعدادات الاشتراك، أمثلة، وخطوات استكشاف الأخطاء."
+---
+
+دمج Mellowtel في تطبيق سطح المكتب تاعك على Windows باش تخلي المستخدمين يشاركو عرض النطاق الترددي غير المستخدم تاعهم مقابل مكافآت أو ميزات متميزة.
+
+<Warning>
+  **موافقة المستخدم ضرورية.** الـ SDK يرمي `InvalidOperationException` إذا ناديت `StartAsync()` بلا ما يكون المستخدم موافق.
+</Warning>
+
+## المتطلبات الأساسية
+
+- حساب Mellowtel و **Integration ID** من [لوحة التحكم](https://www.mellowtel.com/mellowtel-auth/). كل تطبيق سطح المكتب عندو Integration ID خاص بيه.
+- .NET 10 SDK
+- Windows 10 ولا Windows 11
+- تطبيق سطح المكتب .NET (Console، WPF، ولا Windows Forms)
+
+<Note>
+  حاب تشوف دمج كامل وواقعي قبل ما تربطو في التطبيق تاعك؟ المثال [mellowtel-pomodoro-windows](https://github.com/mellowtel-inc/mellowtel-pomodoro-windows) على WPF يوريك العملية كاملة من البداية للنهاية: حوار الموافقة، تبديل الإعدادات، ودورة الحياة في الخلفية.
+</Note>
+
+---
+
+## التثبيت
+
+Mellowtel لـ Windows متوفر في NuGet كـ [`Mellowtel.Win`](https://www.nuget.org/packages/Mellowtel.Win).
+
+### 1. تثبيت الحزمة
+
+من دليل المشروع تاعك:
+
+```bash
+dotnet add package Mellowtel.Win
+```
+
+ولا أضف `PackageReference` إلى `.csproj` تاعك:
+
+```xml
+<PackageReference Include="Mellowtel.Win" Version="1.0.0" />
+```
+
+### 2. أضف إلى الكود تاعك
+
+```csharp
+using MellowtelWin;
+
+// أبدأ Mellowtel بالـ Integration ID تاعك
+var mellowtel = new Mellowtel("YOUR_INTEGRATION_ID", new MellowtelOptions
+{
+    PluginId = "your-app-id"
+});
+
+// إذا كان المستخدم موافق من قبل، استأنف بصمت.
+// إذا لا، هذا لا يفعل شيئ ويرجع false.
+await mellowtel.StartIfOptedInAsync();
+
+// العملية لأول مرة: أظهر واجهة الموافقة تاعك، ثم وافق وابدأ.
+if (!mellowtel.GetOptInStatus() && ShowConsentDialog())
+{
+    mellowtel.OptIn();
+    await mellowtel.StartAsync();
+}
+
+// عند إيقاف التطبيق
+await mellowtel.StopAsync();
+mellowtel.Dispose();
+```
+
+<Note>
+  عوض `YOUR_INTEGRATION_ID` بـ Integration ID من لوحة التحكم تاع Mellowtel، وحط `PluginId` كمعرف ثابت للتطبيق تاعك. `ShowConsentDialog()` هي واجهة المستخدم تاعك اللي ترجع `true` فقط لما المستخدم يوافق صراحة. شوف [موافقة المستخدم](#user-consent) تحت.
+</Note>
+
+### خيارات التكوين
+
+`MellowtelOptions` يخليك تضبط بعض الأشياء:
+
+| الخاصية | النوع | الافتراضي | الوصف |
+| --- | --- | --- | --- |
+| `PluginId` | `string` | `"mellowtel-win"` | معرف ثابت للتطبيق تاعك. حطو حاجة فريدة. |
+| `MaxDailyRate` | `int` | الافتراضي المدمج | أقصى عدد من الطلبات اللي الـ SDK راح يتعامل معها في اليوم. |
+| `DisableLogs` | `bool` | `true` | حطها `false` باش تفعل سجلات الـ SDK أثناء التطوير. |
+
+---
+
+## أمثلة حسب نوع التطبيق
+
+<Tabs>
+  <Tab title="تطبيق Console">
+    ```csharp
+    using MellowtelWin;
+
+    class Program
+    {
+        static async Task Main(string[] args)
+        {
+            using var mellowtel = new Mellowtel("YOUR_INTEGRATION_ID", new MellowtelOptions
+            {
+                PluginId = "your-app-id"
+            });
+
+            if (!mellowtel.GetOptInStatus())
+            {
+                Console.WriteLine("المستخدم لازم يوافق قبل ما يستخدم هذي الخدمة.");
+                return;
+            }
+
+            using var cts = new CancellationTokenSource();
+            Console.CancelKeyPress += (s, e) => { e.Cancel = true; cts.Cancel(); };
+
+            try
+            {
+                await mellowtel.StartAsync(cts.Token);
+                Console.WriteLine("Mellowtel شغال. اضغط Ctrl+C للإيقاف.");
+                await Task.Delay(Timeout.Infinite, cts.Token);
+            }
+            catch (InvalidOperationException ex)
+            {
+                Console.WriteLine($"ما نقدرش نبدأ: {ex.Message}");
+            }
+            catch (OperationCanceledException)
+            {
+                Console.WriteLine("جاري الإيقاف...");
+            }
+            finally
+            {
+                await mellowtel.StopAsync();
+            }
+        }
+    }
+    ```
+  </Tab>
+  <Tab title="تطبيق WPF">
+    أضف إلى `MainWindow.xaml.cs` تاعك:
+
+    ```csharp
+    using MellowtelWin;
+    using System.Windows;
+
+    public partial class MainWindow : Window
+    {
+        private Mellowtel? _mellowtel;
+
+        public MainWindow()
+        {
+            InitializeComponent();
+            Loaded += Window_Loaded;
+        }
+
+        private async void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            _mellowtel = new Mellowtel("YOUR_INTEGRATION_ID", new MellowtelOptions
+            {
+                PluginId = "your-app-id"
+            });
+
+            _mellowtel.ConnectionStateChanged += (s, connected) =>
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    StatusTextBlock.Text = connected ? "متصل" : "غير متصل";
+                });
+            };
+
+            // استأنف بصمت إذا كان موافق من قبل. وإلا أظهر واجهة الموافقة تاعك.
+            var started = await _mellowtel.StartIfOptedInAsync();
+            if (!started)
+            {
+                // أظهر واجهة الموافقة تاعك هنا
+            }
+        }
+
+        protected override async void OnClosing(CancelEventArgs e)
+        {
+            if (_mellowtel != null)
+            {
+                await _mellowtel.StopAsync();
+                _mellowtel.Dispose();
+            }
+            base.OnClosing(e);
+        }
+    }
+    ```
+  </Tab>
+  <Tab title="تطبيق Windows Forms">
+    أضف إلى `MainForm.cs` تاعك:
+
+    ```csharp
+    using MellowtelWin;
+
+    public partial class MainForm : Form
+    {
+        private Mellowtel? _mellowtel;
+
+        public MainForm()
+        {
+            InitializeComponent();
+            Load += MainForm_Load;
+            FormClosing += MainForm_FormClosing;
+        }
+
+        private async void MainForm_Load(object sender, EventArgs e)
+        {
+            _mellowtel = new Mellowtel("YOUR_INTEGRATION_ID", new MellowtelOptions
+            {
+                PluginId = "your-app-id"
+            });
+
+            _mellowtel.ConnectionStateChanged += (s, connected) =>
+            {
+                if (InvokeRequired)
+                    Invoke(() => statusLabel.Text = connected ? "متصل" : "غير متصل");
+                else
+                    statusLabel.Text = connected ? "متصل" : "غير متصل";
+            };
+
+            // استأنف بصمت إذا كان موافق من قبل. وإلا أظهر واجهة الموافقة تاعك.
+            var started = await _mellowtel.StartIfOptedInAsync();
+            if (!started)
+            {
+                // أظهر واجهة الموافقة تاعك هنا
+            }
+        }
+
+        private async void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (_mellowtel != null)
+            {
+                await _mellowtel.StopAsync();
+                _mellowtel.Dispose();
+            }
+        }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+### مراقبة حالة الاتصال
+
+الـ `Mellowtel` عندو حدث `ConnectionStateChanged` اللي يتفعل كلما يتصل أو ينقطع الـ WebSocket الأساسي مع خادم Mellowtel. الأمثلة على WPF و Windows Forms اللي فوق تشترك فيه باش تدير مؤشر الحالة. الحمولة هي `bool` وين `true` يعني متصل و `false` يعني غير متصل.
+
+الحدث يتفعل في خيط خلفي، لذا الإطارات اللي تفرض الانتماء للخيط لازم تنقل التحديثات إلى خيط الواجهة. في WPF استعمل `Dispatcher.Invoke`، وفي Windows Forms استعمل `Control.Invoke` (كلاهما موضح في الأمثلة اللي فوق).
+
+<Note>
+  **حول نمط `async void OnClosing` في WPF.** المثال على WPF اللي فوق يستعمل `protected override async void OnClosing`، اللي هو الشكل الأبسط لكن عندو مشكلة دقيقة: `base.OnClosing(e)` يتنادى بشكل متزامن بينما `StopAsync()` مازال ينتظر، لذا النافذة تقدر تغلق قبل ما يكتمل التنظيف. بالنسبة لمعظم التطبيقات هذا عادي لأن العملية تنتهي مباشرة بعدها. إذا كنت تحتاج إيقاف سلس مضمون (مثال، لإرسال التليمترية)، اتبع [نمط التأجيل الموثق من Microsoft](https://learn.microsoft.com/en-us/dotnet/api/system.windows.window.closing) وين تحط `e.Cancel = true`، `await` العمل غير المتزامن تاعك، ثم تغلق النافذة بشكل صريح.
+</Note>
+
+---
+
+## موافقة المستخدم
+
+<Warning>
+  عرض حوار الموافقة **ضروري**. الـ SDK يفرض هذا: `StartAsync()` يرمي `InvalidOperationException` إذا المستخدم ما وافقش.
+</Warning>
+
+```csharp
+var mellowtel = new Mellowtel("YOUR_INTEGRATION_ID", new MellowtelOptions
+{
+    PluginId = "your-app-id"
+});
+
+if (!mellowtel.GetOptInStatus())
+{
+    var userAgreed = ShowConsentDialog(); // الحوار المخصص تاعك
+
+    if (userAgreed)
+        mellowtel.OptIn();
+    else
+        return; // المستخدم رفض، ما تبدأش
+}
+
+try
+{
+    await mellowtel.StartAsync();
+}
+catch (InvalidOperationException ex)
+{
+    Console.WriteLine($"خطأ: {ex.Message}");
+}
+```
+
+### واش لازم يتضمن حوار الموافقة تاعك
+
+<Steps>
+  <Step title="شرح واش يدير Mellowtel">
+    استعمل لغة بسيطة. مثال: *"هذا التطبيق يستعمل Mellowtel لمشاركة عرض النطاق الترددي غير المستخدم تاعك. هذا يخليك تستفيد من [ميزة/فائدة]. تقدر تلغي الاشتراك في أي وقت من الإعدادات."*
+  </Step>
+  <Step title="اعطي المستخدمين اختيار واضح">
+    ضمّن خيارات قبول ورفض واضحة.
+  </Step>
+  <Step title="رابط للسياسات">
+    ضمّن روابط لـ [شروط الخدمة](https://www.mellowtel.com/terms-and-conditions) و [سياسة الخصوصية](https://www.mellowtel.com/privacy-policy).
+  </Step>
+</Steps>
+
+### خلي المستخدمين يغيرو موافقتهم في الإعدادات
+
+```csharp
+// تحقق من الحالة الحالية
+bool isOptedIn = mellowtel.GetOptInStatus();
+
+// إلغاء الاشتراك
+if (userWantsToOptOut)
+{
+    mellowtel.OptOut();
+    await mellowtel.StopAsync();
+}
+
+// إعادة الاشتراك
+if (userWantsToOptIn)
+{
+    mellowtel.OptIn();
+    await mellowtel.StartAsync();
+}
+```
+
+لواجهة مستخدم أغنى (مثال، عرض وقت الاشتراك الأول)، `GetOptInDetails()` ترجع حالة الاشتراك مع تواريخ الاشتراك والإلغاء:
+
+```csharp
+var (isOptedIn, optInDate, optOutDate) = mellowtel.GetOptInDetails();
+```
+
+---
+
+## استكشاف الأخطاء وإصلاحها
+
+<AccordionGroup>
+  <Accordion title='خطأ "Package not found"'>
+    1. تأكد أن المشروع تاعك يستهدف **.NET 10** أو أحدث. `Mellowtel.Win` يتطلب `net10.0`.
+    2. امسح ذاكرة التخزين المؤقت لـ NuGet واستعد:
+
+    ```bash
+    dotnet nuget locals all --clear
+    dotnet restore
+    ```
+  </Accordion>
+  <Accordion title='خطأ "InvalidOperationException: User has not opted in"'>
+    `StartAsync()` يتطلب موافقة صريحة. ناد `OptIn()` بعد ما حوار الموافقة تاعك يرجع نتيجة إيجابية، ثم ناد `StartAsync()`. للاستئناف الصامت في الإطلاقات اللاحقة، استعمل `StartIfOptedInAsync()` بدلاً من ذلك، اللي ما يدير والو لما المستخدم ما وافقش.
+  </Accordion>
+</AccordionGroup>
+
+---
+
+الوقت المقدر للإكمال: 10-15 دقيقة.
+
+إذا كنت تحتاج مساعدة أو عندك ملاحظات، تواصل معنا على [info@mellowtel.com](mailto:info@mellowtel.com) أو انضم لمجتمعنا على [Discord](https://discord.com/invite/txAZp4MSDe).

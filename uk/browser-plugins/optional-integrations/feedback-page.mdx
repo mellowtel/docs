@@ -1,0 +1,63 @@
+---
+sidebarTitle: "Відгуки користувачів"
+title: "Збирайте відгуки від ваших користувачів"
+icon: "comment"
+robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+canonical: "https://mellowtel.com/docs/uk/browser-plugins/optional-integrations/feedback-page"
+og:title: "Посібник зі сторінки відгуків Mellowtel для розширень браузера"
+og:description: "Налаштування сторінки відгуків Mellowtel показує, як плагіни браузера можуть генерувати посилання на відгуки про видалення, відкривати розміщену сторінку та переглядати відповіді на панелі управління."
+og:url: "https://mellowtel.com/docs/uk/browser-plugins/optional-integrations/feedback-page"
+twitter:card: "summary"
+twitter:title: "Посібник зі сторінки відгуків Mellowtel для розширень браузера"
+twitter:description: "Налаштування сторінки відгуків Mellowtel показує, як плагіни браузера можуть генерувати посилання на відгуки про видалення, відкривати розміщену сторінку та переглядати відповіді на панелі управління."
+---
+
+Mellowtel надає готову сторінку відгуків, яку ти можеш використовувати для збору відгуків від своїх користувачів, щоб швидше вдосконалювати свій продукт. Наразі сторінка доступна лише для плагінів браузера. Сторінка відгуків схожа на цю [сторінку](https://www.mellowtel.com/uninstall-feedback/?extension_id=testId&configuration_key=testConfiguration), динамічно передаючи іконку та назву твого плагіну.
+
+Ти можеш переглядати відгуки на панелі управління Mellowtel і використовувати їх для покращення свого плагіну браузера.
+
+ВАЖЛИВО: Ти зможеш читати відгуки на панелі управління Mellowtel лише якщо твій плагін опублікований у веб-магазині, а не в режимі розробки. Якщо ти ще в процесі розробки і хочеш протестувати сторінку відгуків, будь ласка, зв'яжись через чат.
+
+Ось як ти можеш додати сторінку відгуків до свого плагіну браузера:
+
+
+## Додай сторінку відгуків до свого плагіну
+
+Сторінка відгуків розміщена Mellowtel і доступна через URL, який ти можеш згенерувати за допомогою методу `generateFeedbackLink()` з пакету Mellowtel JS.
+
+Якщо ти хочеш безпосередньо відкрити сторінку відгуків у новій вкладці, ти можеш використовувати метод `generateAndOpenFeedbackLink()`, і він відкриє сторінку, схожу на цю [сторінку](https://www.mellowtel.com/uninstall-feedback/?extension_id=testId&configuration_key=testConfiguration), динамічно передаючи іконку та назву твого плагіну.
+
+Ти можеш відкрити сторінку відгуків, викликавши метод `generateFeedbackLink()` з фонової скрипту або контентного скрипту твого розширення, коли користувач видаляє твій плагін браузера.
+
+Ось як ти можеш це зробити.
+
+Відкрий свій файл `service worker` (також відомий як фоновий скрипт) і додай наступний код:
+
+Не забудь замінити `<YOUR_CONFIGURATION_KEY>` на свій фактичний ключ конфігурації Mellowtel. Якщо у тебе ще немає ключа конфігурації, ти можеш отримати його, зареєструвавшись на [Mellowtel](https://www.mellowtel.com/mellowtel-auth/).
+
+```javascript
+import Mellowtel from "mellowtel";
+
+let mellowtel;
+
+(async () => {
+    mellowtel = new Mellowtel("<YOUR_CONFIGURATION_KEY>");
+    await mellowtel.initBackground();
+})();
+
+// Відкрити сторінку відгуків, коли користувач видаляє розширення
+chrome.runtime.onInstalled.addListener(async function(details) {
+    console.log("Розширення встановлено або оновлено");
+    // Якщо ти хочеш обробляти встановлення та оновлення по-різному
+    /**
+    if(details.reason === "install"){
+        // викликати функцію для обробки першого встановлення
+    } else if(details.reason === "update") {
+        // викликати функцію для обробки оновлення
+    }
+    **/
+    // await mellowtel.generateAndOpenOptInLink(); для обробки налаштувань користувачів. Для деталей: документація opt-in-out
+    const uninstallURl = await mellowtel.generateFeedbackLink();
+    chrome.runtime.setUninstallURL(uninstallURl);
+});
+```

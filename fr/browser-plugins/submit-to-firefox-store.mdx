@@ -1,0 +1,69 @@
+---
+sidebarTitle: "Soumettre aux modules complémentaires Firefox"
+title: "Soumettre l’extension aux modules complémentaires Firefox"
+icon: "firefox"
+robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+canonical: "https://mellowtel.com/docs/fr/browser-plugins/submit-to-firefox-store"
+og:title: "Guide de soumission aux modules complémentaires Firefox pour les extensions Mellowtel"
+og:description: "Le guide de soumission aux modules complémentaires Firefox explique comment télécharger votre module, le code source ZIP, les détails de la liste, les notes pour les réviseurs et la soumission de la version."
+og:url: "https://mellowtel.com/docs/fr/browser-plugins/submit-to-firefox-store"
+twitter:card: "summary"
+twitter:title: "Guide de soumission aux modules complémentaires Firefox pour les extensions Mellowtel"
+twitter:description: "Le guide de soumission aux modules complémentaires Firefox explique comment télécharger votre module, le code source ZIP, les détails de la liste, les notes pour les réviseurs et la soumission de la version."
+---
+
+Après avoir importé Mellowtel dans votre extension comme décrit dans le guide [Démarrage rapide](/browser-plugin/quickstart), suivez ces étapes pour soumettre votre extension aux modules complémentaires Firefox.
+
+### Étape 1 : Téléchargez votre module
+
+1. Rendez-vous sur le [Hub des développeurs de modules complémentaires](https://addons.mozilla.org/developers/).
+2. Cliquez sur "Soumettre un nouveau module".
+3. Vous verrez cette page :
+
+![Page de soumission d'un nouveau module](/images/firefox/submit_new.png)
+
+4. Cliquez sur "Sélectionner un fichier..." et choisissez votre fichier de module (.zip, .xpi, .crx, .jar, ou .xml).
+5. Cliquez sur "Continuer" et attendez que la validation soit terminée.
+
+### Étape 2 : Soumettez le code source
+
+Après la validation, on vous demandera de soumettre le code source :
+
+![Page de soumission du code source](/images/firefox/source_code.png)
+
+1. Sélectionnez "Oui" à la question "Avez-vous besoin de soumettre le code source ?".
+2. Préparez un fichier ZIP contenant :
+   - Des instructions de construction étape par étape (dans un fichier README ou des notes pour les réviseurs)
+   - Un script de construction qui exécute toutes les étapes techniques nécessaires
+   - Les exigences du système d'exploitation et de l'environnement de construction
+   - La version requise et les instructions d'installation pour tous les programmes utilisés dans le processus de construction
+3. Cliquez sur "Parcourir..." et téléchargez votre fichier ZIP de code source.
+4. Cliquez sur "Continuer".
+
+### Étape 3 : Décrivez votre module
+
+Remplissez les détails concernant votre module :
+
+![Page de description du module](/images/firefox/describe.png)
+
+1. Nom : Entrez le nom de votre module
+2. URL du module : Elle sera générée automatiquement, mais vous pouvez la modifier
+3. Résumé : Fournissez une explication claire et concise de ce que fait votre module (max 179 caractères)
+4. Description : Une explication plus longue des fonctionnalités et de la fonctionnalité (recommandé 250 caractères)
+5. Sélectionnez jusqu'à 2 catégories Firefox et 2 catégories Firefox pour Android
+6. Email de support et site web de support
+7. Choisissez une licence
+8. Si votre module a une politique de confidentialité, cochez la case et fournissez la politique
+9. Notes pour les réviseurs : Expliquez que votre module utilise Mellowtel et fournissez tout contexte nécessaire
+
+### Étape 4 : Soumettez la version
+
+Après avoir rempli tous les champs requis, cliquez sur "Soumettre la version" en bas de la page.
+
+### Après la soumission
+
+- Vous recevrez une confirmation par email.
+- Votre module sera publié sur AMO mais peut être soumis à un examen plus approfondi.
+- Pour mettre à jour votre module à l'avenir, visitez sa page sur AMO et téléchargez la nouvelle version là-bas.
+
+Remarque : Le processus de révision de Firefox peut prendre plusieurs jours. Répondez rapidement à toute question de l'équipe de révision.

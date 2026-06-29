@@ -1,0 +1,40 @@
+---
+sidebarTitle: "提交到 CWS"
+title: "提交扩展到 Chrome 网上应用店"
+icon: "chrome"
+robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+canonical: "https://mellowtel.com/docs/zh/browser-plugins/submit-to-chrome-store"
+og:title: "Mellowtel 扩展的 Chrome 网上应用店提交指南"
+og:description: "Chrome 网上应用店提交指南包括 Mellowtel 权限说明文案，涉及 declarativeNetRequest、主机权限、存储和审核。"
+og:url: "https://mellowtel.com/docs/zh/browser-plugins/submit-to-chrome-store"
+twitter:card: "summary"
+twitter:title: "Mellowtel 扩展的 Chrome 网上应用店提交指南"
+twitter:description: "Chrome 网上应用店提交指南包括 Mellowtel 权限说明文案，涉及 declarativeNetRequest、主机权限、存储和审核。"
+---
+
+在你按照[快速开始](/browser-plugins/quickstart)中列出的指引将 Mellowtel 导入到你的扩展后，你就可以将扩展提交到网上应用店了。本指南将帮助你将扩展提交到 Chrome 网上应用店。
+
+预计完成时间：3-5 分钟。
+
+### 网上应用店权限说明
+网上应用店要求你说明你请求的权限。以下是一个模板（解释了 Mellowtel 如何使用这些权限）：
+
+**DeclarativeNetRequest**:
+```txt
+需要 declarativeNetRequest 权限来从某些响应中剥离某些头信息（例如 X-Frame 头）在 sub_frame 级别。这允许在 iframe 中显示网站而不会遇到与跨域资源共享（CORS）相关的问题。这些头信息在响应处理后立即恢复。
+```
+
+**主机权限**:
+```txt
+在 all_urls 上的主机权限是为了让 declarativeNetRequest 修改所有 URL 的响应头。这是为了在 sub_frame 级别从某些响应中剥离某些头信息（例如 X-Frame 头）。这允许在 iframe 中显示网站而不会遇到与跨域资源共享（CORS）相关的问题。这些头信息在响应处理后立即恢复。
+```
+
+**存储**:
+```txt
+需要存储权限来保持扩展特定的状态，并拥有一个本地逻辑以促进扩展各部分之间的通信。
+```
+
+### 提交你的扩展
+你可以根据你是提交新扩展还是更新现有扩展来遵循以下指引：
+- [提交新扩展](https://developer.chrome.com/docs/webstore/publish/)
+- [更新现有扩展](https://developer.chrome.com/docs/webstore/update)

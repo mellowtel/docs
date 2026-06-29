@@ -1,0 +1,163 @@
+---
+sidebarTitle: "फ़ायरफ़ॉक्स एकीकरण"
+title: "फ़ायरफ़ॉक्स एक्सटेंशन्स के साथ Mellowtel सेट अप करना"
+icon: "firefox"
+robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+canonical: "https://mellowtel.com/docs/hi/browser-plugins/quickstart_firefox"
+og:title: "Mellowtel फ़ायरफ़ॉक्स एक्सटेंशन एकीकरण लाइट SDK के साथ"
+og:description: "Mellowtel फ़ायरफ़ॉक्स एक्सटेंशन सेटअप में mellowtel-lite पैकेज, Manifest V2 और V3 अनुमतियाँ, बैकग्राउंड स्क्रिप्ट्स, कंटेंट स्क्रिप्ट्स और सेटिंग्स की व्याख्या की गई है।"
+og:url: "https://mellowtel.com/docs/hi/browser-plugins/quickstart_firefox"
+twitter:card: "summary"
+twitter:title: "Mellowtel फ़ायरफ़ॉक्स एक्सटेंशन एकीकरण लाइट SDK के साथ"
+twitter:description: "Mellowtel फ़ायरफ़ॉक्स एक्सटेंशन सेटअप में mellowtel-lite पैकेज, Manifest V2 और V3 अनुमतियाँ, बैकग्राउंड स्क्रिप्ट्स, कंटेंट स्क्रिप्ट्स और सेटिंग्स की व्याख्या की गई है।"
+---
+
+यह गाइड आपको Mellowtel को आपके फ़ायरफ़ॉक्स एक्सटेंशन में एकीकृत करने की प्रक्रिया से गुजारेगा, जो कि Manifest V2 और V3 दोनों का समर्थन करता है।
+
+## इंस्टॉलेशन
+
+सबसे पहले, Mellowtel Lite (`mellowtel-lite`) npm पैकेज इंस्टॉल करें। कृपया ध्यान दें कि फ़ायरफ़ॉक्स के लिए आप केवल `mellowtel-lite` पैकेज को आयात कर सकते हैं ताकि ब्राउज़र की सहायक उपयोगकर्ता डेटा नीतियों के अनुपालन में रह सकें:
+
+```bash
+npm install mellowtel-lite
+```
+
+## मैनिफेस्ट कॉन्फ़िगरेशन
+
+`manifest.json` फ़ाइल को Mellowtel के सही ढंग से काम करने के लिए विशेष कॉन्फ़िगरेशन की आवश्यकता होती है। यहाँ दोनों Manifest V2 और V3 के लिए आवश्यक भाग दिए गए हैं:
+
+### Manifest V2
+
+```json
+{
+  "manifest_version": 2,
+  "permissions": [
+    "storage",
+    "<all_urls>",
+    "declarativeNetRequestWithHostAccess",
+  ],
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": true
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content_start_mellowtel.js"],
+      "run_at": "document_start",
+      "all_frames": true
+    }
+  ],
+  "browser_action": {
+    "default_popup": "popup.html"
+  }
+}
+```
+
+### Manifest V3
+
+```json
+{
+  "manifest_version": 3,
+  "permissions": [
+    "storage",
+    "declarativeNetRequestWithHostAccess"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "scripts": ["background.js"],
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content_start_mellowtel.js"],
+      "run_at": "document_start",
+      "all_frames": true
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html"
+  }
+}
+```
+
+## बैकग्राउंड स्क्रिप्ट सेटअप
+
+`background.js` नामक एक फ़ाइल बनाएँ और निम्नलिखित सामग्री डालें:
+
+```javascript
+import Mellowtel from "mellowtel-lite";
+
+let mellowtel;
+
+(async () => {
+    mellowtel = new Mellowtel("<your_configuration_key>");
+    await mellowtel.initBackground();
+})();
+
+browser.runtime.onInstalled.addListener(async function(details) {
+    console.log("Extension Installed or Updated");
+    await mellowtel.generateAndOpenOptInLink();
+});
+```
+
+`<your_configuration_key>` को अपने वास्तविक Mellowtel कॉन्फ़िगरेशन कुंजी से बदलें।
+
+## कंटेंट स्क्रिप्ट सेटअप
+
+`content_start_mellowtel.js` नामक एक फ़ाइल बनाएँ और निम्नलिखित सामग्री डालें:
+
+```javascript
+import Mellowtel from "mellowtel-lite";
+
+(async () => {
+    const mellowtel = new Mellowtel("<your_configuration_key>");
+    await mellowtel.initContentScript();
+})();
+```
+
+फिर से, `<your_configuration_key>` को अपने वास्तविक Mellowtel कॉन्फ़िगरेशन कुंजी से बदलें।
+
+## Mellowtel सेटिंग्स के लिए पॉपअप
+
+उपयोगकर्ताओं को Mellowtel सेटिंग्स तक आसानी से पहुँचने की अनुमति देने के लिए, आपको एक पॉपअप बनाना चाहिए। इसे सेट अप करने का तरीका यहाँ है:
+
+1. एक `popup.html` फ़ाइल बनाएँ:
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Mellowtel Settings</title>
+</head>
+<body>
+  <h1>Mellowtel Settings</h1>
+  <button id="openSettings">Open Mellowtel Settings</button>
+  <script src="popup.js"></script>
+</body>
+</html>
+```
+
+2. एक `popup.js` फ़ाइल बनाएँ:
+
+```javascript
+import Mellowtel from "mellowtel-lite";
+
+const mellowtel = new Mellowtel("<your_configuration_key>");
+
+async function openSettings() {
+    try {
+        const settingsLink = await mellowtel.generateSettingsLink();
+        browser.tabs.create({ url: settingsLink });
+    } catch (error) {
+        console.error("Error generating settings link:", error);
+    }
+}
+
+document.getElementById('openSettings').addEventListener('click', openSettings);
+```
+
+याद रखें कि `<your_configuration_key>` को अपने वास्तविक Mellowtel कॉन्फ़िगरेशन कुंजी से बदलें। यदि आपके पास अभी तक कॉन्फ़िगरेशन कुंजी नहीं है, तो आप [Mellowtel](https://www.mellowtel.com/mellowtel-auth/) पर साइन अप करके एक प्राप्त कर सकते हैं।

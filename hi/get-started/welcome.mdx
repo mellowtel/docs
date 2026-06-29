@@ -1,0 +1,69 @@
+---
+sidebarTitle: "स्वागत है"
+title: "स्वागत है 👋"
+icon: "hand-wave"
+robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+canonical: "https://mellowtel.com/docs/hi/get-started/welcome"
+og:title: "Mellowtel Docs: एक्सटेंशन्स, ऐप्स और वेबसाइट्स को मोनेटाइज करें"
+og:description: "Mellowtel डॉक्स दिखाते हैं कि ब्राउज़र एक्सटेंशन्स, डेस्कटॉप ऐप्स, वेबसाइट्स और मोबाइल ऐप्स में सहमति-आधारित बैंडविड्थ शेयरिंग कैसे जोड़ें, क्विकस्टार्ट्स और अवधारणाओं के साथ।"
+og:url: "https://mellowtel.com/docs/hi/get-started/welcome"
+twitter:card: "summary"
+twitter:title: "Mellowtel Docs: एक्सटेंशन्स, ऐप्स और वेबसाइट्स को मोनेटाइज करें"
+twitter:description: "Mellowtel डॉक्स दिखाते हैं कि ब्राउज़र एक्सटेंशन्स, डेस्कटॉप ऐप्स, वेबसाइट्स और मोबाइल ऐप्स में सहमति-आधारित बैंडविड्थ शेयरिंग कैसे जोड़ें, क्विकस्टार्ट्स और अवधारणाओं के साथ।"
+---
+
+**Mellowtel एआई दुनिया में डेवलपर्स और क्रिएटर्स के लिए ओपन-सोर्स मोनेटाइजेशन प्लेटफॉर्म है।** अपने ब्राउज़र एक्सटेंशन, डेस्कटॉप ऐप, वेबसाइट, या मोबाइल ऐप में SDK डालें और आपके उपयोगकर्ता अपने अप्रयुक्त इंटरनेट बैंडविड्थ का एक हिस्सा विश्वसनीय साझेदारों के साथ साझा करने के लिए सहमति दे सकते हैं। आप राजस्व का एक हिस्सा कमाते हैं।
+
+## इंटीग्रेशन कैसा दिखता है
+
+```bash
+npm install mellowtel
+```
+
+```javascript
+import Mellowtel from "mellowtel";
+
+const mellowtel = new Mellowtel("<YOUR_CONFIGURATION_KEY>");
+await mellowtel.initBackground();
+await mellowtel.generateAndOpenOptInLink();
+```
+
+यह ब्राउज़र एक्सटेंशन के लिए पूरी इंटीग्रेशन है। अन्य प्लेटफॉर्म समान हैं। नीचे दिए गए क्विकस्टार्ट्स देखें।
+
+## अपनी प्लेटफॉर्म चुनें
+
+<CardGroup cols={2}>
+    <Card title="ब्राउज़र प्लगइन्स" icon="puzzle-piece" href="/browser-plugins/quickstart">
+        लगभग 5 मिनट में Chrome, Edge, Firefox, या Safari एक्सटेंशन में Mellowtel को इंटीग्रेट करें।
+    </Card>
+    <Card title="डेस्कटॉप ऐप्स" icon="desktop" href="/desktop-app/quickstart">
+        एक Electron, Windows, या macOS डेस्कटॉप ऐप को मोनेटाइज करें।
+    </Card>
+    <Card title="वेबसाइट्स" icon="atom" href="/website/quickstart">
+        किसी भी वेबसाइट में एकल स्क्रिप्ट के साथ Mellowtel जोड़ें।
+    </Card>
+    <Card title="मोबाइल ऐप्स" icon="mobile" href="/mobile-app/quickstart">
+        एक iOS या Android मोबाइल ऐप को मोनेटाइज करें।
+    </Card>
+</CardGroup>
+
+## शिप करने से पहले, अवधारणाओं को पढ़ें
+
+ये चार पृष्ठ उन सिद्धांतों को समझाते हैं जिनका हर Mellowtel इंटीग्रेशन को सम्मान करना चाहिए: सहमति, गोपनीयता, और दर सीमित करना। इन्हें एक बार पढ़ लें और बाकी के डॉक्स समझ में आएंगे।
+
+<CardGroup cols={2}>
+    <Card title="अवधारणाओं का अवलोकन" icon="compass" href="/concepts/overview">
+        एक पृष्ठ में Mellowtel के पीछे के चार विचार।
+    </Card>
+    <Card title="ऑप्ट-इन / ऑप्ट-आउट" icon="signature" href="/concepts/opt-in-out">
+        उपयोगकर्ता की सहमति को सही तरीके से कैसे कैप्चर (और रद्द) करें।
+    </Card>
+</CardGroup>
+
+## राजस्व कैसे काम करता है
+
+विभाजन है **55% डेवलपर्स के लिए, 45% Mellowtel के लिए**। जैसे-जैसे हम बढ़ते हैं, हम अधिक सेवाएं प्रदान करने और डेवलपर शेयर को बढ़ाने में सक्षम होंगे। आगे चलकर ऐसी विशेषताएं हो सकती हैं जो आपको इस राजस्व का एक हिस्सा सीधे अपने उपयोगकर्ताओं के साथ साझा करने की अनुमति देती हैं; इस बीच, आप ऑप्ट-इन उपयोगकर्ताओं को विशेष सुविधाओं या सामग्री के साथ पुरस्कृत कर सकते हैं।
+
+## मदद चाहिए?
+
+यह साइट तकनीकी रूप से सब कुछ के लिए सत्य का स्रोत है। किसी भी अन्य चीज़ के लिए (प्रश्न, प्रतिक्रिया, या सिर्फ अन्य Mellowtel डेवलपर्स के साथ समय बिताने के लिए), [Discord](https://discord.com/invite/txAZp4MSDe) पर हमसे जुड़ें।

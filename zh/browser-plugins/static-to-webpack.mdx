@@ -1,0 +1,159 @@
+---
+sidebarTitle: "从静态到Webpack"
+title: "为浏览器插件设置Webpack"
+icon: "cube"
+robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+canonical: "https://mellowtel.com/docs/zh/browser-plugins/static-to-webpack"
+og:title: "浏览器扩展和Mellowtel的Webpack设置"
+og:description: "浏览器扩展的Webpack设置涵盖项目结构、npm依赖、入口点、资源复制、包脚本、构建和本地测试。"
+og:url: "https://mellowtel.com/docs/zh/browser-plugins/static-to-webpack"
+twitter:card: "summary"
+twitter:title: "浏览器扩展和Mellowtel的Webpack设置"
+twitter:description: "浏览器扩展的Webpack设置涵盖项目结构、npm依赖、入口点、资源复制、包脚本、构建和本地测试。"
+---
+
+本指南概述了如何使用Webpack设置你的浏览器扩展项目，重点是支持多个JavaScript入口点和静态资源管理的配置。
+
+### 第1步：初始项目设置
+
+首先，构建你的项目以容纳源文件、静态资源和最终的打包输出。你的项目目录应如下所示：
+
+```
+your-extension/
+├── public/            # 包含静态文件，如HTML、CSS和manifest
+│   ├── images/
+│   ├── icons/
+│   ├── manifest.json
+│   └── popup.html
+├── src/               # 包含你的JavaScript源代码
+│   ├── background.js
+│   ├── popup.js
+│   ├── content_script.js
+│   └── ... (其他JS文件)
+└── package.json       # NPM包文件
+```
+
+### 第2步：设置Node.js和NPM
+
+确保你的系统上已安装Node.js和NPM。Node.js是运行包生态系统的必要条件，而NPM用于管理你的项目依赖。
+
+### 第3步：安装Webpack和其他依赖
+
+在终端中导航到你的项目根目录，并初始化一个新的NPM项目（如果尚未初始化）：
+
+```bash
+npm init -y
+```
+
+然后，安装Webpack和必要的加载器及插件：
+
+```bash
+npm install --save-dev webpack webpack-cli babel-loader @babel/core @babel/preset-env copy-webpack-plugin file-loader
+```
+
+- **Webpack** 用于打包你的JavaScript和资源。
+- **Babel** 允许你使用现代JavaScript特性。
+- **CopyPlugin** 将文件和目录复制到你的构建目录中。
+- **File Loader** 将文件的import/require()解析为url，并将文件输出到输出目录中。
+
+### 第4步：配置Webpack
+
+在你的项目根目录创建一个`webpack.config.js`文件。该文件应定义你的入口点、输出配置、加载不同文件类型的模块规则以及用于附加功能的插件。以下是给定设置下的`webpack.config.js`示例：
+
+```javascript
+const path = require('path');
+const CopyPlugin = require('copy-webpack-plugin');
+
+module.exports = {
+    mode: 'development', // 生产构建时使用'production'
+    entry: {
+        background: path.join(__dirname, 'src', 'background.js'),
+        popup: path.join(__dirname, 'src', 'popup.js'),
+        content_script: path.join(__dirname, 'src', 'content_script.js'),
+    },
+    output: {
+        path: path.join(__dirname, 'dist'),
+        filename: '[name].js',
+        publicPath: ""
+    },
+    module: {
+        rules: [
+            {
+                test: /\.js$/,
+                exclude: /node_modules/,
+                use: {
+                    loader: 'babel-loader',
+                    options: {
+                        presets: ['@babel/preset-env']
+                    }
+                }
+            },
+            {
+                test: /\.js$/,
+                exclude: /node_modules/
+            },
+            {
+                test: /\.(png|svg|jpg|gif)$/,
+                use: [
+                    'file-loader',
+                ],
+            },
+        ]
+    },
+    plugins: [
+        new CopyPlugin({
+            patterns: [
+                { from: 'public', to: '' } // 将所有资源和manifest.json从'public'复制到'dist'
+            ],
+        }),
+    ]
+};
+```
+
+### 第5步：调整Manifest和HTML文件
+
+确保你的`manifest.json`和任何HTML文件正确引用脚本和资源。例如，脚本将输出到`dist`文件夹，因此相应更新路径。
+
+### 第6步：将构建脚本集成到`package.json`中
+
+在使用Webpack设置你的项目并按照前述步骤进行配置后，你将希望使用`npm`脚本自动化构建和监视过程。打开你的`package.json`文件，并在`scripts`对象中添加以下脚本：
+
+```json
+"scripts": {
+  "test": "echo \"Error: no test specified\" && exit 1",
+  "build": "webpack --mode production",
+  "watch": "webpack --mode development --watch"
+},
+```
+
+每个脚本的功能如下：
+- `"build"`：在生产模式下打包你的扩展，优化输出以便部署。此模式启用诸如代码压缩和无用代码消除等优化。
+- `"watch"`：在开发模式下运行Webpack，并监视你的文件是否有更改，当文件被修改时自动重新编译项目。这在开发过程中非常有用，可以立即反馈更改。
+
+### 第7步：测试和构建扩展
+
+要为生产构建你的扩展，使用：
+
+```bash
+npm run build
+```
+
+此命令使用`--mode production`标志调用Webpack，优化你的项目以便部署。
+
+在开发过程中，你可以让Webpack监视你的文件，并在检测到更改时重新编译：
+
+```bash
+npm run watch
+```
+
+这使得开发过程更加流畅，因为你不必在每次更改后手动重建项目。
+
+### 第7步：测试扩展
+
+在Chrome中测试你的扩展：
+
+1. 在Chrome浏览器中访问`chrome://extensions/`。
+2. 在右上角启用“开发者模式”。
+3. 点击“加载已解压的扩展程序”，然后选择你的`dist`文件夹。
+
+这将在本地安装扩展以进行测试和开发。

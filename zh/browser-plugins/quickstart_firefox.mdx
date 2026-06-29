@@ -1,0 +1,163 @@
+---
+sidebarTitle: "Firefox 集成"
+title: "使用 Firefox 扩展设置 Mellowtel"
+icon: "firefox"
+robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+canonical: "https://mellowtel.com/docs/zh/browser-plugins/quickstart_firefox"
+og:title: "Mellowtel Firefox 扩展与 Lite SDK 集成"
+og:description: "Mellowtel Firefox 扩展设置解释了 mellowtel-lite 包、Manifest V2 和 V3 权限、后台脚本、内容脚本和设置。"
+og:url: "https://mellowtel.com/docs/zh/browser-plugins/quickstart_firefox"
+twitter:card: "summary"
+twitter:title: "Mellowtel Firefox 扩展与 Lite SDK 集成"
+twitter:description: "Mellowtel Firefox 扩展设置解释了 mellowtel-lite 包、Manifest V2 和 V3 权限、后台脚本、内容脚本和设置。"
+---
+
+本指南将引导你将 Mellowtel 集成到你的 Firefox 扩展中，支持 Manifest V2 和 V3。
+
+## 安装
+
+首先，安装 Mellowtel Lite (`mellowtel-lite`) npm 包。请注意，对于 Firefox，你只能导入 `mellowtel-lite` 包，以符合浏览器关于辅助用户数据的政策：
+
+```bash
+npm install mellowtel-lite
+```
+
+## Manifest 配置
+
+`manifest.json` 文件需要特定配置才能使 Mellowtel 正常工作。以下是 Manifest V2 和 V3 所需的部分：
+
+### Manifest V2
+
+```json
+{
+  "manifest_version": 2,
+  "permissions": [
+    "storage",
+    "<all_urls>",
+    "declarativeNetRequestWithHostAccess",
+  ],
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": true
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content_start_mellowtel.js"],
+      "run_at": "document_start",
+      "all_frames": true
+    }
+  ],
+  "browser_action": {
+    "default_popup": "popup.html"
+  }
+}
+```
+
+### Manifest V3
+
+```json
+{
+  "manifest_version": 3,
+  "permissions": [
+    "storage",
+    "declarativeNetRequestWithHostAccess"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "scripts": ["background.js"],
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content_start_mellowtel.js"],
+      "run_at": "document_start",
+      "all_frames": true
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html"
+  }
+}
+```
+
+## 后台脚本设置
+
+创建一个名为 `background.js` 的文件，内容如下：
+
+```javascript
+import Mellowtel from "mellowtel-lite";
+
+let mellowtel;
+
+(async () => {
+    mellowtel = new Mellowtel("<your_configuration_key>");
+    await mellowtel.initBackground();
+})();
+
+browser.runtime.onInstalled.addListener(async function(details) {
+    console.log("扩展已安装或更新");
+    await mellowtel.generateAndOpenOptInLink();
+});
+```
+
+将 `<your_configuration_key>` 替换为你实际的 Mellowtel 配置密钥。
+
+## 内容脚本设置
+
+创建一个名为 `content_start_mellowtel.js` 的文件，内容如下：
+
+```javascript
+import Mellowtel from "mellowtel-lite";
+
+(async () => {
+    const mellowtel = new Mellowtel("<your_configuration_key>");
+    await mellowtel.initContentScript();
+})();
+```
+
+同样，将 `<your_configuration_key>` 替换为你实际的 Mellowtel 配置密钥。
+
+## Mellowtel 设置弹出窗口
+
+为了让用户可以轻松访问 Mellowtel 设置，你应该创建一个弹出窗口。以下是设置方法：
+
+1. 创建一个 `popup.html` 文件：
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Mellowtel 设置</title>
+</head>
+<body>
+  <h1>Mellowtel 设置</h1>
+  <button id="openSettings">打开 Mellowtel 设置</button>
+  <script src="popup.js"></script>
+</body>
+</html>
+```
+
+2. 创建一个 `popup.js` 文件：
+
+```javascript
+import Mellowtel from "mellowtel-lite";
+
+const mellowtel = new Mellowtel("<your_configuration_key>");
+
+async function openSettings() {
+    try {
+        const settingsLink = await mellowtel.generateSettingsLink();
+        browser.tabs.create({ url: settingsLink });
+    } catch (error) {
+        console.error("生成设置链接时出错：", error);
+    }
+}
+
+document.getElementById('openSettings').addEventListener('click', openSettings);
+```
+
+记得将 `<your_configuration_key>` 替换为你实际的 Mellowtel 配置密钥。如果你还没有配置密钥，可以通过在 [Mellowtel](https://www.mellowtel.com/mellowtel-auth/) 注册获取。

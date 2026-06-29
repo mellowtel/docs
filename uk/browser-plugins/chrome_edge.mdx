@@ -1,0 +1,233 @@
+---
+sidebarTitle: "Інтеграція з Chrome / Edge"
+title: "Інтеграція Mellowtel у ваш розширення для Chrome/Edge"
+icon: "chrome"
+robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+canonical: "https://mellowtel.com/docs/uk/browser-plugins/chrome_edge"
+og:title: "Посібник з інтеграції розширення Mellowtel для Chrome та Edge"
+og:description: "Налаштування розширення Mellowtel для Chrome та Edge охоплює політики, дозволи Manifest V3, service workers, content scripts, процес згоди та посилання на налаштування."
+og:url: "https://mellowtel.com/docs/uk/browser-plugins/chrome_edge"
+twitter:card: "summary"
+twitter:title: "Посібник з інтеграції розширення Mellowtel для Chrome та Edge"
+twitter:description: "Налаштування розширення Mellowtel для Chrome та Edge охоплює політики, дозволи Manifest V3, service workers, content scripts, процес згоди та посилання на налаштування."
+---
+
+Тут ти дізнаєшся, як реалізувати бібліотеку Mellowtel у своєму проекті розширення для Chrome/Edge.
+
+Орієнтовний час на виконання: 5-7 хвилин.
+
+# Відповідність політикам браузера
+
+Mellowtel відповідає політикам браузера, якщо інтеграція поважає вибір і налаштування користувачів.
+
+Офіційні плагіни Mellowtel доступні на Chrome та Edge. Незабаром ми також подамо їх до інших основних браузерів.
+
+Chrome: https://chromewebstore.google.com/detail/support-with-mellowtel/jngbedjpioeongcicaomeideeompcbcc
+
+Edge: https://microsoftedge.microsoft.com/addons/detail/support-with-mellowtel/chpomjnojnimgcaomhmcmfgjinfoekhi
+
+У Chrome деякі розробники можуть зіткнутися з проблемами під час перевірки з політикою єдиної мети, яка стверджує, що плагін може мати лише одну чітко визначену функціональність (але часто інтерпретується непослідовно у багатофункціональних розширеннях). 
+У таких випадках ми рекомендуємо розробникам ділитися своїм особистим посиланням і просити користувачів встановити офіційний плагін Mellowtel для Chrome, який має єдину мету - дозволити розробникам заробляти завдяки користувачам, які хочуть підтримати їх, ділячись своїми невикористаними ресурсами.
+Розробники можуть створити своє посилання з [панелі керування Mellowtel](https://www.mellowtel.com/dashboard/support-with-mellowtel) і перенаправити користувачів на офіційний [плагін Mellowtel для Chrome](https://chromewebstore.google.com/detail/support-with-mellowtel/jngbedjpioeongcicaomeideeompcbcc).
+
+Якщо ж у тебе є плагін для Chrome, який працює в області обміну пропускною здатністю AI, і це єдина мета плагіна, ти можеш інтегрувати Mellowtel безпосередньо у свій плагін.
+
+Натомість Edge, Firefox або Safari не мають цієї політики, тому розробники можуть також інтегрувати бібліотеку безпосередньо у свої продукти і переконатися, що вони запитують своїх користувачів, чи хочуть вони їх підтримати, і завжди залишають їм легкий спосіб змінити свої налаштування в будь-який момент з самого плагіна.
+
+# Рекомендовані браузери
+
+На даний момент ми рекомендуємо інтегрувати Mellowtel у плагіни для Edge, оскільки ми все ще працюємо над оптимізацією версій бібліотеки для Firefox та Safari.
+
+# Вимоги
+Перед початком переконайся, що:
+
+1) Твій плагін використовує [Manifest V3](https://developer.chrome.com/docs/extensions/develop/migrate/what-is-mv3).
+2) Твій код організований у скомпільований спосіб, використовуючи Webpack, Rollup або інші збирачі.
+Якщо у тебе немає налаштованого збирача, спочатку слідуй інструкції [тут](/browser-plugins/static-to-webpack)
+
+# Встановлення пакета npm
+
+Щоб встановити пакет npm, ти можеш виконати наступну команду у своєму терміналі:
+
+```npm
+npm install mellowtel
+```
+
+<Accordion title="Yarn">
+    Якщо ти використовуєш yarn як свій менеджер пакетів, ти можеш виконати наступну команду:
+    ```yarn
+    yarn add mellowtel
+    ```
+</Accordion>
+
+# Вибір реалізації
+Є два способи, як ти можеш реалізувати бібліотеку у своєму розширенні.
+
+Якщо ти збираєшся випустити розширення вперше у Web Store, слідуй Опції 1.
+Якщо у тебе вже є розширення, опубліковане у Web Store, прочитай "Як вирішити?"
+
+### Як вирішити?
+
+Коли ти встановлюєш своє розширення з Web Store, чи з'являється вікно попередження, яке запитує дозвіл на "Читання та зміну всіх твоїх даних на всіх вебсайтах"?
+
+Воно виглядає так:
+
+<Frame caption="Вікно попередження, яке запитує дозвіл на Читання та зміну всіх твоїх даних на всіх вебсайтах">
+    <img src="/images/alert_web_store.png" />
+</Frame>
+
+Якщо так, ти можеш слідувати Опції 1. Якщо ні, тобі потрібно слідувати Опції 2.
+
+
+# Опція 1
+Якщо ти випускаєш розширення вперше у Web Store або імпортуєш бібліотеку у розширення, яке запитує дозвіл на роботу на всіх вебсайтах, ти можеш слідувати Опції 1.
+
+### Налаштування manifest
+У своєму файлі [manifest.json](https://developer.chrome.com/docs/extensions/reference/manifest) зміни розділи `permissions` та `host_permissions` таким чином:
+
+```json
+{
+
+  "permissions": [
+    "storage",
+    "declarativeNetRequest"
+  ],
+  "host_permissions": [
+    "\u003Call_urls\u003E"
+  ]
+
+}
+```
+
+### Налаштування service worker (background script)
+
+У своєму файлі [service worker](https://developer.chrome.com/docs/extensions/develop/concepts/service-workers) потрібно імпортувати пакет `mellowtel`.
+Примітка: Service worker також відомий як `background script`.
+
+Ти можеш скопіювати та вставити наступний код у свій файл service worker, змінивши `configuration_key` на свій власний ключ.
+
+```javascript
+import Mellowtel from "mellowtel";
+
+let mellowtel;
+
+(async () => {
+    mellowtel = new Mellowtel("<configuration_key>"); // Замініть на свій конфігураційний ключ
+    await mellowtel.initBackground();
+})();
+```
+
+<Accordion title="Розбір коду service worker">
+Імпортуйте пакет mellowtel
+
+```javascript
+    import Mellowtel from "mellowtel";
+```
+
+Ти можеш використовувати `Mellowtel(configuration_key, options?)` для створення нового екземпляра об'єкта Mellowtel. Об'єкт Mellowtel є твоєю точкою входу до решти SDK Mellowtel. Твій `configuration_key` є обов'язковим при виклику цієї функції, оскільки він ідентифікує твоє розширення для Mellowtel. Ти можеш знайти свій `configuration_key` на [панелі керування](https://www.mellowtel.com/mellowtel-dashboard/#home)
+```javascript
+mellowtel = new Mellowtel("<configuration_key>");
+```
+
+Ініціалізуй Mellowtel, викликавши метод `initBackground`. Цей метод ініціалізує об'єкт Mellowtel та налаштує необхідні слухачі.
+```javascript
+await mellowtel.initBackground();
+```
+</Accordion>
+
+
+### Налаштування content script
+Ти повинен імпортувати пакет mellowtel також у [content scripts](https://developer.chrome.com/docs/extensions/develop/concepts/content-scripts).
+
+Цей content script повинен виконуватися у `all_frames` та `<all_urls>` на `document_start`.
+
+Ми рекомендуємо створити новий content script (наприклад, content_start_mellowtel.js), де ти можеш скопіювати та вставити наступний код.
+Зміни `configuration_key` на свій власний ключ.
+
+```javascript
+import Mellowtel from "mellowtel";
+
+(async () => {
+    const mellowtel = new Mellowtel("<configuration_key>"); // Замініть на свій конфігураційний ключ
+    await mellowtel.initContentScript();
+})();
+```
+
+Потім не забудь додати також цей content script у свій файл `manifest.json` у розділі content_scripts разом з будь-яким іншим content script, який у тебе вже є.
+Ти можеш скопіювати та вставити наступний код, змінивши `name_of_your_content_script.js` на ім'я, яке ти обрав.
+
+```json
+{
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["<name_of_your_content_script.js>"], // <-- Зміни тут на ім'я твого content script
+      "run_at": "document_start",
+      "all_frames": true
+    }
+  ]
+}
+```
+
+### Налаштування логіки згоди
+
+Для активації Mellowtel користувачі повинні явно погодитися на використання сервісу.
+
+Ти можеш реалізувати логіку згоди двома способами:
+1) Використовуючи рекомендовану реалізацію з попередньо створеною сторінкою, наданою Mellowtel.
+
+2) Створюючи власні елементи згоди та використовуючи методи, показані [тут](https://docs.mellowtel.com/concepts/opt-in-out#2-custom-elements)
+
+<Info>
+Якщо ти обираєш створити власні елементи згоди, розглянь можливість використання <a href="/mellowtel-elements/quickstart" target="_blank">**Mellowtel Elements**</a> - попередньо створених UI компонентів, які обробляють згоду користувача та налаштування з мінімальними зусиллями інтеграції.
+</Info>
+
+Якщо ти використовуєш рекомендовану реалізацію, відкрий свій файл `service worker` (також відомий як background script) і додай наступний код:
+
+```javascript
+chrome.runtime.onInstalled.addListener(async function(details) {
+    console.log("Розширення встановлено або оновлено");
+    // Якщо ти хочеш обробляти перше встановлення та оновлення по-різному
+    /**
+    if(details.reason === "install"){
+        // викликати функцію для обробки першого встановлення
+    } else if(details.reason === "update") {
+        // викликати функцію для обробки оновлення
+    }
+    **/
+    await mellowtel.generateAndOpenOptInLink();
+});
+```
+
+### Генерація посилання на налаштування
+
+Щоб дати твоїм користувачам повний контроль над їхньою пропускною здатністю, необхідно залишити легкодоступний спосіб для них змінити свої налаштування в будь-який момент.
+
+Ти можеш згенерувати посилання, використовуючи метод `generateSettingsLink()`.
+Цей метод поверне посилання, яке відкриє сторінку налаштувань Mellowtel, де користувачі можуть у будь-який момент вирішити, чи хочуть вони погодитися чи відмовитися.
+
+Це посилання слід розмістити у спливаючому вікні, на сторінці параметрів або в будь-якому іншому місці, де користувачі можуть легко отримати до нього доступ.
+
+Наприклад, ти можеш помістити його у функцію `openSettings()` таким чином. Ти можеш викликати `openSettings()` при натисканні на кнопку або будь-якій іншій відповідній події:
+
+```javascript
+async function openSettings() {
+    try {
+        // Згенерувати та керувати посиланням на налаштування
+        const settingsLink = await mellowtel.generateSettingsLink();
+        // Записати згенероване посилання для налагодження
+        console.log("Згенероване посилання на налаштування:", settingsLink);
+        // Тепер ти можеш використовувати це посилання у спливаючому вікні, на сторінці параметрів або в будь-якому UI елементі
+    } catch (error) {
+        console.error("Помилка при генерації посилання на налаштування:", error);
+    }
+}
+```
+
+Чудово! Тепер ти готовий відправити своє розширення у Web Store. Слідуй інструкції тут, щоб дізнатися, як [подати своє розширення](/browser-plugins/submit-to-chrome-store)
+
+# Опція 2
+
+<Warning>Опція 2 може потенційно вимкнути твоє розширення, якщо не реалізована правильно. Тому вона недоступна для всіх користувачів </Warning>
+
+Якщо ти не можеш реалізувати Опцію 1, будь ласка, зв'яжися з нами на [Discord](https://discord.com/invite/txAZp4MSDe)

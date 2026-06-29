@@ -1,0 +1,44 @@
+---
+title: "速率限制"
+description: "Mellowtel 如何保持对终端用户的隐形"
+icon: "stopwatch"
+robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+canonical: "https://mellowtel.com/docs/zh/concepts/rate-limiting"
+og:title: "Mellowtel 速率限制：请求节流如何工作"
+og:description: "Mellowtel 速率限制解释了 SDK 如何通过设备、带宽、位置和网络可用性限制请求，以在活动时保护用户体验。"
+og:url: "https://mellowtel.com/docs/zh/concepts/rate-limiting"
+twitter:card: "summary"
+twitter:title: "Mellowtel 速率限制：请求节流如何工作"
+twitter:description: "Mellowtel 速率限制解释了 SDK 如何通过设备、带宽、位置和网络可用性限制请求，以在活动时保护用户体验。"
+---
+
+## 这是什么
+
+Mellowtel 自动限制单个设备（“节点”）将接受和处理的请求数量。限制是在 SDK 内部强制执行的。你无需配置它，行为不当的合作伙伴也无法从外部提高它。
+
+## 为什么重要
+
+整个产品依赖于用户没有注意到 Mellowtel 正在运行。如果一个节点提供无限请求，使用慢速连接的用户会在他们的浏览器中感受到。速率限制是保护这一承诺的机制，这也是你可以将 Mellowtel 提供给真实用户，而不必担心关于“浏览器感觉慢”的支持票的原因。
+
+## 它如何工作
+
+每个请求都在一个为该请求创建并立即销毁的沙盒窗口内执行。这与 Google AdSense 等广告网络使用的隔离模型相同，并额外保证窗口是*无凭证的*（参见[隐私](/concepts/privacy)）。由于每个请求都是短暂且隔离的，唯一对用户体验重要的控制是*运行多少*，而这正是速率限制所控制的。
+
+当前的限制根据以下因素变化：
+
+- **带宽速度**：较慢的连接接收较少的请求。
+- **地理位置**：容量在区域间平衡。
+- **整体网络可用性**：当全球需求低时，SDK 会退避。
+
+<Note>
+**待办事项：** 一旦确定，记录具体数字（请求/分钟上限、地理层级、带宽阈值）。目前，限制是有意适应性的，并未通过公共 API 公开。
+</Note>
+
+## API 表面
+
+没有可调用的速率限制 API。节流是内部的并且始终开启。你无法禁用它，也不需要检查它。如果你认为速率限制在你的集成中引起了问题，[在 GitHub 上打开一个问题](https://github.com/mellowtel-inc/)或在 [Discord](https://discord.com/invite/txAZp4MSDe) 上联系我们。
+
+## 相关内容
+
+- [隐私](/concepts/privacy)：沙盒窗口可以访问和无法访问的内容。
+- [选择加入 / 选择退出](/concepts/opt-in-out)：所有这些之前的同意层。

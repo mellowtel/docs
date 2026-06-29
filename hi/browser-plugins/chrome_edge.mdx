@@ -1,0 +1,231 @@
+---
+sidebarTitle: "Chrome / Edge एकीकरण"
+title: "अपने Chrome/Edge एक्सटेंशन में Mellowtel को एकीकृत करें"
+icon: "chrome"
+robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+canonical: "https://mellowtel.com/docs/hi/browser-plugins/chrome_edge"
+og:title: "Mellowtel Chrome और Edge एक्सटेंशन एकीकरण गाइड"
+og:description: "Mellowtel Chrome और Edge एक्सटेंशन सेटअप में नीतियाँ, Manifest V3 अनुमतियाँ, सेवा कार्यकर्ता, सामग्री स्क्रिप्ट्स, ऑप्ट-इन प्रवाह, और सेटिंग्स लिंक शामिल हैं।"
+og:url: "https://mellowtel.com/docs/hi/browser-plugins/chrome_edge"
+twitter:card: "summary"
+twitter:title: "Mellowtel Chrome और Edge एक्सटेंशन एकीकरण गाइड"
+twitter:description: "Mellowtel Chrome और Edge एक्सटेंशन सेटअप में नीतियाँ, Manifest V3 अनुमतियाँ, सेवा कार्यकर्ता, सामग्री स्क्रिप्ट्स, ऑप्ट-इन प्रवाह, और सेटिंग्स लिंक शामिल हैं।"
+---
+
+यहां आप देखेंगे कि अपने Chrome/Edge एक्सटेंशन प्रोजेक्ट में Mellowtel लाइब्रेरी को कैसे लागू करें।
+
+पूरा करने का अनुमानित समय: 5-7 मिनट।
+
+# ब्राउज़र नीतियों के साथ अनुपालन
+
+यदि एकीकरण उपयोगकर्ताओं की पसंद और सेटिंग्स का सम्मान करता है, तो Mellowtel ब्राउज़र नीतियों के साथ अनुपालन करता है।
+
+आधिकारिक Mellowtel प्लगइन्स Chrome और Edge पर उपलब्ध हैं। जल्द ही हम इन्हें अन्य प्रमुख ब्राउज़रों पर भी सबमिट करेंगे।
+
+Chrome: https://chromewebstore.google.com/detail/support-with-mellowtel/jngbedjpioeongcicaomeideeompcbcc
+
+Edge: https://microsoftedge.microsoft.com/addons/detail/support-with-mellowtel/chpomjnojnimgcaomhmcmfgjinfoekhi
+
+Chrome पर, कुछ डेवलपर्स को समीक्षा के दौरान सिंगल पर्पस पॉलिसी के साथ समस्याएं हो सकती हैं, जो कहती है कि एक प्लगइन में केवल एक स्पष्ट रूप से बताई गई कार्यक्षमता हो सकती है (लेकिन अक्सर इसे मल्टी-फीचर एक्सटेंशनों में असंगत रूप से व्याख्यायित किया जाता है)। 
+ऐसे मामलों में, हम डेवलपर्स को सलाह देते हैं कि वे अपनी व्यक्तिगत लिंक साझा करें और उपयोगकर्ताओं से आधिकारिक Mellowtel Chrome प्लगइन को इंस्टॉल करने के लिए कहें, जिसका एकमात्र उद्देश्य डेवलपर्स को उन उपयोगकर्ताओं के माध्यम से कमाने की अनुमति देना है जो अपनी निष्क्रिय संसाधनों को साझा करके उनका समर्थन करना चाहते हैं।
+डेवलपर्स [Mellowtel डैशबोर्ड](https://www.mellowtel.com/dashboard/support-with-mellowtel) से अपनी लिंक बना सकते हैं और उपयोगकर्ताओं को आधिकारिक [Mellowtel Chrome प्लगइन](https://chromewebstore.google.com/detail/support-with-mellowtel/jngbedjpioeongcicaomeideeompcbcc) पर पुनर्निर्देशित कर सकते हैं।
+
+यदि आपके पास एक प्लगइन है जो Chrome पर AI बैंडविड्थ शेयरिंग स्पेस में काम करता है और जो प्लगइन का एकमात्र उद्देश्य है, तो आप अपने प्लगइन में सीधे Mellowtel को एकीकृत कर सकते हैं।
+
+इसके विपरीत, Edge, Firefox, या Safari में यह नीति नहीं है, इसलिए डेवलपर्स अपने उत्पादों में सीधे लाइब्रेरी को एकीकृत कर सकते हैं और यह सुनिश्चित कर सकते हैं कि वे अपने उपयोगकर्ताओं से पूछें कि वे उनका समर्थन करना चाहते हैं या नहीं और हमेशा उन्हें प्लगइन से ही किसी भी समय अपनी सेटिंग्स बदलने का एक आसान तरीका दें।
+
+# अनुशंसित ब्राउज़र
+
+वर्तमान में, हम Edge प्लगइन्स में Mellowtel को एकीकृत करने की सिफारिश करते हैं क्योंकि हम अभी भी लाइब्रेरी के Firefox और Safari संस्करणों को अनुकूलित करने पर काम कर रहे हैं।
+
+# आवश्यकताएँ
+शुरू करने से पहले, सुनिश्चित करें कि:
+
+1) आपका प्लगइन [Manifest V3](https://developer.chrome.com/docs/extensions/develop/migrate/what-is-mv3) का उपयोग कर रहा है।
+2) आपका कोड Webpack, Rollup, या अन्य बंडलर्स का उपयोग करके एक संकलित तरीके से संगठित है।
+यदि आपके पास बंडलर सेटअप नहीं है, तो पहले [यहाँ](/browser-plugins/static-to-webpack) गाइड का पालन करें।
+
+# npm पैकेज इंस्टॉल करें
+
+npm पैकेज को इंस्टॉल करने के लिए, आप अपने टर्मिनल में निम्नलिखित कमांड चला सकते हैं:
+
+```npm
+npm install mellowtel
+```
+
+<Accordion title="Yarn">
+    यदि आप अपने पैकेज मैनेजर के रूप में yarn का उपयोग कर रहे हैं, तो आप निम्नलिखित कमांड चला सकते हैं:
+    ```yarn
+    yarn add mellowtel
+    ```
+</Accordion>
+
+# कार्यान्वयन का निर्णय लें
+आप अपने एक्सटेंशन में लाइब्रेरी को लागू करने के दो तरीके हैं।
+
+यदि आप पहली बार वेब स्टोर पर एक्सटेंशन जारी करने जा रहे हैं, तो विकल्प 1 का पालन करें।
+यदि आपने पहले से ही वेब स्टोर पर एक्सटेंशन प्रकाशित कर दिया है, तो "कैसे निर्णय लें?" पढ़ें।
+
+### कैसे निर्णय लें?
+
+जब आप वेब स्टोर से अपना एक्सटेंशन इंस्टॉल करते हैं, तो क्या एक अलर्ट विंडो पॉप अप होती है जो सभी वेबसाइटों पर "आपका डेटा पढ़ने और बदलने" की अनुमति मांगती है?
+
+यह इस तरह दिखता है:
+
+<Frame caption="सभी वेबसाइटों पर आपका डेटा पढ़ने और बदलने की अनुमति मांगने वाली अलर्ट विंडो">
+    <img src="/images/alert_web_store.png" />
+</Frame>
+
+यदि ऐसा होता है, तो आप विकल्प 1 का पालन कर सकते हैं। यदि नहीं, तो आपको विकल्प 2 का पालन करना होगा।
+
+# विकल्प 1
+यदि आप पहली बार वेब स्टोर पर एक्सटेंशन जारी कर रहे हैं या आप सभी वेबसाइटों पर संचालन की अनुमति मांगने वाले एक्सटेंशन में लाइब्रेरी आयात कर रहे हैं, तो आप विकल्प 1 का पालन कर सकते हैं।
+
+### अपने मैनिफेस्ट को सेट करें
+अपने [manifest.json](https://developer.chrome.com/docs/extensions/reference/manifest) फ़ाइल में `permissions` और `host_permissions` अनुभागों को इस तरह से संशोधित करें:
+
+```json
+{
+
+  "permissions": [
+    "storage",
+    "declarativeNetRequest"
+  ],
+  "host_permissions": [
+    "\u003Call_urls\u003E"
+  ]
+
+}
+```
+
+### अपने सेवा कार्यकर्ता (पृष्ठभूमि स्क्रिप्ट) को सेट करें
+
+अपने [सेवा कार्यकर्ता](https://developer.chrome.com/docs/extensions/develop/concepts/service-workers) फ़ाइल में, आपको `mellowtel` पैकेज को आयात करने की आवश्यकता है।
+नोट: सेवा कार्यकर्ता को `पृष्ठभूमि स्क्रिप्ट` के रूप में भी जाना जाता है।
+
+आप अपने सेवा कार्यकर्ता फ़ाइल में निम्नलिखित कोड को कॉपी और पेस्ट कर सकते हैं, `configuration_key` को अपनी खुद की कुंजी से बदलकर।
+
+```javascript
+import Mellowtel from "mellowtel";
+
+let mellowtel;
+
+(async () => {
+    mellowtel = new Mellowtel("<configuration_key>"); // अपनी कॉन्फ़िगरेशन कुंजी से बदलें
+    await mellowtel.initBackground();
+})();
+```
+
+<Accordion title="सेवा कार्यकर्ता कोड ब्रेकडाउन">
+mellowtel पैकेज आयात करें
+
+```javascript
+    import Mellowtel from "mellowtel";
+```
+
+आप `Mellowtel(configuration_key, options?)` का उपयोग करके Mellowtel ऑब्जेक्ट का एक नया उदाहरण बना सकते हैं। Mellowtel ऑब्जेक्ट Mellowtel के SDK के बाकी हिस्सों के लिए आपका प्रवेश बिंदु है। इस फ़ंक्शन को कॉल करते समय आपकी `configuration_key` आवश्यक है, क्योंकि यह Mellowtel को आपके एक्सटेंशन की पहचान करती है। आप अपनी `configuration_key` [डैशबोर्ड](https://www.mellowtel.com/mellowtel-dashboard/#home) में पा सकते हैं।
+```javascript
+mellowtel = new Mellowtel("<configuration_key>");
+```
+
+Mellowtel को `initBackground` मेथड को कॉल करके प्रारंभ करें। यह मेथड Mellowtel ऑब्जेक्ट को प्रारंभ करेगा और आवश्यक श्रोताओं को सेट करेगा।
+```javascript
+await mellowtel.initBackground();
+```
+</Accordion>
+
+### अपनी सामग्री स्क्रिप्ट सेट करें
+आपको [सामग्री स्क्रिप्ट्स](https://developer.chrome.com/docs/extensions/develop/concepts/content-scripts) में भी mellowtel पैकेज आयात करना होगा।
+
+यह सामग्री स्क्रिप्ट `all_frames` और `<all_urls>` में `document_start` पर चलनी चाहिए।
+
+हम सुझाव देते हैं कि आप एक नई सामग्री स्क्रिप्ट बनाएं (जैसे content_start_mellowtel.js) जहां आप निम्नलिखित कोड को कॉपी और पेस्ट कर सकते हैं।
+`configuration_key` को अपनी खुद की कुंजी से बदलें।
+
+```javascript
+import Mellowtel from "mellowtel";
+
+(async () => {
+    const mellowtel = new Mellowtel("<configuration_key>"); // अपनी कॉन्फ़िगरेशन कुंजी से बदलें
+    await mellowtel.initContentScript();
+})();
+```
+
+फिर याद रखें कि इस सामग्री स्क्रिप्ट को अपने `manifest.json` फ़ाइल में content_scripts अनुभाग में किसी भी अन्य सामग्री स्क्रिप्ट के साथ जोड़ें जो आपके पास पहले से है।
+आप निम्नलिखित कोड को कॉपी और पेस्ट कर सकते हैं, `name_of_your_content_script.js` को आपके द्वारा चुने गए नाम से बदलकर।
+
+```json
+{
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["<name_of_your_content_script.js>"], // <-- यहाँ अपने सामग्री स्क्रिप्ट के नाम से बदलें
+      "run_at": "document_start",
+      "all_frames": true
+    }
+  ]
+}
+```
+
+### ऑप्ट-इन/ऑप्ट-आउट लॉजिक सेट करें
+
+Mellowtel को सक्रिय करने के लिए, उपयोगकर्ताओं को सेवा के लिए स्पष्ट रूप से ऑप्ट-इन करना होगा।
+
+आप ऑप्ट-इन/ऑप्ट-आउट लॉजिक को दो तरीकों से लागू कर सकते हैं:
+1) Mellowtel द्वारा प्रदान किए गए प्री-बिल्ट पेज के साथ अनुशंसित कार्यान्वयन का उपयोग करके।
+
+2) अपने स्वयं के कस्टम ऑप्ट-इन/ऑप्ट-आउट तत्व बनाकर और [यहां](https://docs.mellowtel.com/concepts/opt-in-out#2-custom-elements) दिखाए गए तरीकों का उपयोग करके।
+
+<Info>
+यदि अपने स्वयं के ऑप्ट-इन/ऑप्ट-आउट तत्व बनाने का चयन करते हैं, तो <a href="/mellowtel-elements/quickstart" target="_blank">**Mellowtel Elements**</a> का उपयोग करने पर विचार करें - प्री-बिल्ट UI घटक जो उपयोगकर्ता की सहमति और सेटिंग्स को न्यूनतम एकीकरण प्रयास के साथ संभालते हैं।
+</Info>
+
+यदि आप अनुशंसित कार्यान्वयन का उपयोग करते हैं, तो अपने `सेवा कार्यकर्ता` फ़ाइल (जिसे पृष्ठभूमि स्क्रिप्ट के रूप में भी जाना जाता है) को खोलें और निम्नलिखित कोड जोड़ें:
+
+```javascript
+chrome.runtime.onInstalled.addListener(async function(details) {
+    console.log("एक्सटेंशन इंस्टॉल या अपडेट किया गया");
+    // यदि आप पहले इंस्टॉल और अपडेट को अलग-अलग संभालना चाहते हैं
+    /**
+    if(details.reason === "install"){
+        // पहले इंस्टॉल को संभालने के लिए एक फ़ंक्शन कॉल करें
+    } else if(details.reason === "update") {
+        // अपडेट को संभालने के लिए एक फ़ंक्शन कॉल करें
+    }
+    **/
+    await mellowtel.generateAndOpenOptInLink();
+});
+```
+
+### सेटिंग्स लिंक उत्पन्न करें
+
+अपने उपयोगकर्ताओं को उनके बैंडविड्थ पर पूर्ण नियंत्रण देने के लिए, यह आवश्यक है कि आप उन्हें किसी भी समय अपनी सेटिंग्स बदलने के लिए एक आसानी से सुलभ तरीका छोड़ें।
+
+आप `generateSettingsLink()` मेथड का उपयोग करके एक लिंक उत्पन्न कर सकते हैं।
+यह मेथड एक लिंक लौटाएगा जो Mellowtel सेटिंग्स पेज खोलेगा जहां उपयोगकर्ता किसी भी समय तय कर सकते हैं कि वे ऑप्ट-इन करना चाहते हैं या ऑप्ट-आउट।
+
+इस लिंक को पॉपअप, विकल्प पेज या किसी अन्य स्थान पर रखा जाना चाहिए जहां उपयोगकर्ता इसे आसानी से एक्सेस कर सकें।
+
+उदाहरण के लिए आप इसे `openSettings()` फ़ंक्शन में इस तरह रख सकते हैं। आप `openSettings()` को एक बटन क्लिक या किसी अन्य प्रासंगिक घटना पर कॉल कर सकते हैं:
+
+```javascript
+async function openSettings() {
+    try {
+        // सेटिंग्स लिंक उत्पन्न करें और प्रबंधित करें
+        const settingsLink = await mellowtel.generateSettingsLink();
+        // डिबगिंग के लिए उत्पन्न लिंक लॉग करें
+        console.log("उत्पन्न सेटिंग्स लिंक:", settingsLink);
+        // अब आप इस लिंक का उपयोग पॉपअप, विकल्प पेज, या किसी UI तत्व में कर सकते हैं
+    } catch (error) {
+        console.error("सेटिंग्स लिंक उत्पन्न करने में त्रुटि:", error);
+    }
+}
+```
+
+बढ़िया! अब आप अपने एक्सटेंशन को वेब स्टोर पर भेजने के लिए तैयार हैं। यह देखने के लिए [यहाँ](/browser-plugins/submit-to-chrome-store) गाइड का पालन करें कि अपने एक्सटेंशन को कैसे सबमिट करें।
+
+# विकल्प 2
+
+<Warning>विकल्प 2 आपके एक्सटेंशन को अक्षम कर सकता है यदि इसे सही तरीके से लागू नहीं किया गया। इसलिए यह सभी उपयोगकर्ताओं के लिए उपलब्ध नहीं है</Warning>
+
+यदि आप विकल्प 1 को लागू नहीं कर सकते हैं, तो कृपया हमसे [Discord](https://discord.com/invite/txAZp4MSDe) पर संपर्क करें।

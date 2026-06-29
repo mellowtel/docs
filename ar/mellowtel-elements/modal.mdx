@@ -1,0 +1,122 @@
+---
+sidebarTitle: "دعم النافذة المنبثقة"
+title: "نافذة دعم Mellowtel"
+icon: "window-maximize"
+robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+canonical: "https://mellowtel.com/docs/ar/mellowtel-elements/modal"
+og:title: "نافذة دعم Mellowtel للإضافات والمواقع"
+og:description: "إعداد نافذة دعم Mellowtel يشرح كيفية إنشاء نافذة دعم غير مزعجة مع نص مخصص، وسلوك تأجيل، وبديل للتخزين، واستخدام API."
+og:url: "https://mellowtel.com/docs/ar/mellowtel-elements/modal"
+twitter:card: "summary"
+twitter:title: "نافذة دعم Mellowtel للإضافات والمواقع"
+twitter:description: "إعداد نافذة دعم Mellowtel يشرح كيفية إنشاء نافذة دعم غير مزعجة مع نص مخصص، وسلوك تأجيل، وبديل للتخزين، واستخدام API."
+---
+
+نافذة دعم Mellowtel هي نافذة منبثقة غير مزعجة تشجع المستخدمين على دعم الإضافة أو الموقع الخاص بك من خلال دعم إضافة Mellowtel.
+
+## المتطلبات الأساسية
+
+قبل ما تستعمل النافذة المنبثقة، تأكد بلي عندك Mellowtel Elements مهيأ في المشروع تاعك:
+
+<CardGroup cols={2}>
+    <Card title="دمج الإضافة" icon="puzzle-piece" href="/mellowtel-elements/extension-integration">
+        إعداد لإضافات المتصفح
+    </Card>
+    <Card title="دمج الموقع" icon="atom" href="/mellowtel-elements/website-integration">
+        إعداد للمواقع باستخدام NPM أو CDN
+    </Card>
+</CardGroup>
+
+## الميزات الرئيسية
+
+- **عبر المنصات** - يخدم في المواقع و سكريبتات محتوى الإضافات
+- **تأجيل ذكي** - المستخدمين يقدرو يأجلو لمدة أسبوع، أسبوعين، أو يعطلوه نهائياً
+- **تخزين كروم** - يستخدم API تخزين كروم إذا كان متاح، ويرجع لـ localStorage إذا ماكانش
+- **Shadow DOM** - عزل الأنماط يمنع التعارض مع أنماط الصفحة المضيفة
+- **متجاوب مع الجوال** - محسن لجميع أحجام الشاشات
+- **تفاصيل الإضافة** - يجلب ويعرض تلقائياً اسم الإضافة والأيقونة
+
+## إنشاء النافذة المنبثقة
+
+من بعد ما تهيأ Mellowtel Elements (شوف دلائل الدمج فوق)، تقدر تنشئ وتعرض نافذة الدعم:
+
+### الاستخدام الأساسي
+
+```javascript
+// الاستخدام الأساسي مع العنوان والنص الافتراضي
+await mellowtel.createModal('your-invite-id-here');
+
+// عنوان ونص مخصص
+await mellowtel.createModal(
+  'your-invite-id-here',
+  'دعم الإضافة تاعنا!',
+  'ساعدنا في الحفاظ على هذه الخدمة المجانية بإضافة الإضافة تاعنا.'
+);
+```
+
+### أمثلة على الاستخدام
+
+#### في سكريبتات المحتوى
+
+```javascript
+// عرض النافذة بعد ما المستخدم يبقى في الصفحة لمدة 30 ثانية
+setTimeout(async () => {
+    await mellowtel.createModal(
+        'content-script-invite-456',
+        'شكراً لاستخدامك الإضافة تاعنا!',
+        'ساعدنا نحسن من خلال دعم تطوير هذه الإضافة.'
+    );
+}, 30000);
+```
+
+#### على المواقع
+
+```javascript
+// عرض النافذة بعد ما الصفحة تحمل
+window.addEventListener('load', async () => {
+    await mellowtel.createModal(
+        'website-invite-123',
+        'دعم الخدمة تاعنا',
+        'ثبت الإضافة تاعنا باش تساعد في بقاء هذا الموقع مجاني وبدون إعلانات.'
+    );
+});
+```
+
+#### العرض الشرطي
+
+```javascript
+// عرض فقط في بعض النطاقات
+const allowedDomains = ['github.com', 'stackoverflow.com', 'reddit.com'];
+const currentDomain = window.location.hostname;
+
+if (allowedDomains.some(domain => currentDomain.includes(domain))) {
+    await mellowtel.createModal(
+        'conditional-invite-789',
+        'تستمتع بالإضافة تاعنا؟',
+        'أظهر دعمك وساعدنا في تحسين هذه الأداة المجانية.'
+    );
+}
+```
+
+## مرجع API
+
+### `createModal(inviteId, title?, body?)`
+
+ينشئ ويعرض نافذة الدعم.
+
+**المعلمات:**
+- `inviteId` (string, required): معرف فريد لتتبع تفاعلات النافذة
+- `title` (string, optional): عنوان مخصص للنافذة (الافتراضي "دعم مع Mellowtel")
+- `body` (string, optional): نص مخصص لجسم النافذة
+
+**يرجع:** `Promise<void>`
+
+## سلوك النافذة المنبثقة
+
+### خيارات التأجيل
+
+المستخدمين يقدرو يختارو من بين ثلاث خيارات للتأجيل:
+
+- **أسبوع واحد**: النافذة ما تظهرش لمدة 7 أيام
+- **أسبوعين**: النافذة ما تظهرش لمدة 14 يوم  
+- **تعطيل**: النافذة ما تظهرش مرة أخرى نهائياً

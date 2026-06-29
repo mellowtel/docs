@@ -1,0 +1,122 @@
+---
+sidebarTitle: "支持弹窗"
+title: "Mellowtel 支持弹窗"
+icon: "window-maximize"
+robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+canonical: "https://mellowtel.com/docs/zh/mellowtel-elements/modal"
+og:title: "Mellowtel 扩展和网站支持弹窗"
+og:description: "Mellowtel 支持弹窗设置说明如何创建一个不干扰用户的支持提示，包括自定义文案、延迟行为、存储回退和 API 使用。"
+og:url: "https://mellowtel.com/docs/zh/mellowtel-elements/modal"
+twitter:card: "summary"
+twitter:title: "Mellowtel 扩展和网站支持弹窗"
+twitter:description: "Mellowtel 支持弹窗设置说明如何创建一个不干扰用户的支持提示，包括自定义文案、延迟行为、存储回退和 API 使用。"
+---
+
+Mellowtel 支持弹窗是一个不干扰用户的弹窗，鼓励用户通过 Mellowtel 扩展来支持你的扩展或网站。
+
+## 前提条件
+
+在使用弹窗之前，请确保你的项目中已设置 Mellowtel Elements：
+
+<CardGroup cols={2}>
+    <Card title="扩展集成" icon="puzzle-piece" href="/mellowtel-elements/extension-integration">
+        浏览器扩展的设置
+    </Card>
+    <Card title="网站集成" icon="atom" href="/mellowtel-elements/website-integration">
+        使用 NPM 或 CDN 的网站设置
+    </Card>
+</CardGroup>
+
+## 主要功能
+
+- **跨平台** - 适用于网站和扩展内容脚本
+- **智能延迟** - 用户可以选择延迟 1 周、2 周或永久禁用
+- **Chrome 存储** - 优先使用 Chrome 存储 API，若不可用则回退到 localStorage
+- **Shadow DOM** - 样式隔离防止与主页面样式冲突
+- **移动响应** - 针对所有屏幕尺寸进行优化
+- **扩展详情** - 自动获取并显示扩展名称和图标
+
+## 创建弹窗
+
+一旦你初始化了 Mellowtel Elements（参见上面的集成指南），你就可以创建并显示支持弹窗：
+
+### 基本用法
+
+```javascript
+// 使用默认标题和正文的基本用法
+await mellowtel.createModal('your-invite-id-here');
+
+// 自定义标题和正文
+await mellowtel.createModal(
+  'your-invite-id-here',
+  '支持我们的扩展！',
+  '通过添加我们的扩展来帮助我们维护这项免费服务。'
+);
+```
+
+### 使用示例
+
+#### 在内容脚本中
+
+```javascript
+// 用户在页面上停留 30 秒后显示弹窗
+setTimeout(async () => {
+    await mellowtel.createModal(
+        'content-script-invite-456',
+        '感谢使用我们的扩展！',
+        '通过支持此扩展的开发来帮助我们改进。'
+    );
+}, 30000);
+```
+
+#### 在网站上
+
+```javascript
+// 页面加载后显示弹窗
+window.addEventListener('load', async () => {
+    await mellowtel.createModal(
+        'website-invite-123',
+        '支持我们的服务',
+        '安装我们的扩展以帮助保持此网站免费且无广告。'
+    );
+});
+```
+
+#### 条件显示
+
+```javascript
+// 仅在某些域名上显示
+const allowedDomains = ['github.com', 'stackoverflow.com', 'reddit.com'];
+const currentDomain = window.location.hostname;
+
+if (allowedDomains.some(domain => currentDomain.includes(domain))) {
+    await mellowtel.createModal(
+        'conditional-invite-789',
+        '喜欢我们的扩展吗？',
+        '展示你的支持，帮助我们不断改进这个免费工具。'
+    );
+}
+```
+
+## API 参考
+
+### `createModal(inviteId, title?, body?)`
+
+创建并显示支持弹窗。
+
+**参数：**
+- `inviteId` (string, required): 用于跟踪弹窗交互的唯一标识符
+- `title` (string, optional): 自定义弹窗标题（默认为 "Support with Mellowtel"）
+- `body` (string, optional): 自定义弹窗正文文本
+
+**返回：** `Promise<void>`
+
+## 弹窗行为
+
+### 延迟选项
+
+用户可以选择以下三种延迟选项：
+
+- **1 周**: 弹窗将在 7 天内不再出现
+- **2 周**: 弹窗将在 14 天内不再出现  
+- **禁用**: 弹窗将永不再出现

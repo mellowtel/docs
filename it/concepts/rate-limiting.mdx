@@ -1,0 +1,44 @@
+---
+title: "Limitazione del Tasso"
+description: "Come Mellowtel si mantiene invisibile per l’utente finale"
+icon: "stopwatch"
+robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+canonical: "https://mellowtel.com/docs/it/concepts/rate-limiting"
+og:title: "Limitazione del Tasso di Mellowtel: Come Funziona il Throttling delle Richieste"
+og:description: "La limitazione del tasso di Mellowtel spiega come l’SDK limita le richieste per dispositivo, larghezza di banda, posizione e disponibilità di rete per proteggere l’esperienza utente mentre è attivo."
+og:url: "https://mellowtel.com/docs/it/concepts/rate-limiting"
+twitter:card: "summary"
+twitter:title: "Limitazione del Tasso di Mellowtel: Come Funziona il Throttling delle Richieste"
+twitter:description: "La limitazione del tasso di Mellowtel spiega come l’SDK limita le richieste per dispositivo, larghezza di banda, posizione e disponibilità di rete per proteggere l’esperienza utente mentre è attivo."
+---
+
+## Cos'è
+
+Mellowtel limita automaticamente quante richieste un singolo dispositivo (un "nodo") accetterà e processerà. Il limite è applicato all'interno dell'SDK. Non devi configurarlo, e un partner che si comporta male non può aumentarlo dall'esterno.
+
+## Perché è importante
+
+L'intero prodotto dipende dal fatto che gli utenti non notino che Mellowtel è in esecuzione. Se un nodo servisse richieste illimitate, un utente con una connessione lenta lo percepirebbe nel suo browser. La limitazione del tasso è il meccanismo che protegge questa promessa, ed è il motivo per cui puoi distribuire Mellowtel a utenti reali senza preoccuparti di ticket di supporto riguardanti "il browser sembra lento."
+
+## Come funziona
+
+Ogni richiesta viene eseguita all'interno di una finestra isolata che viene creata per la richiesta e distrutta immediatamente dopo. Questo è lo stesso modello di isolamento utilizzato da reti pubblicitarie come Google AdSense, con la garanzia aggiuntiva che la finestra sia *senza credenziali* (vedi [Privacy](/concepts/privacy)). Poiché ogni richiesta è di breve durata e isolata, l'unico parametro che conta per l'esperienza utente è *quante* ne vengono eseguite, ed è ciò che la limitazione del tasso controlla.
+
+Il limite attuale varia in base a:
+
+- **Velocità della larghezza di banda**: connessioni più lente ricevono meno richieste.
+- **Geolocalizzazione**: la capacità è bilanciata a livello regionale.
+- **Disponibilità complessiva della rete**: l'SDK si ritira quando la domanda globale è bassa.
+
+<Note>
+**TODO:** Documentare numeri concreti (limiti req/min, livelli geografici, soglie di larghezza di banda) una volta finalizzati. Per ora i limiti sono intenzionalmente adattivi e non esposti tramite l'API pubblica.
+</Note>
+
+## Superficie dell'API
+
+Non esiste un'API di limitazione del tasso da chiamare. Il throttling è interno e sempre attivo. Non puoi disabilitarlo e non dovresti aver bisogno di ispezionarlo. Se credi che la limitazione del tasso stia causando un problema nella tua integrazione, [apri un problema su GitHub](https://github.com/mellowtel-inc/) o contattaci su [Discord](https://discord.com/invite/txAZp4MSDe).
+
+## Correlati
+
+- [Privacy](/concepts/privacy): cosa la finestra isolata può e non può accedere.
+- [Opt-in / Opt-out](/concepts/opt-in-out): il livello di consenso che si trova davanti a tutto questo.
