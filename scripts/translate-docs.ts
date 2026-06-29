@@ -108,15 +108,9 @@ async function validateApiKey(): Promise<void> {
 
   for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
     try {
-      const response = await openai.chat.completions.create({
-        model: "gpt-4o",
-        messages: [{ role: "user", content: "Reply with OK" }],
-        max_tokens: 5,
-      });
-
-      if (!response.choices[0]?.message?.content) {
-        throw new Error("API returned empty response");
-      }
+      // Use models.list (GET) instead of chat completions (POST) — more
+      // reliable in CI environments where chunked POST responses can drop.
+      await openai.models.list();
 
       console.log("✓ OpenAI API key is valid and working\n");
       return;
