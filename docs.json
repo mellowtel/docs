@@ -87,6 +87,16 @@
             ]
           },
           {
+            "group": "Mellowtel Elements",
+            "pages": [
+              "mellowtel-elements/quickstart",
+              "mellowtel-elements/extension-integration",
+              "mellowtel-elements/website-integration",
+              "mellowtel-elements/modal",
+              "mellowtel-elements/styling"
+            ]
+          },
+          {
             "group": "Mobile App",
             "pages": [
               "mobile-app/quickstart"
@@ -158,6 +168,21 @@
             "group": "Integrate",
             "pages": [
               "website/quickstart"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Mellowtel Elements",
+        "groups": [
+          {
+            "group": "Integrate",
+            "pages": [
+              "mellowtel-elements/quickstart",
+              "mellowtel-elements/extension-integration",
+              "mellowtel-elements/website-integration",
+              "mellowtel-elements/modal",
+              "mellowtel-elements/styling"
             ]
           }
         ]
