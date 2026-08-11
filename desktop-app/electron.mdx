@@ -117,13 +117,14 @@ The `Mellowtel` class exposes the following public methods. All are available on
 **Lifecycle**
 
 - `init(): Promise<void>` starts the service if the user has opted in, or silently returns early if not. Throws only when the configuration key is empty.
+- `shutdown(): Promise<void>` cleans up SDK resources when the application is closing. Closes the WebSocket, destroys hidden worker windows, and clears background timers. **Preserves** the user's opt-in preference.
 - `requestConsent(window: BrowserWindow, incentive: string): Promise<boolean | undefined>` shows the built-in native consent dialog and persists the result. Returns `true` on accept, `false` on decline or close, `undefined` if consent was already given.
 - `showConsentSettings(window: BrowserWindow): Promise<void>` shows the built-in manage-consent dialog. The SDK handles the opt-in / opt-out transitions internally when the user toggles their choice.
 
 **Manual opt-in control**
 
 - `optIn(): Promise<void>` flags the user as opted in without showing a dialog. Use this only after collecting consent through your own UI.
-- `optOut(): Promise<void>` flags the user as opted out and closes the active WebSocket connection.
+- `optOut(): Promise<void>` flags the user as opted out and performs full cleanup (same resources as `shutdown()`, plus clearing the saved consent preference). There is no need to call `shutdown()` afterward.
 - `getOptInStatus(): boolean | undefined` returns the current opt-in state, or `undefined` if the user has never made a choice.
 - `getNodeId(): string` returns the Mellowtel node identifier for this installation. Useful when filing support tickets.
 
@@ -140,11 +141,71 @@ Request counts are persisted locally through `electron-store` and survive app re
 
 ---
 
-## Shutdown and Lifecycle
+## Lifecycle and app shutdown
 
-The Electron SDK does **not** register its own `before-quit` or `will-quit` handlers. When your Electron process exits, the background WebSocket connection is torn down with it, and no explicit cleanup is required on your side.
+After processing its first request, Mellowtel may create hidden Electron worker windows. Host applications **must** call `shutdown()` when the application is actually closing.
 
-If you want to disconnect Mellowtel mid-session (for example, when a user toggles a "pause" setting in your app), call `optOut()`. This both clears the opt-in flag and closes the active connection. To reconnect, call `optIn()` followed by `init()`.
+`shutdown()`:
+
+- Closes the WebSocket connection.
+- Destroys hidden worker windows.
+- Clears background timers and network resources.
+- Preserves the user's opt-in preference.
+
+<Warning>
+  **`shutdown()` vs `optOut()`:** `shutdown()` is application lifecycle cleanup — consent is preserved. `optOut()` withdraws user consent and cleans up all resources. Do not confuse the two.
+</Warning>
+
+### Single-window applications
+
+Call `shutdown()` when the main application window closes:
+
+```js
+mainWindow.on('closed', async () => {
+  mainWindow = null;
+
+  if (process.platform !== 'darwin') {
+    await mellowtel.shutdown();
+    app.quit();
+  }
+});
+```
+
+Do not rely solely on Electron's `window-all-closed` event because Mellowtel's hidden worker windows may prevent it from firing.
+
+### Tray applications
+
+Do not call `shutdown()` when merely hiding the window to the system tray. Call it from the explicit Quit action:
+
+```js
+trayQuitItem.click = async () => {
+  await mellowtel.shutdown();
+  app.quit();
+};
+```
+
+### macOS applications
+
+If the application remains active after its windows close, call `shutdown()` only when the user actually quits the application.
+
+### Opting out
+
+`optOut()` already performs full cleanup:
+
+```js
+await mellowtel.optOut();
+```
+
+There is no need to call `shutdown()` afterward. Unlike `shutdown()`, `optOut()` also changes the saved consent preference.
+
+### Starting again
+
+After `shutdown()` or `optOut()`, Mellowtel can be started again:
+
+```js
+await mellowtel.optIn(); // Only needed after optOut()
+await mellowtel.init();
+```
 
 ## Consent Persistence
 
