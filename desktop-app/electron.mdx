@@ -7,11 +7,11 @@ platforms:
 robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
 canonical: "https://mellowtel.com/docs/desktop-app/electron"
 og:title: "Mellowtel Electron SDK Integration and Consent Guide"
-og:description: "Mellowtel Electron SDK setup covers npm registry auth, installation, consent dialogs, settings, request counters, lifecycle behavior, and troubleshooting."
+og:description: "Mellowtel Electron SDK setup covers installation, consent dialogs, settings, request counters, lifecycle behavior, and troubleshooting."
 og:url: "https://mellowtel.com/docs/desktop-app/electron"
 twitter:card: "summary"
 twitter:title: "Mellowtel Electron SDK Integration and Consent Guide"
-twitter:description: "Mellowtel Electron SDK setup covers npm registry auth, installation, consent dialogs, settings, request counters, lifecycle behavior, and troubleshooting."
+twitter:description: "Mellowtel Electron SDK setup covers installation, consent dialogs, settings, request counters, lifecycle behavior, and troubleshooting."
 ---
 
 Integrate Mellowtel into your cross-platform Electron application to let users share their unused internet bandwidth in exchange for rewards or premium features. The Electron SDK runs anywhere Electron runs (macOS, Windows, and Linux).
@@ -29,44 +29,29 @@ Integrate Mellowtel into your cross-platform Electron application to let users s
 
 ## Installation
 
-### 1. Configure npm Authentication
-
-Create a `.npmrc` file in your project's root directory to point npm at the Mellowtel GitHub Packages registry and authenticate the install:
-
-```bash
-@mellowtel-inc:registry=https://npm.pkg.github.com/
-//npm.pkg.github.com/:_authToken=YOUR_NPM_TOKEN
-```
-
-Replace `YOUR_NPM_TOKEN` with the install token below. Click to reveal, then use the copy icon on the code block to copy it to your clipboard.
-
-<Accordion title="Reveal install token">
-  ```
-  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
-  ```
-</Accordion>
-
-### 2. Install the Package
+### 1. Install the Package
 
 From your project root, install the Electron SDK:
 
 ```bash
-npm install @mellowtel-inc/mellowtel-electron
+npm install mellowtel-electron
 ```
 
-### 3. Add to Your Code
+### 2. Add to Your Code
 
-In your Electron main process file (typically `main.ts` or `main.js`), import the SDK, instantiate it with your configuration key, request consent from the user, and then call `init()` to start the service.
+In your Electron main process file (typically `main.ts` or `main.js`), import the SDK, optionally call `setupMellowtelApp()` before the app is ready, instantiate Mellowtel with your configuration key, request consent from the user, and then call `init()` to start the service.
 
 ```typescript
 import { app, BrowserWindow } from 'electron';
-import Mellowtel from '@mellowtel-inc/mellowtel-electron';
+import Mellowtel, { setupMellowtelApp } from 'mellowtel-electron';
 
+// Optional: Call BEFORE app.ready to prevent system dialogs
+setupMellowtelApp();
 
 // When the app is ready, create the window
 app.whenReady().then(async () => {
   let win = createWindow();
-  
+
   const mellowtel: Mellowtel = new Mellowtel('YOUR_CONFIGURATION_KEY');
 
   await mellowtel.requestConsent(win, "Get 3 months free")
@@ -88,7 +73,7 @@ app.whenReady().then(async () => {
 
 The SDK ships with an optional helper, `setupMellowtelApp()`, that configures Electron command-line flags to suppress system dialogs (autofill popups, translation bars, NTLM / Kerberos auth prompts, password manager integration, media overlays, first-run dialogs) that would otherwise interrupt your users when Mellowtel's hidden windows process requests in the background.
 
-Call it at the top of your main process file, **before** `app.whenReady()`, and import it alongside the default export from `@mellowtel-inc/mellowtel-electron`. See the [upstream README](https://github.com/mellowtel-inc/mellowtel-electron#setupmellowtelapp-optional) for the canonical usage.
+Call it at the top of your main process file, **before** `app.whenReady()`, and import it alongside the default export from `mellowtel-electron`. See the [upstream README](https://github.com/mellowtel-inc/mellowtel-electron#setupmellowtelapp-optional) for the canonical usage.
 
 ---
 
@@ -177,13 +162,8 @@ State survives app updates. Uninstalling your app will not clear it automaticall
 
 <AccordionGroup>
   <Accordion title='"Package not found" error during install'>
-    1. Verify `.npmrc` is in the project root, next to your `package.json`.
-    2. Make sure the token has no leading or trailing whitespace.
-    3. Clear the npm cache and retry by running `npm cache clean --force` followed by `npm install`.
-  </Accordion>
-  <Accordion title='"Unauthorized" or 401 during install'>
-    1. Verify the token in `.npmrc` is correct and active. If you are unsure, request a fresh token from [info@mellowtel.com](mailto:info@mellowtel.com).
-    2. Confirm the `@mellowtel-inc:registry` line is present and points to `https://npm.pkg.github.com/`.
+    1. Confirm you are installing `mellowtel-electron` (not a scoped GitHub Packages name).
+    2. Clear the npm cache and retry by running `npm cache clean --force` followed by `npm install mellowtel-electron`.
   </Accordion>
   <Accordion title="The consent dialog never appears">
     1. Make sure you call `requestConsent` **after** `app.whenReady()` has resolved and with a valid, non-destroyed `BrowserWindow` reference.
