@@ -1,0 +1,97 @@
+---
+title: "Participation / Désinscription"
+description: "Les utilisateurs doivent donner leur consentement explicite avant que toute bande passante ne soit partagée, et peuvent révoquer ce consentement à tout moment"
+icon: "signature"
+robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+canonical: "https://mellowtel.com/docs/fr/concepts/opt-in-out"
+og:title: "Guide de l’API de Consentement Utilisateur pour Participation et Désinscription Mellowtel"
+og:description: "Les directives de participation et désinscription de Mellowtel couvrent les exigences de consentement, les liens vers les paramètres hébergés, les méthodes d’interface utilisateur personnalisées, et les annonces de mise à jour pour les utilisateurs ultérieurement."
+og:url: "https://mellowtel.com/docs/fr/concepts/opt-in-out"
+twitter:card: "summary"
+twitter:title: "Guide de l’API de Consentement Utilisateur pour Participation et Désinscription Mellowtel"
+twitter:description: "Les directives de participation et désinscription de Mellowtel couvrent les exigences de consentement, les liens vers les paramètres hébergés, les méthodes d’interface utilisateur personnalisées, et les annonces de mise à jour pour les utilisateurs ultérieurement."
+---
+
+## Ce que c'est
+
+Mellowtel ne partagera pas un seul octet de bande passante tant que l'utilisateur n'aura pas explicitement choisi de participer, et l'utilisateur doit toujours avoir un moyen évident de se désinscrire. C'est une exigence stricte du SDK et une exigence stricte de chaque politique de magasin de navigateurs qui permet les extensions basées sur Mellowtel.
+
+## Pourquoi c'est important
+
+C'est la bande passante de l'utilisateur. Tout consentement qui n'est pas explicite et révocable est à la fois contraire à l'éthique et un motif de suppression du magasin. Le SDK est conçu pour que le chemin *facile* soit également le chemin *conforme*. Si tu suis la mise en œuvre recommandée, tu ne peux pas accidentellement livrer une version qui s'active sans consentement.
+
+## Comment ça fonctionne
+
+Lors de la première installation (et lors de toute mise à jour qui introduit Mellowtel), tu dois montrer à l'utilisateur un avertissement non rejetable qui explique ce que fait Mellowtel, puis capturer son choix. Ensuite, un lien vers les paramètres doit être accessible depuis un endroit évident dans ton interface utilisateur afin qu'il puisse changer d'avis.
+
+<Frame caption="Exemple d'avertissement">
+    <img src="/images/mellowtel_disclaimer.png" />
+</Frame>
+
+Tu as deux options de mise en œuvre :
+
+1. **Recommandé :** ouvre la page de participation préconstruite de Mellowtel avec `generateAndOpenOptInLink()`. Un appel de méthode, entièrement conforme, maximise la conversion de participation.
+2. **Interface utilisateur personnalisée :** construis ta propre interface de consentement et appelle `optIn()` / `optOut()` toi-même.
+
+## Surface de l'API
+
+| Méthode | Retourne | Utilise-le pour |
+|---|---|---|
+| `generateAndOpenOptInLink()` | `Promise<void>` | Ouvrir la page de participation hébergée (chemin recommandé). |
+| `getOptInStatus()` | `Promise<boolean>` | Vérifier si l'utilisateur a déjà choisi de participer. |
+| `optIn()` | `Promise<void>` | Enregistrer le consentement depuis ta propre interface utilisateur. |
+| `optOut()` | `Promise<void>` | Révoquer le consentement depuis ta propre interface utilisateur. |
+| `start()` | `Promise<void>` | Commencer à servir les requêtes après la participation. |
+| `generateSettingsLink()` | `Promise<string>` | URL vers la page des paramètres hébergée pour que les utilisateurs puissent changer leur choix ultérieurement. |
+
+Toutes les méthodes sont accessibles depuis n'importe quelle partie de ton extension : popup, script de contenu ou script d'arrière-plan.
+
+## Mise en œuvre recommandée
+
+Le guide d'intégration complet se trouve dans les démarrages rapides de la plateforme. Ils montrent où placer le SDK, comment l'intégrer dans le cycle de vie d'installation/mise à jour, et comment le tester :
+
+- [Démarrage rapide des plugins de navigateur](/browser-plugins/quickstart)
+- [Démarrage rapide des applications de bureau](/desktop-app/quickstart)
+- [Démarrage rapide des sites web](/website/quickstart)
+- [Démarrage rapide des applications mobiles](/mobile-app/quickstart)
+
+En bref, après `new Mellowtel(...)` et `initBackground()`, appelle `generateAndOpenOptInLink()` depuis ton gestionnaire d'installation/mise à jour. C'est tout.
+
+## Interface utilisateur personnalisée
+
+Si tu veux un contrôle total sur l'interface de consentement, capture le choix de l'utilisateur dans ta propre interface utilisateur et transmets-le au SDK :
+
+```javascript
+// L'utilisateur a accepté
+await mellowtel.optIn();
+await mellowtel.start();
+
+// L'utilisateur a refusé ou a révoqué plus tard
+await mellowtel.optOut();
+
+// Vérifier le statut (par exemple pour afficher un bascule)
+const hasOptedIn = await mellowtel.getOptInStatus();
+```
+
+Quelle que soit l'interface utilisateur que tu construis, elle doit :
+
+1. Être non rejetable lors de la première installation.
+2. Par défaut, être en mode désinscription jusqu'à ce que l'utilisateur accepte activement.
+3. Être ré-ouvrable depuis un endroit évident dans ton produit afin que les utilisateurs puissent changer leur choix.
+
+## Lien vers les paramètres
+
+Les utilisateurs doivent toujours avoir un moyen facile de changer leurs paramètres. Utilise `generateSettingsLink()` pour obtenir une URL vers la page des paramètres hébergée et place-la quelque part de persistant : ton popup, une page d'options, un écran de compte.
+
+```javascript
+const settingsUrl = await mellowtel.generateSettingsLink();
+```
+
+## Annoncer Mellowtel aux utilisateurs existants
+
+Si tu ajoutes Mellowtel à une extension qui a déjà des utilisateurs, tu dois leur dire ce qui a changé avant de demander leur consentement. Nous fournissons un [modèle d'annonce prêt à copier-coller](/concepts/update-announcement) que tu peux adapter.
+
+## Connexes
+
+- [Confidentialité](/concepts/privacy) : ce à quoi les utilisateurs acceptent réellement de partager.
+- [Limitation de débit](/concepts/rate-limiting) : comment le SDK protège les utilisateurs qui choisissent de participer.

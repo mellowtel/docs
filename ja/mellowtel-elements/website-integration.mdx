@@ -1,0 +1,70 @@
+---
+sidebarTitle: "ウェブサイト統合"
+title: "ウェブサイトにMellowtel Elementsを実装する"
+icon: "globe"
+robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+canonical: "https://mellowtel.com/docs/ja/mellowtel-elements/website-integration"
+og:title: "NPMとCDNを使ったMellowtel Elementsウェブサイト統合"
+og:description: "Mellowtel Elementsウェブサイト統合は、npmパッケージまたはCDNを使用して、サイトにオプトイン、オプトアウト、設定コンポーネントを迅速に作成する方法を示します。"
+og:url: "https://mellowtel.com/docs/ja/mellowtel-elements/website-integration"
+twitter:card: "summary"
+twitter:title: "NPMとCDNを使ったMellowtel Elementsウェブサイト統合"
+twitter:description: "Mellowtel Elementsウェブサイト統合は、npmパッケージまたはCDNを使用して、サイトにオプトイン、オプトアウト、設定コンポーネントを迅速に作成する方法を示します。"
+---
+
+ここでは、NPMパッケージまたはCDNを使用して、Mellowtel Elementsをあなたのウェブサイトに統合する方法を紹介します。
+
+## オプション1: NPMパッケージ
+
+### インストール
+
+```bash
+npm install mellowtel-elements
+```
+
+### 実装
+
+```javascript
+import { MellowtelElements } from 'mellowtel-elements';
+
+// 拡張IDと設定キーで初期化
+const mellowtel = new MellowtelElements('your-extension-id', 'your-config-key');
+
+// 要素を作成
+await mellowtel.createElement('opt-in-container', { type: 'opt-in' });
+await mellowtel.createElement('opt-out-container', { type: 'opt-out' });
+await mellowtel.createElement('settings-container', { type: 'settings' });
+```
+
+## オプション2: CDN
+
+### HTMLセットアップ
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MellowTel Elementsの例</title>
+</head>
+<body>
+    <!-- 要素のためのコンテナdiv -->
+    <div id="opt-in-container"></div>
+    <div id="opt-out-container"></div>
+    <div id="settings-container"></div>
+
+    <!-- CDNからロード -->
+    <script src="https://cdn.jsdelivr.net/npm/mellowtel-elements@latest/dist/index.global.js"></script>
+    <script>
+        // MellowTel Elementsを初期化
+        const mellowtel = new window.MellowtelElements.default('your-extension-id', 'your-config-key');
+
+        // 要素を作成
+        mellowtel.createElement('opt-in-container', { type: 'opt-in' });
+        mellowtel.createElement('opt-out-container', { type: 'opt-out' });
+        mellowtel.createElement('settings-container', { type: 'settings' });
+    </script>
+</body>
+</html>
+```
+
+完璧です！これであなたのウェブサイトは、シームレスなオプトイン、オプトアウト、設定管理のためにMellowtel Elementsを使用する準備が整いました。

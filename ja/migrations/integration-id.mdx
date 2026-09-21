@@ -1,0 +1,63 @@
+---
+title: "統合IDへの移行"
+description: "従来の構成キーを新しい統合ごとの識別子に置き換える"
+icon: "arrow-right-arrow-left"
+robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+canonical: "https://mellowtel.com/docs/ja/migrations/integration-id"
+og:title: "Mellowtel 統合ID移行：構成キーから"
+og:description: "Mellowtel 統合ID移行は、なぜ構成キーが変更されるのか、アプリごとのIDがどのように機能するのか、それをどこで見つけるのか、どのコードを更新するのかを説明します。"
+og:url: "https://mellowtel.com/docs/ja/migrations/integration-id"
+twitter:card: "summary"
+twitter:title: "Mellowtel 統合ID移行：構成キーから"
+twitter:description: "Mellowtel 統合ID移行は、なぜ構成キーが変更されるのか、アプリごとのIDがどのように機能するのか、それをどこで見つけるのか、どのコードを更新するのかを説明します。"
+---
+
+私たちは、従来の`configuration_key`を**統合ID**と呼ばれる新しい識別子に置き換えています。すでにMellowtelを出荷している場合は、SDKに渡す文字列を更新する必要があります。
+
+## 要約
+
+- すべての統合には、`intgr-`で始まる独自の**統合ID**があります。
+- 古い`configuration_key`は現在も機能しますが、非推奨になります。
+- コードの変更は、`new Mellowtel(...)`に渡す文字列だけです。
+
+## 構成キー vs 統合ID
+
+| | 構成キー (従来) | 統合ID (新しい) |
+|---|---|---|
+| 範囲 | アカウントごとに1つのキー | 統合ごとに1つのID |
+| 形式 | 不透明な文字列 | `intgr-XXXXXXXXXX` |
+| 統計 | すべてのアプリでバンドル | アプリごと |
+
+## なぜこの変更を行うのか
+
+Mellowtelは現在、ブラウザ拡張、デスクトップアプリ、モバイルアプリ、ウェブサイトで提供されています。共有キーが1つでは、どのサーフェスが実際に収益を上げているのかをチームが把握できませんでした。
+
+アプリごとに1つの統合IDがあれば、それを解決します。移行すると、アプリごとの統計、アプリごとの収益、そして次に構築するダッシュボード機能を利用して、各アプリを独立して成長させることができます。
+
+## 変更が必要なこと
+
+`new Mellowtel(...)`に渡す文字列だけです。
+
+```javascript
+// 以前
+const mellowtel = new Mellowtel("<your_configuration_key>");
+
+// 以後
+const mellowtel = new Mellowtel("intgr-MG8tHhnkDN");
+```
+
+他の部分はすべて同じです。
+
+## 統合IDの取得方法
+
+1. ダッシュボードの[統合ページ](https://www.mellowtel.com/dashboard/integrations)を開きます。
+2. アプリごとに1つの統合を作成し、対応するタイプ（拡張、デスクトップ、モバイル、ウェブサイト）を選択します。
+3. 統合IDをコピーして、SDKの初期化に貼り付けます。
+
+## 後方互換性
+
+既存のコードは引き続き動作します。従来のキーが削除される前に、十分な通知をもって非推奨の日付を発表します。早めに移行することで、アプリごとの機能を利用できるため、待つ理由はありません。
+
+## 助けが必要ですか？
+
+[Discord](https://discord.com/invite/txAZp4MSDe)で私たちに連絡してください。案内します。

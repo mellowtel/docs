@@ -1,0 +1,159 @@
+---
+sidebarTitle: "静的からWebpackへ"
+title: "ブラウザプラグインのためのWebpack設定"
+icon: "cube"
+robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+canonical: "https://mellowtel.com/docs/ja/browser-plugins/static-to-webpack"
+og:title: "ブラウザ拡張機能とMellowtelのためのWebpack設定"
+og:description: "ブラウザ拡張機能のためのWebpack設定は、プロジェクト構造、npm依存関係、エントリーポイント、アセットのコピー、パッケージスクリプト、ビルド、ローカルテストをカバーします。"
+og:url: "https://mellowtel.com/docs/ja/browser-plugins/static-to-webpack"
+twitter:card: "summary"
+twitter:title: "ブラウザ拡張機能とMellowtelのためのWebpack設定"
+twitter:description: "ブラウザ拡張機能のためのWebpack設定は、プロジェクト構造、npm依存関係、エントリーポイント、アセットのコピー、パッケージスクリプト、ビルド、ローカルテストをカバーします。"
+---
+
+このガイドでは、複数のJavaScriptエントリーポイントと静的アセット管理をサポートする設定に焦点を当てて、Webpackを使用してブラウザ拡張プロジェクトをセットアップする方法を説明します。
+
+### ステップ 1: 初期プロジェクトセットアップ
+
+まず、ソースファイル、静的アセット、最終的なバンドル出力を収容するようにプロジェクトを構造化します。プロジェクトディレクトリは次のようになります:
+
+```
+your-extension/
+├── public/            # HTML、CSS、マニフェストなどの静的ファイルを含む
+│   ├── images/
+│   ├── icons/
+│   ├── manifest.json
+│   └── popup.html
+├── src/               # JavaScriptソースコードを含む
+│   ├── background.js
+│   ├── popup.js
+│   ├── content_script.js
+│   └── ... (その他のJSファイル)
+└── package.json       # NPMパッケージファイル
+```
+
+### ステップ 2: Node.jsとNPMのセットアップ
+
+Node.jsとNPMがシステムにインストールされていることを確認してください。Node.jsはパッケージエコシステムを実行するために必要で、NPMはプロジェクトの依存関係を管理するために使用されます。
+
+### ステップ 3: Webpackとその他の依存関係のインストール
+
+ターミナルでプロジェクトのルートディレクトリに移動し、まだしていない場合は新しいNPMプロジェクトを初期化します:
+
+```bash
+npm init -y
+```
+
+次に、Webpackと必要なローダーおよびプラグインをインストールします:
+
+```bash
+npm install --save-dev webpack webpack-cli babel-loader @babel/core @babel/preset-env copy-webpack-plugin file-loader
+```
+
+- **Webpack** はJavaScriptとアセットをバンドルします。
+- **Babel** は最新のJavaScript機能を使用できるようにします。
+- **CopyPlugin** はファイルとディレクトリをビルドディレクトリにコピーします。
+- **File Loader** はファイルのimport/require()をURLに解決し、ファイルを出力ディレクトリに出力します。
+
+### ステップ 4: Webpackの設定
+
+プロジェクトのルートに `webpack.config.js` ファイルを作成します。このファイルはエントリーポイント、出力設定、さまざまなファイルタイプを読み込むためのモジュールルール、および追加機能のためのプラグインを定義する必要があります。以下は、与えられたセットアップでの `webpack.config.js` の例です:
+
+```javascript
+const path = require('path');
+const CopyPlugin = require('copy-webpack-plugin');
+
+module.exports = {
+    mode: 'development', // 本番ビルドには 'production' を使用
+    entry: {
+        background: path.join(__dirname, 'src', 'background.js'),
+        popup: path.join(__dirname, 'src', 'popup.js'),
+        content_script: path.join(__dirname, 'src', 'content_script.js'),
+    },
+    output: {
+        path: path.join(__dirname, 'dist'),
+        filename: '[name].js',
+        publicPath: ""
+    },
+    module: {
+        rules: [
+            {
+                test: /\.js$/,
+                exclude: /node_modules/,
+                use: {
+                    loader: 'babel-loader',
+                    options: {
+                        presets: ['@babel/preset-env']
+                    }
+                }
+            },
+            {
+                test: /\.js$/,
+                exclude: /node_modules/
+            },
+            {
+                test: /\.(png|svg|jpg|gif)$/,
+                use: [
+                    'file-loader',
+                ],
+            },
+        ]
+    },
+    plugins: [
+        new CopyPlugin({
+            patterns: [
+                { from: 'public', to: '' } // 'public' から 'dist' へすべてのアセットとmanifest.jsonをコピー
+            ],
+        }),
+    ]
+};
+```
+
+### ステップ 5: マニフェストとHTMLファイルの調整
+
+`manifest.json` とすべてのHTMLファイルがスクリプトとアセットを正しく参照していることを確認してください。例えば、スクリプトは `dist` フォルダに出力されるので、パスを適宜更新します。
+
+### ステップ 6: `package.json` にビルドスクリプトを統合
+
+Webpackでプロジェクトをセットアップし、前述の手順で設定した後、`npm` スクリプトを使用してビルドとウォッチプロセスを自動化したいと思うでしょう。`package.json` ファイルを開き、`scripts` オブジェクト内に次のスクリプトを追加します:
+
+```json
+"scripts": {
+  "test": "echo \"Error: no test specified\" && exit 1",
+  "build": "webpack --mode production",
+  "watch": "webpack --mode development --watch"
+},
+```
+
+各スクリプトの説明:
+- `"build"`: 本番モードで拡張機能をバンドルし、デプロイメント用に出力を最適化します。このモードでは、ミニフィケーションやデッドコードの削除などの最適化が有効になります。
+- `"watch"`: 開発モードでWebpackを実行し、ファイルの変更を監視し、ファイルが変更されると自動的にプロジェクトを再コンパイルします。これは開発中に変更の即時フィードバックを得るのに役立ちます。
+
+### ステップ 7: 拡張機能のテストとビルド
+
+本番用に拡張機能をビルドするには、次のコマンドを使用します:
+
+```bash
+npm run build
+```
+
+このコマンドは `--mode production` フラグを使用してWebpackを呼び出し、プロジェクトをデプロイメント用に最適化します。
+
+開発用には、Webpackがファイルを監視し、変更が検出されるたびに再コンパイルすることができます:
+
+```bash
+npm run watch
+```
+
+これにより、開発プロセスがスムーズになり、変更のたびにプロジェクトを手動で再ビルドする必要がなくなります。
+
+### ステップ 7: 拡張機能のテスト
+
+Chromeで拡張機能をテストするには:
+
+1. Chromeブラウザで `chrome://extensions/` に移動します。
+2. 右上の「デベロッパーモード」を有効にします。
+3. 「パッケージ化されていない拡張機能を読み込む」をクリックし、`dist` フォルダを選択します。
+
+これにより、テストと開発の目的で拡張機能がローカルにインストールされます。

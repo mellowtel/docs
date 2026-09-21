@@ -1,0 +1,44 @@
+---
+title: "Limitation de débit"
+description: "Comment Mellowtel protège l’expérience utilisateur tout en partageant la bande passante"
+icon: "chronomètre"
+robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+canonical: "https://mellowtel.com/docs/fr/concepts/rate-limiting"
+og:title: "Limitation de débit Mellowtel : Comment fonctionne la régulation des requêtes"
+og:description: "La limitation de débit Mellowtel explique comment le SDK limite les requêtes par appareil, bande passante, localisation et disponibilité du réseau pour protéger l’expérience utilisateur en activité."
+og:url: "https://mellowtel.com/docs/fr/concepts/rate-limiting"
+twitter:card: "summary"
+twitter:title: "Limitation de débit Mellowtel : Comment fonctionne la régulation des requêtes"
+twitter:description: "La limitation de débit Mellowtel explique comment le SDK limite les requêtes par appareil, bande passante, localisation et disponibilité du réseau pour protéger l’expérience utilisateur en activité."
+---
+
+## Ce que c'est
+
+Mellowtel limite automatiquement le nombre de requêtes qu'un seul appareil (un "nœud") acceptera et traitera. Cette limite est appliquée à l'intérieur du SDK. Tu ne la configures pas, et un partenaire malveillant ne peut pas l'augmenter de l'extérieur.
+
+## Pourquoi c'est important
+
+Le partage de bande passante ne devrait jamais ralentir l'application ou la connexion de l'utilisateur. Si un nœud traitait un nombre illimité de requêtes, un utilisateur sur un réseau lent le ressentirait. La limitation de débit est le mécanisme qui protège cette promesse, et c'est pourquoi tu peux déployer Mellowtel auprès de vrais utilisateurs sans te soucier des tickets de support concernant "le navigateur semble lent."
+
+## Comment ça fonctionne
+
+Chaque requête s'exécute dans une fenêtre isolée et sans identifiants (voir [Confidentialité](/concepts/privacy)). Étant donné que les requêtes sont isolées de la session de l'utilisateur, le seul paramètre qui compte pour l'expérience utilisateur est *combien* s'exécutent, et c'est ce que la limitation de débit contrôle.
+
+La limite actuelle varie en fonction de :
+
+- **Vitesse de la bande passante** : les connexions plus lentes reçoivent moins de requêtes.
+- **Géolocalisation** : la capacité est équilibrée régionalement.
+- **Disponibilité globale du réseau** : le SDK se retire lorsque la demande mondiale est faible.
+
+<Note>
+**À FAIRE :** Documenter les chiffres concrets (plafonds de req/min, niveaux géographiques, seuils de bande passante) une fois finalisés. Pour l'instant, les limites sont intentionnellement adaptatives et non exposées via l'API publique.
+</Note>
+
+## Surface de l'API
+
+Il n'y a pas d'API de limitation de débit à appeler. La régulation est interne et toujours activée. Tu ne peux pas la désactiver, et tu ne devrais pas avoir besoin de l'inspecter. Si tu penses que la limitation de débit cause un problème dans ton intégration, [ouvre un problème sur GitHub](https://github.com/mellowtel-inc/) ou contacte-nous sur [Discord](https://discord.com/invite/txAZp4MSDe).
+
+## Connexe
+
+- [Confidentialité](/concepts/privacy) : ce à quoi la fenêtre isolée a accès et n'a pas accès.
+- [Participation / Désinscription](/concepts/opt-in-out) : la couche de consentement qui se trouve devant tout cela.

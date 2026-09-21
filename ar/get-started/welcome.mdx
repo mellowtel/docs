@@ -1,0 +1,69 @@
+---
+sidebarTitle: "مرحبا"
+title: "مرحبا 👋"
+icon: "hand-wave"
+robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+canonical: "https://mellowtel.com/docs/ar/get-started/welcome"
+og:title: "Mellowtel Docs: Monetize Extensions, Apps and Websites"
+og:description: "Mellowtel docs show how to add consent-based bandwidth sharing to browser extensions, desktop apps, websites, and mobile apps with quickstarts and concepts."
+og:url: "https://mellowtel.com/docs/ar/get-started/welcome"
+twitter:card: "summary"
+twitter:title: "Mellowtel Docs: Monetize Extensions, Apps and Websites"
+twitter:description: "Mellowtel docs show how to add consent-based bandwidth sharing to browser extensions, desktop apps, websites, and mobile apps with quickstarts and concepts."
+---
+
+**Mellowtel هي منصة مفتوحة المصدر للربح للمطورين والمبدعين في عالم الذكاء الاصطناعي.** ضيف الـ SDK في الإضافة تاع المتصفح، تطبيق سطح المكتب، الموقع الإلكتروني، أو التطبيق المحمول تاعك والمستخدمين تاعك يقدرو يختارو يشاركو جزء صغير من النطاق الترددي للإنترنت اللي ما يستعملوش مع شركاء موثوقين. تقدر تربح حصة من الإيرادات.
+
+## كيفاش تكون التكامل
+
+```bash
+npm install mellowtel
+```
+
+```javascript
+import Mellowtel from "mellowtel";
+
+const mellowtel = new Mellowtel("<YOUR_CONFIGURATION_KEY>");
+await mellowtel.initBackground();
+await mellowtel.generateAndOpenOptInLink();
+```
+
+هادي هي التكامل كامل لإضافة المتصفح. المنصات الأخرى مشابهة. شوف البدايات السريعة اللي تحت.
+
+## اختار المنصة تاعك
+
+<CardGroup cols={2}>
+    <Card title="إضافات المتصفح" icon="puzzle-piece" href="/browser-plugins/quickstart">
+        دمج Mellowtel في إضافة Chrome، Edge، Firefox، أو Safari في حوالي 5 دقائق.
+    </Card>
+    <Card title="تطبيقات سطح المكتب" icon="desktop" href="/desktop-app/quickstart">
+        ربح تطبيق سطح المكتب Electron، Windows، أو macOS.
+    </Card>
+    <Card title="المواقع الإلكترونية" icon="atom" href="/website/quickstart">
+        ضيف Mellowtel لأي موقع إلكتروني بسكريبت واحد.
+    </Card>
+    <Card title="التطبيقات المحمولة" icon="mobile" href="/mobile-app/quickstart">
+        ربح تطبيق محمول iOS أو Android.
+    </Card>
+</CardGroup>
+
+## قبل ما تطلق، اقرا المفاهيم
+
+هاد الصفحات الأربعة تشرح المبادئ اللي لازم أي تكامل مع Mellowtel يحترمها: الموافقة، الخصوصية، وتحديد السرعة. اقراهم مرة وحدة وباقي الوثائق راح تكون مفهومة.
+
+<CardGroup cols={2}>
+    <Card title="نظرة عامة على المفاهيم" icon="compass" href="/concepts/overview">
+        الأفكار الأربعة اللي ورا Mellowtel في صفحة وحدة.
+    </Card>
+    <Card title="الاختيار / الإلغاء" icon="signature" href="/concepts/opt-in-out">
+        كيفاش تلتقط (وتلغي) موافقة المستخدم بالطريقة الصحيحة.
+    </Card>
+</CardGroup>
+
+## كيفاش تخدم الإيرادات
+
+التقسيم هو **55% للمطورين، 45% لـ Mellowtel**. كي نكبر نقدر نقدمو خدمات أكثر ونزيدو حصة المطورين. في المستقبل ممكن تكون ميزات تخليك تشارك جزء من هاد الإيرادات مباشرة مع المستخدمين تاعك؛ في الوقت الحالي تقدر تكافئ المستخدمين اللي اختارو الاشتراك بميزات حصرية أو محتوى.
+
+## تحتاج مساعدة؟
+
+هاد الموقع هو المصدر الحقيقي لكل شي تقني. لأي حاجة أخرى (أسئلة، ملاحظات، أو فقط باش تتلاقى مع مطورين Mellowtel آخرين)، انضم لينا على [Discord](https://discord.com/invite/txAZp4MSDe).

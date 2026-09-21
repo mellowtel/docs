@@ -1,0 +1,70 @@
+---
+sidebarTitle: "إدماج الموقع"
+title: "تطبيق Mellowtel Elements في المواقع"
+icon: "globe"
+robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+canonical: "https://mellowtel.com/docs/ar/mellowtel-elements/website-integration"
+og:title: "إدماج Mellowtel Elements في الموقع باستخدام NPM وCDN"
+og:description: "إدماج Mellowtel Elements في الموقع يوضح كيفية استخدام حزمة npm أو CDN لإنشاء مكونات الاشتراك، إلغاء الاشتراك، والإعدادات في موقعك بسرعة."
+og:url: "https://mellowtel.com/docs/ar/mellowtel-elements/website-integration"
+twitter:card: "summary"
+twitter:title: "إدماج Mellowtel Elements في الموقع باستخدام NPM وCDN"
+twitter:description: "إدماج Mellowtel Elements في الموقع يوضح كيفية استخدام حزمة npm أو CDN لإنشاء مكونات الاشتراك، إلغاء الاشتراك، والإعدادات في موقعك بسرعة."
+---
+
+هنا تشوف كيفاش تدمج Mellowtel Elements في موقعك باستخدام حزمة NPM أو CDN للإعداد السريع.
+
+## الخيار 1: حزمة NPM
+
+### التثبيت
+
+```bash
+npm install mellowtel-elements
+```
+
+### التطبيق
+
+```javascript
+import { MellowtelElements } from 'mellowtel-elements';
+
+// بّدأ مع معرف الامتداد ديالك ومفتاح التكوين
+const mellowtel = new MellowtelElements('your-extension-id', 'your-config-key');
+
+// إنشاء العناصر
+await mellowtel.createElement('opt-in-container', { type: 'opt-in' });
+await mellowtel.createElement('opt-out-container', { type: 'opt-out' });
+await mellowtel.createElement('settings-container', { type: 'settings' });
+```
+
+## الخيار 2: CDN
+
+### إعداد HTML
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MellowTel Elements Example</title>
+</head>
+<body>
+    <!-- حاويات العناصر -->
+    <div id="opt-in-container"></div>
+    <div id="opt-out-container"></div>
+    <div id="settings-container"></div>
+
+    <!-- التحميل من CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/mellowtel-elements@latest/dist/index.global.js"></script>
+    <script>
+        // بّدأ MellowTel Elements
+        const mellowtel = new window.MellowtelElements.default('your-extension-id', 'your-config-key');
+
+        // إنشاء العناصر
+        mellowtel.createElement('opt-in-container', { type: 'opt-in' });
+        mellowtel.createElement('opt-out-container', { type: 'opt-out' });
+        mellowtel.createElement('settings-container', { type: 'settings' });
+    </script>
+</body>
+</html>
+```
+
+هايل! دابا موقعك واجد باش يستعمل Mellowtel Elements للاشتراك، إلغاء الاشتراك، وتسيير الإعدادات بكل سهولة.

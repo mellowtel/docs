@@ -1,0 +1,170 @@
+---
+sidebarTitle: "Plasmo"
+title: "Integreer Mellowtel in je Plasmo-extensie"
+description: "Een snelle handleiding over hoe je Mellowtel integreert in je Plasmo-browserextensie"
+icon: "puzzel"
+robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+canonical: "https://mellowtel.com/docs/nl/browser-plugins/guides/plasmo"
+og:title: "Mellowtel Plasmo Browser Extensie Integratiehandleiding"
+og:description: "Mellowtel Plasmo-integratie behandelt pakketinstellingen, permissies, omgevingsvariabelen, achtergrond- en inhoudsscripts, pop-up instellingen en testen."
+og:url: "https://mellowtel.com/docs/nl/browser-plugins/guides/plasmo"
+twitter:card: "summary"
+twitter:title: "Mellowtel Plasmo Browser Extensie Integratiehandleiding"
+twitter:description: "Mellowtel Plasmo-integratie behandelt pakketinstellingen, permissies, omgevingsvariabelen, achtergrond- en inhoudsscripts, pop-up instellingen en testen."
+---
+
+Hier leer je hoe je je Plasmo-browserextensie kunt monetizen door Mellowtel te integreren.
+Geschatte tijd om te voltooien: 5-15 minuten.
+
+# Handmatige Installatie
+
+Als je een bestaand Plasmo-project hebt, volg dan deze stappen om Mellowtel-integratie toe te voegen.
+
+### Installeer Afhankelijkheden
+
+Voeg eerst het Mellowtel-pakket toe aan je project:
+
+```bash
+pnpm add mellowtel
+```
+
+### Configureer package.json
+
+Werk je `package.json` bij om de vereiste permissies op te nemen:
+
+```json
+{
+  "manifest": {
+    "permissions": [
+      "storage",
+      "declarativeNetRequest"
+    ],
+    "host_permissions": ["<all_urls>"]
+  }
+}
+```
+
+### Stel Omgevingsvariabelen in
+
+Maak of werk je `.env` bestand bij:
+
+```plaintext
+PLASMO_PUBLIC_MELLOWTEL=your_mellowtel_api_key_here
+```
+
+<Warning>
+    Zorg ervoor dat je `your_mellowtel_api_key_here` vervangt door je daadwerkelijke Mellowtel API-sleutel uit het dashboard.
+</Warning>
+
+# Implementatie
+
+### Achtergrondscript Instellen
+
+Maak of wijzig je achtergrondscript (`background.ts`):
+
+```typescript
+import Mellowtel from "mellowtel"
+
+let mellowtel;
+
+(async () => {
+  mellowtel = new Mellowtel(process.env.PLASMO_PUBLIC_MELLOWTEL)
+  await mellowtel.initBackground()
+})()
+
+// Behandel installatie en updates
+chrome.runtime.onInstalled.addListener(async function (details) {
+  console.log("Extensie Geïnstalleerd of Bijgewerkt", details)
+  await mellowtel.generateAndOpenOptInLink()
+})
+```
+
+### Inhoudsscript Instellen
+
+Maak of wijzig je inhoudsscript (`content.ts`):
+
+```typescript
+import Mellowtel from "mellowtel"
+import type { PlasmoCSConfig } from "plasmo"
+
+let mellowtel;
+
+// Configureer het gedrag van het inhoudsscript
+export const config: PlasmoCSConfig = {
+  matches: ["<all_urls>"],
+  all_frames: true,
+  run_at: "document_start"
+}
+
+const start = async () => {
+  mellowtel = new Mellowtel(process.env.PLASMO_PUBLIC_MELLOWTEL)
+  const resp = await mellowtel.initContentScript()
+}
+
+start()
+```
+
+### Pop-up Implementatie
+
+Maak of wijzig je pop-up component (`popup.tsx`):
+
+```typescript
+import Mellowtel from "mellowtel"
+
+const Popup: React.FC = () => {
+  const handleMellowtelSettings = async () => {
+    const mellowtel = new Mellowtel(process.env.PLASMO_PUBLIC_MELLOWTEL)
+    const link = await mellowtel.generateSettingsLink()
+    chrome.tabs.create({ url: link })
+  }
+
+  return (
+    <div>
+      <button onClick={handleMellowtelSettings}>
+        Mellowtel Instellingen Wijzigen
+      </button>
+    </div>
+  )
+}
+
+export default Popup
+```
+
+# Ontwikkelingscommando's
+
+Gebruik deze commando's tijdens de ontwikkeling:
+
+```bash
+# Start ontwikkelserver
+pnpm dev
+
+# Bouw voor productie
+pnpm build
+
+# Verpak de extensie
+pnpm package
+```
+
+<Accordion title="Beste Praktijken voor Ontwikkeling">
+    1. Test je extensie altijd grondig in zowel ontwikkel- als productieomgevingen
+    2. Houd de console in de gaten voor eventuele Mellowtel-gerelateerde waarschuwingen of fouten
+    3. Test de opt-in flow vanuit het perspectief van een gebruiker
+    4. Controleer of de instellingenlink correct werkt
+    5. Zorg ervoor dat alle permissies correct zijn geconfigureerd
+</Accordion>
+
+# Testen
+
+Voordat je je extensie indient:
+
+1. Test de installatieflow
+2. Controleer of het opt-in proces werkt
+3. Controleer of de instellingenpagina toegankelijk is
+4. Bevestig dat alle permissies correct werken
+5. Test op verschillende browsers als je meerdere platforms target
+
+<Note>
+    Voor meer informatie over de functies en API van Mellowtel, bezoek de [Quickstart](https://docs.mellowtel.com/browser-plugins/quickstart).
+</Note>
+
+Hulp nodig? Word lid van onze [Discord community](https://discord.com/invite/txAZp4MSDe) voor ondersteuning.

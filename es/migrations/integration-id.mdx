@@ -1,0 +1,63 @@
+---
+title: "Migrando al ID de Integración"
+description: "Reemplaza tu clave de configuración heredada con el nuevo identificador por integración"
+icon: "arrow-right-arrow-left"
+robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+canonical: "https://mellowtel.com/docs/es/migrations/integration-id"
+og:title: "Migración del ID de Integración de Mellowtel desde la Clave de Configuración"
+og:description: "La migración del ID de Integración de Mellowtel explica por qué las claves de configuración están cambiando, cómo funcionan los IDs por aplicación, dónde encontrarlos y qué código actualizar."
+og:url: "https://mellowtel.com/docs/es/migrations/integration-id"
+twitter:card: "summary"
+twitter:title: "Migración del ID de Integración de Mellowtel desde la Clave de Configuración"
+twitter:description: "La migración del ID de Integración de Mellowtel explica por qué las claves de configuración están cambiando, cómo funcionan los IDs por aplicación, dónde encontrarlos y qué código actualizar."
+---
+
+Estamos reemplazando la `configuration_key` heredada con un nuevo identificador llamado **ID de Integración**. Si ya utilizas Mellowtel, necesitarás actualizar la cadena que pasas al SDK.
+
+## Resumen
+
+- Cada integración ahora tiene su propio **ID de Integración**, con el prefijo `intgr-`.
+- La antigua `configuration_key` todavía funciona hoy, pero será obsoleta.
+- El único cambio en el código es la cadena pasada a `new Mellowtel(...)`.
+
+## Clave de Configuración vs ID de Integración
+
+| | Clave de Configuración (heredada) | ID de Integración (nuevo) |
+|---|---|---|
+| Alcance | Una clave por cuenta | Un ID por integración |
+| Formato | Cadena opaca | `intgr-XXXXXXXXXX` |
+| Estadísticas | Agrupadas en todas las apps | Por app |
+
+## Por qué estamos haciendo este cambio
+
+Mellowtel ahora se distribuye en extensiones de navegador, aplicaciones de escritorio, aplicaciones móviles y sitios web. Con una clave compartida, los equipos no podían saber qué plataforma realmente generaba ingresos.
+
+Un ID de Integración por app soluciona eso. Una vez que migres, desbloquearás estadísticas por app, ingresos por app, y las funciones del panel que estamos desarrollando para ayudarte a hacer crecer cada app de manera independiente.
+
+## Qué necesitas cambiar
+
+Solo la cadena que pasas a `new Mellowtel(...)`.
+
+```javascript
+// Antes
+const mellowtel = new Mellowtel("<your_configuration_key>");
+
+// Después
+const mellowtel = new Mellowtel("intgr-MG8tHhnkDN");
+```
+
+Todo lo demás permanece igual.
+
+## Obteniendo tu ID de Integración
+
+1. Abre la [página de Integraciones](https://www.mellowtel.com/dashboard/integrations) en tu panel.
+2. Crea una integración por app, eligiendo el tipo correspondiente (extensión, escritorio, móvil, sitio web).
+3. Copia el ID de Integración y pégalo en la inicialización de tu SDK.
+
+## Compatibilidad retroactiva
+
+El código existente sigue funcionando. Anunciaremos una fecha de obsolescencia con suficiente antelación antes de que se elimine la clave heredada. Migrar antes desbloquea las funciones por app, así que no hay razón para esperar.
+
+## ¿Necesitas ayuda?
+
+Contáctanos en [Discord](https://discord.com/invite/txAZp4MSDe) y te guiaremos en el proceso.

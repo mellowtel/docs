@@ -1,0 +1,103 @@
+---
+title: "ユーザー同意"
+description: "ユーザーはいつでもMellowtelネットワークに参加するかどうかを決めることができます。"
+canonical: "https://mellowtel.com/docs/ja/flutter/user-consent"
+og:url: "https://mellowtel.com/docs/ja/flutter/user-consent"
+---
+
+## はじめに
+
+Mellowtelを有効にするには、ユーザーが明示的な同意を与える必要があります。このパッケージは、オプトインまたはオプトアウトする方法を提供します。基本的な考え方は、インターネットの帯域幅はユーザーのものであるため、共有するかどうかを決めるのはユーザー自身であるべきだということです。
+
+ユーザーは同意設定ダイアログを通じて同意を提供できます。
+
+### 同意ダイアログの設定
+
+同意ダイアログはMellowtel統合の重要な部分です。ユーザーがインターネットの帯域幅を共有する前に、十分な情報を得て明示的な同意を提供することを保証します。
+
+`Mellowtel`のインスタンスを作成する際に、同意ダイアログの設定を定義できます。
+
+```dart
+import 'package:mellowtel/mellowtel.dart';
+
+final Mellowtel mellowtel = Mellowtel(
+    "your_configuration_key",
+    dialogConfiguration: const ConsentDialogConfiguration(
+        appName: 'あなたのアプリ名',
+        incentive: 'インターネットを共有して報酬を得る'
+        appIcon: 'assets/logo.png', // 同意ダイアログに表示されるオプションのアプリアイコン。信頼を築くのに役立ちます。
+        acceptButtonText: "はい、始めましょう！", // 承諾ボタンのオプションのテキスト（デフォルトは"Yes"）。
+        declineButtonText: '今はしない', // 拒否ボタンのオプションのテキスト（デフォルトは"No"）。
+        dialogTextOverride: 'カスタム同意メッセージ', // オプションのカスタムまたはローカライズされた同意ダイアログメッセージ。
+    ),
+);
+```
+
+#### 同意ダイアログを開く
+
+ユーザーがまだ自分の選択を提供していない場合、`start()`メソッドが呼び出されるとデフォルトで同意ダイアログが開きます。
+
+```dart
+await mellowtel.start(
+    ... // その他の設定
+    onOptIn: () async {
+        // ユーザーが同意を提供した場合、インセンティブを有効にします。
+    }, 
+    onOptOut: () async {
+        // ユーザーが同意を拒否/取り消した場合、インセンティブを無効にします。
+    },
+    showConsentDialog: true
+);
+```
+
+ダイアログを表示する場所を管理したい場合は、`showConsentDialog`をfalseに設定できます。`start`メソッドを次の2つの異なる場所で呼び出すことをお勧めします：
+
+1. **アプリ起動時**に`showConsentDialog: false`を使用して、すでに許可が提供されている場合に操作を開始します。
+2. **最初の「アハ」モーメント後**に`showConsentDialog: true`を使用して、ユーザーがアプリの価値を体験した後に同意を求めます。
+
+このアプローチは、ユーザーの同意を最適なタイミングで取得しながら、Mellowtelが即座に動作を開始することを保証します。
+
+### 同意設定ダイアログ
+
+Mellowtelはユーザーに完全なコントロールとプライバシーを保証します。ユーザーは、同意設定ページからいつでも同意を変更できます。アプリの設定ページ内でオプションとして提供することができます。
+
+#### 同意設定ページを表示
+
+`showConsentSettingsPage()`メソッドを使用して、同意設定ダイアログを開きます。
+
+```dart
+await mellowtel.showConsentSettingsPage(
+    context,
+    onOptIn: () async {
+        // ユーザーが同意を提供した場合、インセンティブを有効にします。
+    }, 
+    onOptOut: () async {
+        // ユーザーが同意を拒否/取り消した場合、インセンティブを無効にします。
+    },
+);
+```
+
+<img src="https://raw.githubusercontent.com/mellowtel-inc/mellowtel-flutter/main/assets/settings-popup.png" width="300px" alt="設定ポップアップ" />
+
+### 手動メソッド（推奨されません）
+
+同意ダイアログと設定ページに加えて、`optIn()`および`optOut()`メソッドを使用して、ユーザーの同意を手動で管理できます。
+
+#### オプトイン
+
+ユーザーを手動でオプトインとしてマークします。
+```dart
+await mellowtel.optIn();
+```
+#### オプトアウト
+
+ユーザーを手動でオプトアウトとしてマークします。
+```dart
+await mellowtel.optOut();
+```
+#### 同意ステータスの確認
+
+`checkConsent()`メソッドを使用して、ユーザーの現在の同意ステータスを確認できます。
+```dart
+bool? hasOptedIn = await mellowtel.checkConsent();
+```

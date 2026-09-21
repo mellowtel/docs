@@ -1,0 +1,69 @@
+---
+sidebarTitle: "Welkom"
+title: "Welkom 👋"
+icon: "hand-wave"
+robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+canonical: "https://mellowtel.com/docs/nl/get-started/welcome"
+og:title: "Mellowtel Docs: Monetize Extensions, Apps and Websites"
+og:description: "Mellowtel docs laten zien hoe je consent-gebaseerd bandbreedte delen kunt toevoegen aan browserextensies, desktopapps, websites en mobiele apps met quickstarts en concepten."
+og:url: "https://mellowtel.com/docs/nl/get-started/welcome"
+twitter:card: "summary"
+twitter:title: "Mellowtel Docs: Monetize Extensions, Apps and Websites"
+twitter:description: "Mellowtel docs laten zien hoe je consent-gebaseerd bandbreedte delen kunt toevoegen aan browserextensies, desktopapps, websites en mobiele apps met quickstarts en concepten."
+---
+
+**Mellowtel is het open-source monetisatieplatform voor ontwikkelaars en makers in de AI-wereld.** Voeg de SDK toe aan je browserextensie, desktopapp, website of mobiele app en je gebruikers kunnen ervoor kiezen om een deel van hun ongebruikte internetbandbreedte te delen met vertrouwde partners. Jij verdient een deel van de inkomsten.
+
+## Hoe de integratie eruitziet
+
+```bash
+npm install mellowtel
+```
+
+```javascript
+import Mellowtel from "mellowtel";
+
+const mellowtel = new Mellowtel("<YOUR_CONFIGURATION_KEY>");
+await mellowtel.initBackground();
+await mellowtel.generateAndOpenOptInLink();
+```
+
+Dat is de hele integratie voor een browserextensie. Andere platforms zijn vergelijkbaar. Zie de quickstarts hieronder.
+
+## Kies je platform
+
+<CardGroup cols={2}>
+    <Card title="Browser plugins" icon="puzzle-piece" href="/browser-plugins/quickstart">
+        Integreer Mellowtel in een Chrome-, Edge-, Firefox- of Safari-extensie in ~5 minuten.
+    </Card>
+    <Card title="Desktop apps" icon="desktop" href="/desktop-app/quickstart">
+        Monetiseer een Electron-, Windows- of macOS-desktopapp.
+    </Card>
+    <Card title="Websites" icon="atom" href="/website/quickstart">
+        Voeg Mellowtel toe aan elke website met een enkel script.
+    </Card>
+    <Card title="Mobiele apps" icon="mobile" href="/mobile-app/quickstart">
+        Monetiseer een iOS- of Android-mobiele app.
+    </Card>
+</CardGroup>
+
+## Lees de concepten voordat je verzendt
+
+Deze vier pagina's leggen de principes uit die elke Mellowtel-integratie moet respecteren: toestemming, privacy en snelheidsbeperking. Lees ze vluchtig door en de rest van de documentatie zal logisch zijn.
+
+<CardGroup cols={2}>
+    <Card title="Concepten overzicht" icon="compass" href="/concepts/overview">
+        De vier ideeën achter Mellowtel op één pagina.
+    </Card>
+    <Card title="Opt-in / Opt-out" icon="signature" href="/concepts/opt-in-out">
+        Hoe je gebruikers toestemming op de juiste manier kunt vastleggen (en intrekken).
+    </Card>
+</CardGroup>
+
+## Hoe de inkomsten werken
+
+De verdeling is **55% voor ontwikkelaars, 45% voor Mellowtel**. Naarmate we groeien, zullen we meer diensten kunnen aanbieden en het aandeel voor ontwikkelaars kunnen verhogen. In de toekomst kunnen er functies zijn waarmee je een deel van deze inkomsten direct met je gebruikers kunt delen; in de tussentijd kun je gebruikers die hebben ingestemd belonen met exclusieve functies of inhoud.
+
+## Hulp nodig?
+
+Deze site is de bron van waarheid voor alles wat technisch is. Voor al het andere (vragen, feedback, of gewoon om te kletsen met andere Mellowtel-ontwikkelaars), sluit je aan bij ons op [Discord](https://discord.com/invite/txAZp4MSDe).

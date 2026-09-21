@@ -1,0 +1,44 @@
+---
+title: "Limitazione della Velocità"
+description: "Come Mellowtel protegge l’esperienza dell’utente mentre condivide la larghezza di banda"
+icon: "stopwatch"
+robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+canonical: "https://mellowtel.com/docs/it/concepts/rate-limiting"
+og:title: "Limitazione della Velocità di Mellowtel: Come Funziona il Throttling delle Richieste"
+og:description: "La limitazione della velocità di Mellowtel spiega come l’SDK limita le richieste per dispositivo, larghezza di banda, posizione e disponibilità di rete per proteggere l’esperienza dell’utente mentre è attivo."
+og:url: "https://mellowtel.com/docs/it/concepts/rate-limiting"
+twitter:card: "summary"
+twitter:title: "Limitazione della Velocità di Mellowtel: Come Funziona il Throttling delle Richieste"
+twitter:description: "La limitazione della velocità di Mellowtel spiega come l’SDK limita le richieste per dispositivo, larghezza di banda, posizione e disponibilità di rete per proteggere l’esperienza dell’utente mentre è attivo."
+---
+
+## Cos'è
+
+Mellowtel limita automaticamente quante richieste un singolo dispositivo (un "nodo") accetterà e elaborerà. Il limite è applicato all'interno dell'SDK. Non lo configuri tu, e un partner che si comporta male non può aumentarlo dall'esterno.
+
+## Perché è importante
+
+Condividere la larghezza di banda non dovrebbe mai rallentare l'app o la connessione dell'utente. Se un nodo servisse richieste illimitate, un utente su una rete lenta lo percepirebbe. La limitazione della velocità è il meccanismo che protegge questa promessa, ed è il motivo per cui puoi distribuire Mellowtel agli utenti reali senza preoccuparti di ticket di supporto su "il browser sembra lento."
+
+## Come funziona
+
+Ogni richiesta viene eseguita all'interno di una finestra isolata e senza credenziali (vedi [Privacy](/concepts/privacy)). Poiché le richieste sono isolate dalla sessione dell'utente, l'unico fattore che conta per l'esperienza dell'utente è *quante* ne vengono eseguite, ed è ciò che controlla la limitazione della velocità.
+
+Il limite attuale varia in base a:
+
+- **Velocità della larghezza di banda**: le connessioni più lente ricevono meno richieste.
+- **Geolocalizzazione**: la capacità è bilanciata a livello regionale.
+- **Disponibilità complessiva della rete**: l'SDK si ritira quando la domanda globale è bassa.
+
+<Note>
+**TODO:** Documentare numeri concreti (limiti req/min, livelli geografici, soglie di larghezza di banda) una volta finalizzati. Per ora i limiti sono intenzionalmente adattivi e non esposti tramite l'API pubblica.
+</Note>
+
+## Superficie dell'API
+
+Non esiste un'API di limitazione della velocità da chiamare. Il throttling è interno e sempre attivo. Non puoi disabilitarlo e non dovresti avere bisogno di ispezionarlo. Se credi che la limitazione della velocità stia causando un problema nella tua integrazione, [apri un problema su GitHub](https://github.com/mellowtel-inc/) o contattaci su [Discord](https://discord.com/invite/txAZp4MSDe).
+
+## Correlati
+
+- [Privacy](/concepts/privacy): cosa la finestra isolata può e non può accedere.
+- [Opt-in / Opt-out](/concepts/opt-in-out): il livello di consenso che si trova davanti a tutto questo.

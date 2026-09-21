@@ -1,0 +1,169 @@
+---
+sidebarTitle: "要素のスタイリング"
+title: "Mellowtel 要素のスタイル"
+icon: "palette"
+robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+canonical: "https://mellowtel.com/docs/ja/mellowtel-elements/styling"
+og:title: "Mellowtel 要素のスタイリングと配置オプションガイド"
+og:description: "Mellowtel 要素のスタイリングは、色とサイズのパッケージオプション、配置のためのコンテナCSS、レスポンシブレイアウト、完全な例をカバーしています。"
+og:url: "https://mellowtel.com/docs/ja/mellowtel-elements/styling"
+twitter:card: "summary"
+twitter:title: "Mellowtel 要素のスタイリングと配置オプションガイド"
+twitter:description: "Mellowtel 要素のスタイリングは、色とサイズのパッケージオプション、配置のためのコンテナCSS、レスポンシブレイアウト、完全な例をカバーしています。"
+---
+
+ここでは、組み込みのスタイリングオプションとCSSコンテナの配置を使用して、Mellowtel 要素の外観をカスタマイズする方法を紹介します。コンテナのスタイリングにより、レイアウトと配置を完全に制御でき、パッケージのスタイリングオプションにより要素の外観を制御できます。
+
+## パッケージスタイリングオプション
+
+Mellowtel 要素パッケージは、カスタムCSSを書くことなく要素の外観をカスタマイズできる組み込みのスタイリングオプションを提供します。設定オブジェクトを通じて、色、寸法、および視覚的なプロパティを直接制御できます。
+
+```javascript
+const styles = {
+  textColor: '#FFFFFF',        // テキストの色（16進数形式）
+  backgroundColor: '#4CAF50',  // 背景色（16進数形式）
+  radius: 8,                   // ボーダー半径（ピクセル単位）
+  width: 200,                  // 幅（ピクセル単位、50-300の範囲）
+  height: 50                   // 高さ（ピクセル単位、20-200の範囲）
+};
+```
+
+### 例
+
+```javascript
+// 緑色のオプトインボタンを作成
+await mellowtel.createElement('opt-in-container', {
+  type: 'opt-in',
+  styles: {
+    textColor: '#FFFFFF',
+    backgroundColor: '#10B981',
+    radius: 12,
+    width: 180,
+    height: 45
+  }
+});
+```
+
+## コンテナの配置
+
+要素を配置するためにコンテナdivをスタイルします：
+
+```css
+/* 基本的な配置 */
+.mellowtel-container {
+  display: flex;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+/* 固定配置 */
+#opt-in-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+}
+
+/* レスポンシブレイアウト */
+.mellowtel-elements {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  padding: 20px;
+}
+
+/* モバイルレスポンシブ */
+@media (max-width: 768px) {
+  .mellowtel-container {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+```
+
+### 完全なスタイリング例
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        .mellowtel-wrapper {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px;
+            border-radius: 12px;
+            margin: 20px;
+        }
+        
+        .mellowtel-elements {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .element-container {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+    <div class="mellowtel-wrapper">
+        <h2>Mellowtel 要素</h2>
+        <div class="mellowtel-elements">
+            <div class="element-container">
+                <div id="opt-in-container"></div>
+            </div>
+            <div class="element-container">
+                <div id="opt-out-container"></div>
+            </div>
+            <div class="element-container">
+                <div id="settings-container"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        import { MellowtelElements } from 'mellowtel-elements';
+        
+        const mellowtel = new MellowtelElements('your-extension-id', 'your-config-key');
+
+        // カスタムスタイリングで要素を作成
+        mellowtel.createElement('opt-in-container', {
+            type: 'opt-in',
+            styles: {
+                backgroundColor: '#10B981',
+                textColor: '#FFFFFF',
+                radius: 12,
+                width: 180,
+                height: 45
+            }
+        });
+
+        mellowtel.createElement('opt-out-container', {
+            type: 'opt-out',
+            styles: {
+                backgroundColor: '#EF4444',
+                textColor: '#FFFFFF',
+                radius: 12,
+                width: 180,
+                height: 45
+            }
+        });
+
+        mellowtel.createElement('settings-container', {
+            type: 'settings',
+            styles: {
+                backgroundColor: '#3B82F6',
+                textColor: '#FFFFFF',
+                radius: 12,
+                width: 180,
+                height: 45
+            }
+        });
+    </script>
+</body>
+</html>
+```

@@ -1,0 +1,44 @@
+---
+title: "Limitação de Taxa"
+description: "Como a Mellowtel protege a experiência do usuário enquanto compartilha largura de banda"
+icon: "cronômetro"
+robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+canonical: "https://mellowtel.com/docs/pt-BR/concepts/rate-limiting"
+og:title: "Limitação de Taxa da Mellowtel: Como Funciona a Restrição de Requisições"
+og:description: "A limitação de taxa da Mellowtel explica como o SDK limita requisições por dispositivo, largura de banda, localização e disponibilidade de rede para proteger a experiência do usuário enquanto ativo."
+og:url: "https://mellowtel.com/docs/pt-BR/concepts/rate-limiting"
+twitter:card: "summary"
+twitter:title: "Limitação de Taxa da Mellowtel: Como Funciona a Restrição de Requisições"
+twitter:description: "A limitação de taxa da Mellowtel explica como o SDK limita requisições por dispositivo, largura de banda, localização e disponibilidade de rede para proteger a experiência do usuário enquanto ativo."
+---
+
+## O que é
+
+A Mellowtel limita automaticamente quantas requisições um único dispositivo (um "nó") aceitará e processará. O limite é imposto dentro do SDK. Você não o configura, e um parceiro com comportamento inadequado não pode aumentá-lo de fora.
+
+## Por que é importante
+
+Compartilhar largura de banda nunca deve deixar o aplicativo ou conexão do usuário lentos. Se um nó atendesse a requisições ilimitadas, um usuário em uma rede lenta sentiria isso. A limitação de taxa é o mecanismo que protege essa promessa, e é por isso que você pode enviar a Mellowtel para usuários reais sem se preocupar com tickets de suporte sobre "o navegador está lento."
+
+## Como funciona
+
+Cada requisição é executada dentro de uma janela isolada e sem credenciais (veja [Privacidade](/concepts/privacy)). Como as requisições são isoladas da sessão do usuário, o único fator que importa para a experiência do usuário é *quantas* são executadas, e é isso que a limitação de taxa controla.
+
+O limite atual varia com base em:
+
+- **Velocidade da largura de banda**: conexões mais lentas recebem menos requisições.
+- **Geolocalização**: a capacidade é equilibrada regionalmente.
+- **Disponibilidade geral da rede**: o SDK reduz a atividade quando a demanda global é baixa.
+
+<Note>
+**TODO:** Documentar números concretos (limites de req/min, níveis geográficos, limiares de largura de banda) assim que finalizados. Por enquanto, os limites são intencionalmente adaptativos e não expostos via a API pública.
+</Note>
+
+## Superfície da API
+
+Não há uma API de limitação de taxa para chamar. A restrição é interna e sempre ativa. Você não pode desativá-la, e não deve precisar inspecioná-la. Se você acredita que a limitação de taxa está causando um problema na sua integração, [abra um problema no GitHub](https://github.com/mellowtel-inc/) ou nos contate no [Discord](https://discord.com/invite/txAZp4MSDe).
+
+## Relacionados
+
+- [Privacidade](/concepts/privacy): o que a janela isolada faz e não tem acesso.
+- [Opt-in / Opt-out](/concepts/opt-in-out): a camada de consentimento que está à frente de tudo isso.

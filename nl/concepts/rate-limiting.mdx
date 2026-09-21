@@ -1,0 +1,44 @@
+---
+title: "Snelheidsbeperking"
+description: "Hoe Mellowtel de gebruikerservaring beschermt terwijl bandbreedte wordt gedeeld"
+icon: "stopwatch"
+robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+canonical: "https://mellowtel.com/docs/nl/concepts/rate-limiting"
+og:title: "Mellowtel Snelheidsbeperking: Hoe Verzoekbeperking Werkt"
+og:description: "Mellowtel snelheidsbeperking legt uit hoe de SDK verzoeken beperkt per apparaat, bandbreedte, locatie en netwerkbeschikbaarheid om de gebruikerservaring te beschermen terwijl deze actief is."
+og:url: "https://mellowtel.com/docs/nl/concepts/rate-limiting"
+twitter:card: "summary"
+twitter:title: "Mellowtel Snelheidsbeperking: Hoe Verzoekbeperking Werkt"
+twitter:description: "Mellowtel snelheidsbeperking legt uit hoe de SDK verzoeken beperkt per apparaat, bandbreedte, locatie en netwerkbeschikbaarheid om de gebruikerservaring te beschermen terwijl deze actief is."
+---
+
+## Wat het is
+
+Mellowtel beperkt automatisch hoeveel verzoeken een enkel apparaat (een "node") zal accepteren en verwerken. De limiet wordt binnen de SDK afgedwongen. Je hoeft het niet te configureren, en een slecht functionerende partner kan het niet van buitenaf verhogen.
+
+## Waarom het belangrijk is
+
+Het delen van bandbreedte mag de app of verbinding van de gebruiker nooit vertragen. Als een node onbeperkte verzoeken zou bedienen, zou een gebruiker op een traag netwerk dat merken. Snelheidsbeperking is het mechanisme dat die belofte beschermt, en daarom kun je Mellowtel naar echte gebruikers verzenden zonder je zorgen te maken over supporttickets over "de browser voelt traag aan."
+
+## Hoe het werkt
+
+Elk verzoek draait in een gesandboxed, credentialloze venster (zie [Privacy](/concepts/privacy)). Omdat verzoeken geïsoleerd zijn van de sessie van de gebruiker, is de enige factor die van belang is voor de gebruikerservaring *hoeveel* er draaien, en dat is wat snelheidsbeperking regelt.
+
+De huidige limiet varieert op basis van:
+
+- **Bandbreedtesnelheid**: tragere verbindingen ontvangen minder verzoeken.
+- **Geolocatie**: capaciteit wordt regionaal gebalanceerd.
+- **Algemene netwerkbeschikbaarheid**: de SDK trekt zich terug wanneer de wereldwijde vraag laag is.
+
+<Note>
+**TODO:** Documenteer concrete cijfers (verzoeken/min plafonds, geo-niveaus, bandbreedtedrempels) zodra deze zijn afgerond. Voor nu zijn de limieten opzettelijk adaptief en niet blootgesteld via de publieke API.
+</Note>
+
+## API-oppervlak
+
+Er is geen snelheidsbeperkende API om aan te roepen. De beperking is intern en altijd actief. Je kunt het niet uitschakelen, en je zou het niet hoeven te inspecteren. Als je denkt dat snelheidsbeperking een probleem veroorzaakt in je integratie, [open een issue op GitHub](https://github.com/mellowtel-inc/) of stuur ons een bericht op [Discord](https://discord.com/invite/txAZp4MSDe).
+
+## Gerelateerd
+
+- [Privacy](/concepts/privacy): wat het gesandboxed venster wel en niet kan benaderen.
+- [Opt-in / Opt-out](/concepts/opt-in-out): de toestemmingslaag die voor dit alles zit.

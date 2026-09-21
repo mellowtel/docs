@@ -1,0 +1,69 @@
+---
+sidebarTitle: "Enviar para Firefox Add-ons"
+title: "Enviar extensão para Firefox Add-ons"
+icon: "firefox"
+robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+canonical: "https://mellowtel.com/docs/pt-BR/browser-plugins/submit-to-firefox-store"
+og:title: "Guia de Envio para Firefox Add-ons para Extensões Mellowtel"
+og:description: "Orientações para envio ao Firefox Add-ons, incluindo upload do seu add-on, ZIP do código-fonte, detalhes da listagem, notas para revisores e envio de versão."
+og:url: "https://mellowtel.com/docs/pt-BR/browser-plugins/submit-to-firefox-store"
+twitter:card: "summary"
+twitter:title: "Guia de Envio para Firefox Add-ons para Extensões Mellowtel"
+twitter:description: "Orientações para envio ao Firefox Add-ons, incluindo upload do seu add-on, ZIP do código-fonte, detalhes da listagem, notas para revisores e envio de versão."
+---
+
+Após importar o Mellowtel para sua extensão conforme descrito no guia [Início Rápido](/browser-plugin/quickstart), siga estas etapas para enviar sua extensão para o Firefox Add-ons.
+
+### Etapa 1: Fazer Upload do Seu Add-on
+
+1. Acesse o [Add-ons Developer Hub](https://addons.mozilla.org/developers/).
+2. Clique em "Enviar um Novo Add-on".
+3. Você verá esta página:
+
+![Página de Envio de Novo Add-on](/images/firefox/submit_new.png)
+
+4. Clique em "Selecionar um arquivo..." e escolha o arquivo do seu add-on (.zip, .xpi, .crx, .jar ou .xml).
+5. Clique em "Continuar" e aguarde a conclusão da validação.
+
+### Etapa 2: Enviar Código-Fonte
+
+Após a validação, você será questionado sobre o envio do código-fonte:
+
+![Página de Envio de Código-Fonte](/images/firefox/source_code.png)
+
+1. Selecione "Sim" para a pergunta "Você precisa enviar o código-fonte?".
+2. Prepare um arquivo ZIP contendo:
+   - Instruções passo a passo de compilação (em um arquivo README ou notas para revisores)
+   - Um script de compilação que execute todas as etapas técnicas necessárias
+   - Requisitos de sistema operacional e ambiente de compilação
+   - Versão necessária e instruções de instalação para quaisquer programas usados no processo de compilação
+3. Clique em "Procurar..." e faça o upload do arquivo ZIP do seu código-fonte.
+4. Clique em "Continuar".
+
+### Etapa 3: Descrever Seu Add-on
+
+Preencha os detalhes sobre seu add-on:
+
+![Página de Descrição do Add-on](/images/firefox/describe.png)
+
+1. Nome: Insira o nome do seu add-on
+2. URL do Add-on: Este será gerado automaticamente, mas você pode editá-lo
+3. Resumo: Forneça uma explicação clara e concisa do que seu add-on faz (máximo de 179 caracteres)
+4. Descrição: Uma explicação mais longa das funcionalidades e características (recomendado 250 caracteres)
+5. Selecione até 2 categorias do Firefox e 2 categorias do Firefox para Android
+6. E-mail de suporte e site de suporte
+7. Escolha uma licença
+8. Se seu add-on tiver uma política de privacidade, marque a caixa e forneça a política
+9. Notas para Revisores: Explique que seu add-on usa Mellowtel e forneça qualquer contexto necessário
+
+### Etapa 4: Enviar Versão
+
+Após preencher todos os campos obrigatórios, clique em "Enviar Versão" na parte inferior da página.
+
+### Após o Envio
+
+- Você receberá um e-mail de confirmação.
+- Seu add-on será publicado no AMO, mas pode estar sujeito a revisão adicional.
+- Para atualizar seu add-on no futuro, visite sua página no AMO e faça o upload da nova versão lá.
+
+Nota: O processo de revisão do Firefox pode levar vários dias para ser concluído. Responda prontamente a quaisquer perguntas da equipe de revisão.

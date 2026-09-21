@@ -1,0 +1,51 @@
+---
+sidebarTitle: "Início Rápido"
+title: "Integre o Mellowtel no seu App Desktop"
+icon: "rocket"
+robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+canonical: "https://mellowtel.com/docs/pt-BR/desktop-app/quickstart"
+og:title: "Guia de Início Rápido para Integração do App Desktop Mellowtel"
+og:description: "A integração do app desktop Mellowtel explica os pré-requisitos, requisitos de consentimento e os caminhos do SDK para Windows .NET e Electron para adicionar compartilhamento de largura de banda."
+og:url: "https://mellowtel.com/docs/pt-BR/desktop-app/quickstart"
+twitter:card: "summary"
+twitter:title: "Guia de Início Rápido para Integração do App Desktop Mellowtel"
+twitter:description: "A integração do app desktop Mellowtel explica os pré-requisitos, requisitos de consentimento e os caminhos do SDK para Windows .NET e Electron para adicionar compartilhamento de largura de banda."
+---
+
+O Mellowtel permite que seus usuários optem por compartilhar uma pequena fração de sua largura de banda de internet não utilizada com parceiros confiáveis (startups, pesquisadores e organizações sem fins lucrativos) que recuperam dados publicamente disponíveis da web. Você é pago pelas solicitações atendidas, os usuários recebem qualquer recompensa ou recurso premium que você escolher oferecer em troca, e nenhum dado pessoal é coletado, compartilhado ou vendido.
+
+## Pré-requisitos
+
+Antes de começar, certifique-se de ter:
+
+- Uma conta Mellowtel e uma **chave de configuração**. Gere a sua a partir do [painel do Mellowtel](https://www.mellowtel.com/mellowtel-auth/).
+- Um framework desktop suportado (veja abaixo). Cada guia de framework inclui uma revelação com um clique para o token de instalação do registro do pacote, então você não precisa solicitar um antecipadamente.
+
+<Warning>
+  **O consentimento do usuário é obrigatório.** Ambos os SDKs exigem opt-in no nível da API. Seu app deve exibir um diálogo de consentimento claro e permitir que os usuários gerenciem seu estado de opt-in a qualquer momento.
+</Warning>
+
+## Escolha seu Framework
+
+Escolha o framework que você está usando e siga as instruções.
+
+<CardGroup cols={2}>
+  <Card title="Windows (.NET)" icon="windows" href="/desktop-app/windows">
+    Aplicações Console, WPF ou Windows Forms usando o SDK .NET. Apenas Windows.
+  </Card>
+  <Card title="Electron" icon="bolt" href="/desktop-app/electron">
+    Apps desktop multiplataforma construídos com Electron. Funciona em macOS, Windows e Linux.
+  </Card>
+</CardGroup>
+
+{/*
+<Note>
+  **SDKs nativos para macOS e Linux ainda não estão disponíveis.** Se você lançar um app nativo Cocoa, Swift, Qt ou GTK e quiser suporte Mellowtel, nos avise no [Discord](https://discord.com/invite/txAZp4MSDe) para que possamos avaliar a demanda.
+</Note>
+*/}
+
+---
+
+Tempo estimado para completar: 10-15 minutos por framework.
+
+Se precisar de ajuda ou tiver feedback, entre em contato conosco em [info@mellowtel.com](mailto:info@mellowtel.com) ou junte-se à nossa [comunidade no Discord](https://discord.com/invite/txAZp4MSDe).

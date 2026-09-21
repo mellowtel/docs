@@ -1,0 +1,41 @@
+---
+sidebarTitle: "Invia al CWS"
+title: "Invia l’estensione al Chrome Web Store"
+icon: "chrome"
+robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+canonical: "https://mellowtel.com/docs/it/browser-plugins/submit-to-chrome-store"
+og:title: "Guida alla Sottomissione al Chrome Web Store per Estensioni Mellowtel"
+og:description: "La guida alla sottomissione al Chrome Web Store include la giustificazione dei permessi Mellowtel per declarativeNetRequest, permessi host, storage e revisione."
+og:url: "https://mellowtel.com/docs/it/browser-plugins/submit-to-chrome-store"
+twitter:card: "summary"
+twitter:title: "Guida alla Sottomissione al Chrome Web Store per Estensioni Mellowtel"
+twitter:description: "La guida alla sottomissione al Chrome Web Store include la giustificazione dei permessi Mellowtel per declarativeNetRequest, permessi host, storage e revisione."
+---
+
+Dopo aver seguito le istruzioni per importare Mellowtel nella tua estensione che sono state delineate in [Quick Start](/browser-plugins/quickstart), sei pronto per inviare la tua estensione al Web Store.
+Questa guida ti aiuterà a inviare la tua estensione al Chrome Web Store.
+
+Tempo stimato per il completamento: 3-5 minuti.
+
+### Giustificazione per il Web Store
+Il Web Store richiede di giustificare i permessi che stai richiedendo. Ecco un modello che puoi utilizzare (spiega come Mellowtel utilizza i permessi):
+
+**DeclarativeNetRequest**:
+```txt
+Il permesso declarativeNetRequest è necessario per rimuovere alcune intestazioni (ad esempio, intestazioni X-Frame) da alcune risposte a livello di sub_frame. Questo consente di visualizzare siti web in un iframe senza incorrere in problemi relativi alla condivisione delle risorse tra origini diverse (CORS). Queste intestazioni vengono immediatamente ripristinate dopo che la risposta è stata elaborata.
+```
+
+**Permessi Host**:
+```txt
+I permessi host su all_urls sono necessari per consentire a declarativeNetRequest di modificare le intestazioni delle risposte su tutti gli URL. Questo è necessario per rimuovere alcune intestazioni (ad esempio, intestazioni X-Frame) da alcune risposte a livello di sub_frame. Questo consente di visualizzare siti web in un iframe senza incorrere in problemi relativi alla condivisione delle risorse tra origini diverse (CORS). Queste intestazioni vengono immediatamente ripristinate dopo che la risposta è stata elaborata.
+```
+
+**Storage**:
+```txt
+Il permesso di storage è necessario per mantenere lo stato specifico dell'estensione e avere una logica locale per facilitare le comunicazioni tra le varie parti dell'estensione.
+```
+
+### Invia la tua estensione
+Puoi seguire le istruzioni qui a seconda che tu stia inviando una nuova estensione o aggiornando una esistente:
+- [Invia una nuova estensione](https://developer.chrome.com/docs/webstore/publish/)
+- [Aggiorna un'estensione esistente](https://developer.chrome.com/docs/webstore/update)

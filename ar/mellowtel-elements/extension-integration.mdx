@@ -1,0 +1,65 @@
+---
+sidebarTitle: "تكامل الإضافة"
+title: "تطبيق Mellowtel Elements في إضافات المتصفح"
+icon: "puzzle-piece"
+robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+canonical: "https://mellowtel.com/docs/ar/mellowtel-elements/extension-integration"
+og:title: "دليل تكامل Mellowtel Elements في إضافات المتصفح"
+og:description: "تكامل Mellowtel Elements في إضافات المتصفح يوضح كيفية تثبيت الحزمة، إضافة حاويات الاختيار، التهيئة بالمعرفات، وإنشاء عناصر الموافقة."
+og:url: "https://mellowtel.com/docs/ar/mellowtel-elements/extension-integration"
+twitter:card: "summary"
+twitter:title: "دليل تكامل Mellowtel Elements في إضافات المتصفح"
+twitter:description: "تكامل Mellowtel Elements في إضافات المتصفح يوضح كيفية تثبيت الحزمة، إضافة حاويات الاختيار، التهيئة بالمعرفات، وإنشاء عناصر الموافقة."
+---
+
+هنا راك تشوف كيفاش تدمج Mellowtel Elements في إضافة المتصفح تاعك باش تدير إدارة سلسة لموافقة المستخدم.
+
+## التثبيت
+
+ثبّت الحزمة في مشروع الإضافة تاعك:
+
+```bash
+npm install mellowtel-elements
+```
+
+## التطبيق
+
+### 1. إنشاء حاويات Div في HTML
+
+زيد حاويات div في HTML تاع الإضافة تاعك:
+
+```html
+<!-- في popup.html أو صفحة الخيارات -->
+<div id="opt-in-container"></div>
+<div id="opt-out-container"></div>
+<div id="settings-container"></div>
+```
+
+### 2. تهيئة Mellowtel Elements
+
+```javascript
+import { MellowtelElements } from 'mellowtel-elements';
+
+// إنشاء نسخة بالمعرف تاع الإضافة ومفتاح التهيئة
+const mellowtel = new MellowtelElements(
+  'your-extension-id-here',    // معرف الإضافة
+  'your-config-key-here'       // مفتاح التهيئة
+);
+```
+
+### 3. إنشاء العناصر
+
+زيد العناصر في نافذة الإضافة أو صفحة الخيارات تاعك:
+
+```javascript
+// إنشاء عنصر opt-in
+await mellowtel.createElement('opt-in-container', { type: 'opt-in' });
+
+// إنشاء عنصر opt-out
+await mellowtel.createElement('opt-out-container', { type: 'opt-out' });
+
+// إنشاء عنصر الإعدادات
+await mellowtel.createElement('settings-container', { type: 'settings' });
+```
+
+برافو! دابا الإضافة تاعك واجدة باش تستعمل Mellowtel Elements للإدارة السلسة للاختيار، الإلغاء، وتسيير الإعدادات.

@@ -1,0 +1,231 @@
+---
+sidebarTitle: "تكامل Chrome / Edge"
+title: "دمج Mellowtel في إضافة Chrome/Edge ديالك"
+icon: "chrome"
+robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+canonical: "https://mellowtel.com/docs/ar/browser-plugins/chrome_edge"
+og:title: "دليل دمج Mellowtel في إضافات Chrome و Edge"
+og:description: "إعداد إضافة Mellowtel على Chrome و Edge كيغطي السياسات، أذونات Manifest V3، عمال الخدمة، سكريبتات المحتوى، تدفق الاشتراك، وروابط الإعدادات."
+og:url: "https://mellowtel.com/docs/ar/browser-plugins/chrome_edge"
+twitter:card: "summary"
+twitter:title: "دليل دمج Mellowtel في إضافات Chrome و Edge"
+twitter:description: "إعداد إضافة Mellowtel على Chrome و Edge كيغطي السياسات، أذونات Manifest V3، عمال الخدمة، سكريبتات المحتوى، تدفق الاشتراك، وروابط الإعدادات."
+---
+
+هنا غادي تشوف كيفاش تطبق مكتبة Mellowtel في مشروع إضافة Chrome/Edge ديالك.
+
+الوقت المقدر للإكمال: 5-7 دقايق.
+
+# الامتثال لسياسات المتصفح
+
+Mellowtel متوافق مع سياسات المتصفح إذا كان التكامل كيحترم اختيارات وإعدادات المستخدمين.
+
+الإضافات الرسمية ديال Mellowtel متوفرة على Chrome و Edge. قريبا غادي نقدموهم حتى للمتصفحات الرئيسية الأخرى.
+
+Chrome: https://chromewebstore.google.com/detail/support-with-mellowtel/jngbedjpioeongcicaomeideeompcbcc
+
+Edge: https://microsoftedge.microsoft.com/addons/detail/support-with-mellowtel/chpomjnojnimgcaomhmcmfgjinfoekhi
+
+على Chrome، بعض المطورين قد يواجهوا مشاكل أثناء المراجعة مع سياسة الغرض الواحد، اللي كتقول أن الإضافة يمكنها فقط يكون عندها وظيفة واحدة واضحة (لكن غالبا ما كتفسر بشكل غير متسق عبر الإضافات متعددة الوظائف). 
+في هاد الحالات، كنوصيو المطورين يشاركو الرابط الشخصي ديالهم ويطلبو من المستخدمين تثبيت الإضافة الرسمية ديال Mellowtel اللي عندها الغرض الواحد اللي هو السماح للمطورين يربحو بفضل المستخدمين اللي بغاو يدعموهم بمشاركة الموارد الخاملة ديالهم.
+المطورين يقدرو ينشئو الرابط ديالهم من [لوحة التحكم ديال Mellowtel](https://www.mellowtel.com/dashboard/support-with-mellowtel) ويوجهو المستخدمين للإضافة الرسمية [ديال Mellowtel على Chrome](https://chromewebstore.google.com/detail/support-with-mellowtel/jngbedjpioeongcicaomeideeompcbcc).
+
+إذا كان عندك إضافة على Chrome كتعمل في مجال مشاركة عرض النطاق الترددي للذكاء الاصطناعي وهاد هو الغرض الوحيد من الإضافة، تقدر تدمج Mellowtel مباشرة في الإضافة ديالك.
+
+بالمقابل، Edge، Firefox، أو Safari ما عندهمش هاد السياسة، لذلك المطورين يقدرو يدمجو المكتبة مباشرة في المنتجات ديالهم ويتأكدو أنهم يسألو المستخدمين واش بغاو يدعموهم أو لا ويخليوهم دائما طريقة سهلة لتغيير الإعدادات ديالهم في أي وقت من الإضافة نفسها.
+
+# المتصفحات الموصى بها
+
+حاليا، كنوصيو بدمج Mellowtel في إضافات Edge حيث ما زلنا نعمل على تحسين نسخ Firefox و Safari من المكتبة.
+
+# المتطلبات
+قبل ما تبدا، تأكد من:
+
+1) الإضافة ديالك كتستخدم [Manifest V3](https://developer.chrome.com/docs/extensions/develop/migrate/what-is-mv3).
+2) الكود ديالك منظم بطريقة مجمعة، باستخدام Webpack، Rollup، أو مجمعات أخرى.
+إذا ما عندكش مجمع مضبوط، أولا تابع الدليل [هنا](/browser-plugins/static-to-webpack)
+
+# تثبيت حزمة npm
+
+باش تثبت حزمة npm، تقدر تشغل الأمر التالي في الطرفية ديالك:
+
+```npm
+npm install mellowtel
+```
+
+<Accordion title="Yarn">
+    إذا كنت كتستخدم yarn كمدير حزم، تقدر تشغل الأمر التالي:
+    ```yarn
+    yarn add mellowtel
+    ```
+</Accordion>
+
+# قرر التنفيذ
+كاين جوج طرق تقدر تنفذ بها المكتبة في الإضافة ديالك.
+
+إذا كنت غادي تطلق الإضافة لأول مرة في متجر الويب تابع الخيار 1.
+إذا كان عندك الإضافة منشورة بالفعل في متجر الويب قرا "كيفاش تقرر؟"
+
+### كيفاش تقرر؟
+
+منين كتثبت الإضافة ديالك من متجر الويب، واش كتظهر نافذة تنبيه كتطلب الإذن بـ "قراءة وتغيير جميع البيانات ديالك على جميع المواقع"؟
+
+كتبان بحال هادي:
+
+<Frame caption="نافذة التنبيه كتطلب الإذن بقراءة وتغيير جميع البيانات ديالك على جميع المواقع">
+    <img src="/images/alert_web_store.png" />
+</Frame>
+
+إذا كانت كتظهر، تقدر تابع الخيار 1. إذا ما كانتش كتظهر، خاصك تابع الخيار 2.
+
+# الخيار 1
+إذا كنت غادي تطلق الإضافة لأول مرة في متجر الويب أو كنت كتحمل المكتبة في إضافة كتطلب الإذن بالعمل على جميع المواقع، تقدر تابع الخيار 1.
+
+### ضبط الملف التعريفي ديالك
+في ملف [manifest.json](https://developer.chrome.com/docs/extensions/reference/manifest) ديالك عدل الأقسام `permissions` و `host_permissions` بحال هكا:
+
+```json
+{
+
+  "permissions": [
+    "storage",
+    "declarativeNetRequest"
+  ],
+  "host_permissions": [
+    "\u003Call_urls\u003E"
+  ]
+
+}
+```
+
+### ضبط عامل الخدمة (سكريبت الخلفية) ديالك
+
+في ملف [عامل الخدمة](https://developer.chrome.com/docs/extensions/develop/concepts/service-workers) ديالك، خاصك تستورد حزمة `mellowtel`.
+ملاحظة: عامل الخدمة كيعرف أيضا بـ `سكريبت الخلفية`.
+
+تقدر تنسخ وتلصق الكود التالي في ملف عامل الخدمة ديالك بتغيير `configuration_key` بالمفتاح ديالك.
+
+```javascript
+import Mellowtel from "mellowtel";
+
+let mellowtel;
+
+(async () => {
+    mellowtel = new Mellowtel("<configuration_key>"); // عوض بالمفتاح ديالك
+    await mellowtel.initBackground();
+})();
+```
+
+<Accordion title="تفصيل كود عامل الخدمة">
+استورد حزمة mellowtel
+
+```javascript
+    import Mellowtel from "mellowtel";
+```
+
+تقدر من بعد تستخدم `Mellowtel(configuration_key, options?)` لإنشاء نسخة جديدة من كائن Mellowtel. كائن Mellowtel هو نقطة الدخول ديالك لباقي SDK ديال Mellowtel. `configuration_key` ديالك مطلوب عند استدعاء هاد الوظيفة، حيث كيعرف الإضافة ديالك لـ Mellowtel. تقدر تلقى `configuration_key` ديالك في [لوحة التحكم](https://www.mellowtel.com/mellowtel-dashboard/#home)
+```javascript
+mellowtel = new Mellowtel("<configuration_key>");
+```
+
+بدا Mellowtel باستدعاء طريقة `initBackground`. هاد الطريقة غادي تبدا كائن Mellowtel وتضبط المستمعين الضروريين.
+```javascript
+await mellowtel.initBackground();
+```
+</Accordion>
+
+### ضبط سكريبت المحتوى ديالك
+خاصك تستورد حزمة mellowtel في [سكريبتات المحتوى](https://developer.chrome.com/docs/extensions/develop/concepts/content-scripts) أيضا.
+
+هاد سكريبت المحتوى خاصو يتشغل في `all_frames` و `<all_urls>` عند `document_start`.
+
+كنقترحو إنشاء سكريبت محتوى جديد (مثلا content_start_mellowtel.js) فين تقدر تنسخ وتلصق الكود التالي.
+غير `configuration_key` بالمفتاح ديالك.
+
+```javascript
+import Mellowtel from "mellowtel";
+
+(async () => {
+    const mellowtel = new Mellowtel("<configuration_key>"); // عوض بالمفتاح ديالك
+    await mellowtel.initContentScript();
+})();
+```
+
+من بعد تذكر تضيف هاد سكريبت المحتوى في ملف `manifest.json` ديالك في قسم content_scripts بجانب أي سكريبت محتوى آخر عندك.
+تقدر تنسخ وتلصق الكود التالي بتغيير `name_of_your_content_script.js` بالاسم اللي اخترتي.
+
+```json
+{
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["<name_of_your_content_script.js>"], // <-- غير هنا باسم سكريبت المحتوى ديالك
+      "run_at": "document_start",
+      "all_frames": true
+    }
+  ]
+}
+```
+
+### ضبط منطق الاشتراك/إلغاء الاشتراك
+
+باش تفعل Mellowtel، المستخدمين خاصهم يختارو بشكل صريح الاشتراك في الخدمة.
+
+تقدر تنفذ منطق الاشتراك/إلغاء الاشتراك بجوج طرق:
+1) باستخدام التنفيذ الموصى به مع الصفحة الجاهزة المقدمة من Mellowtel.
+
+2) إنشاء عناصر الاشتراك/إلغاء الاشتراك الخاصة بك واستخدام الطرق الموضحة [هنا](https://docs.mellowtel.com/concepts/opt-in-out#2-custom-elements)
+
+<Info>
+إذا اخترت إنشاء عناصر الاشتراك/إلغاء الاشتراك الخاصة بك، فكر في استخدام <a href="/mellowtel-elements/quickstart" target="_blank">**عناصر Mellowtel**</a> - مكونات واجهة مستخدم جاهزة كتعالج موافقة المستخدم والإعدادات بجهد تكامل بسيط.
+</Info>
+
+إذا استخدمت التنفيذ الموصى به، افتح ملف `عامل الخدمة` ديالك (المعروف أيضا بسكريبت الخلفية) وأضف الكود التالي:
+
+```javascript
+chrome.runtime.onInstalled.addListener(async function(details) {
+    console.log("تم تثبيت أو تحديث الإضافة");
+    // إذا كنت بغيتي تتعامل مع التثبيت الأول والتحديثات بشكل مختلف
+    /**
+    if(details.reason === "install"){
+        // استدعي وظيفة للتعامل مع التثبيت الأول
+    } else if(details.reason === "update") {
+        // استدعي وظيفة للتعامل مع التحديث
+    }
+    **/
+    await mellowtel.generateAndOpenOptInLink();
+});
+```
+
+### توليد رابط الإعدادات
+
+باش تخلي المستخدمين ديالك عندهم تحكم كامل في عرض النطاق الترددي ديالهم، مطلوب أنك تخلي طريقة سهلة للوصول لتغيير الإعدادات ديالهم في أي لحظة.
+
+تقدر تولد رابط باستخدام الطريقة `generateSettingsLink()`.
+هاد الطريقة غادي ترجع رابط غادي يفتح صفحة إعدادات Mellowtel فين المستخدمين يقدرو يقررو في أي وقت واش بغاو يشتركو أو يلغيو الاشتراك.
+
+هاد الرابط خاصو يكون داخل النافذة المنبثقة، صفحة الخيارات أو أي مكان آخر فين المستخدمين يقدرو يوصلولو بسهولة.
+
+مثلا تقدر تحطو في وظيفة `openSettings()` بحال هكا. تقدر تستدعي `openSettings()` عند الضغط على زر أو أي حدث آخر مناسب:
+
+```javascript
+async function openSettings() {
+    try {
+        // توليد وإدارة رابط الإعدادات
+        const settingsLink = await mellowtel.generateSettingsLink();
+        // سجل الرابط المولد لأغراض التصحيح
+        console.log("رابط الإعدادات المولد:", settingsLink);
+        // تقدر دابا تستخدم هاد الرابط داخل نافذة منبثقة، صفحة الخيارات، أو أي عنصر واجهة مستخدم
+    } catch (error) {
+        console.error("خطأ في توليد رابط الإعدادات:", error);
+    }
+}
+```
+
+مزيان! دابا راك جاهز تبعث الإضافة ديالك لمتجر الويب. تابع الدليل هنا باش تشوف كيفاش [تقدم الإضافة ديالك](/browser-plugins/submit-to-chrome-store)
+
+# الخيار 2
+
+<Warning>الخيار 2 ممكن يعطل الإضافة ديالك إذا ما تنفذش بشكل صحيح. لهذا السبب ما متاحش لجميع المستخدمين </Warning>
+
+إذا ما قدرتش تنفذ الخيار 1، من فضلك تواصل معنا على [Discord](https://discord.com/invite/txAZp4MSDe)

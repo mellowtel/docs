@@ -1,0 +1,65 @@
+---
+sidebarTitle: "Integrazione dell’Estensione"
+title: "Implementare Mellowtel Elements nelle Estensioni del Browser"
+icon: "puzzle-piece"
+robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+canonical: "https://mellowtel.com/docs/it/mellowtel-elements/extension-integration"
+og:title: "Guida all’Integrazione di Mellowtel Elements nelle Estensioni del Browser"
+og:description: "L’integrazione dell’estensione del browser Mellowtel Elements mostra come installare il pacchetto, aggiungere contenitori opt-in, inizializzare con ID e creare elementi di consenso."
+og:url: "https://mellowtel.com/docs/it/mellowtel-elements/extension-integration"
+twitter:card: "summary"
+twitter:title: "Guida all’Integrazione di Mellowtel Elements nelle Estensioni del Browser"
+twitter:description: "L’integrazione dell’estensione del browser Mellowtel Elements mostra come installare il pacchetto, aggiungere contenitori opt-in, inizializzare con ID e creare elementi di consenso."
+---
+
+Qui vedrai come integrare Mellowtel Elements nella tua estensione del browser per una gestione fluida del consenso degli utenti.
+
+## Installazione
+
+Installa il pacchetto nel tuo progetto di estensione:
+
+```bash
+npm install mellowtel-elements
+```
+
+## Implementazione
+
+### 1. Crea Contenitori Div HTML
+
+Aggiungi i div contenitori nell'HTML della tua estensione:
+
+```html
+<!-- In popup.html o nella pagina delle opzioni -->
+<div id="opt-in-container"></div>
+<div id="opt-out-container"></div>
+<div id="settings-container"></div>
+```
+
+### 2. Inizializza Mellowtel Elements
+
+```javascript
+import { MellowtelElements } from 'mellowtel-elements';
+
+// Crea un'istanza con ID dell'estensione e chiave di configurazione
+const mellowtel = new MellowtelElements(
+  'your-extension-id-here',    // ID dell'estensione
+  'your-config-key-here'       // Chiave di configurazione
+);
+```
+
+### 3. Crea Elementi
+
+Aggiungi elementi al popup della tua estensione o alla pagina delle opzioni:
+
+```javascript
+// Crea elemento opt-in
+await mellowtel.createElement('opt-in-container', { type: 'opt-in' });
+
+// Crea elemento opt-out
+await mellowtel.createElement('opt-out-container', { type: 'opt-out' });
+
+// Crea elemento impostazioni
+await mellowtel.createElement('settings-container', { type: 'settings' });
+```
+
+Perfetto! Ora la tua estensione è pronta per utilizzare Mellowtel Elements per opt-in, opt-out e gestione delle impostazioni in modo fluido.

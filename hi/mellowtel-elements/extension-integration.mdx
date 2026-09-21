@@ -1,0 +1,65 @@
+---
+sidebarTitle: "एक्सटेंशन इंटीग्रेशन"
+title: "ब्राउज़र एक्सटेंशन्स में Mellowtel Elements लागू करें"
+icon: "puzzle-piece"
+robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+canonical: "https://mellowtel.com/docs/hi/mellowtel-elements/extension-integration"
+og:title: "Mellowtel Elements ब्राउज़र एक्सटेंशन इंटीग्रेशन गाइड"
+og:description: "Mellowtel Elements ब्राउज़र एक्सटेंशन इंटीग्रेशन यह दिखाता है कि पैकेज कैसे इंस्टॉल करें, ऑप्ट-इन कंटेनर्स जोड़ें, आईडी के साथ इनिशियलाइज़ करें, और सहमति एलिमेंट्स बनाएं।"
+og:url: "https://mellowtel.com/docs/hi/mellowtel-elements/extension-integration"
+twitter:card: "summary"
+twitter:title: "Mellowtel Elements ब्राउज़र एक्सटेंशन इंटीग्रेशन गाइड"
+twitter:description: "Mellowtel Elements ब्राउज़र एक्सटेंशन इंटीग्रेशन यह दिखाता है कि पैकेज कैसे इंस्टॉल करें, ऑप्ट-इन कंटेनर्स जोड़ें, आईडी के साथ इनिशियलाइज़ करें, और सहमति एलिमेंट्स बनाएं।"
+---
+
+यहां आप देखेंगे कि अपने ब्राउज़र एक्सटेंशन में Mellowtel Elements को कैसे इंटीग्रेट करें ताकि उपयोगकर्ता की सहमति प्रबंधन में सहजता बनी रहे।
+
+## इंस्टॉलेशन
+
+अपने एक्सटेंशन प्रोजेक्ट में पैकेज इंस्टॉल करें:
+
+```bash
+npm install mellowtel-elements
+```
+
+## इंप्लीमेंटेशन
+
+### 1. HTML Div कंटेनर्स बनाएं
+
+अपने एक्सटेंशन के HTML में कंटेनर डिव्स जोड़ें:
+
+```html
+<!-- popup.html या ऑप्शन्स पेज में -->
+<div id="opt-in-container"></div>
+<div id="opt-out-container"></div>
+<div id="settings-container"></div>
+```
+
+### 2. Mellowtel Elements इनिशियलाइज़ करें
+
+```javascript
+import { MellowtelElements } from 'mellowtel-elements';
+
+// एक्सटेंशन आईडी और कॉन्फिग की के साथ इंस्टेंस बनाएं
+const mellowtel = new MellowtelElements(
+  'your-extension-id-here',    // एक्सटेंशन आईडी
+  'your-config-key-here'       // कॉन्फिगरेशन की
+);
+```
+
+### 3. एलिमेंट्स बनाएं
+
+अपने एक्सटेंशन के पॉपअप या ऑप्शन्स पेज में एलिमेंट्स जोड़ें:
+
+```javascript
+// ऑप्ट-इन एलिमेंट बनाएं
+await mellowtel.createElement('opt-in-container', { type: 'opt-in' });
+
+// ऑप्ट-आउट एलिमेंट बनाएं
+await mellowtel.createElement('opt-out-container', { type: 'opt-out' });
+
+// सेटिंग्स एलिमेंट बनाएं
+await mellowtel.createElement('settings-container', { type: 'settings' });
+```
+
+बढ़िया! अब आपका एक्सटेंशन Mellowtel Elements का उपयोग करने के लिए तैयार है ताकि ऑप्ट-इन, ऑप्ट-आउट, और सेटिंग्स प्रबंधन में सहजता बनी रहे।

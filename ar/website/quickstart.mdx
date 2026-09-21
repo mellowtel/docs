@@ -1,0 +1,168 @@
+---
+sidebarTitle: "بداية سريعة"
+title: "ربح من موقعك مع Mellowtel"
+description: "ضيف فقط وسم سكريبت واحد باش تخلي الزوار يدعموك بمشاركة النطاق الترددي الغير مستخدم."
+icon: "rocket"
+robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+canonical: "https://mellowtel.com/docs/ar/website/quickstart"
+og:title: "دليل البداية السريعة لودجيت Mellowtel لمونيتايز الموقع"
+og:description: "مونيتايز الموقع مع Mellowtel يوريك كيفاش تضيف سكريبت الودجيت، تضبط invite_id، تختار مكان الزر، الأيقونة، أو البانر، وتتحقق وتعلن عليه."
+og:url: "https://mellowtel.com/docs/ar/website/quickstart"
+twitter:card: "summary"
+twitter:title: "دليل البداية السريعة لودجيت Mellowtel لمونيتايز الموقع"
+twitter:description: "مونيتايز الموقع مع Mellowtel يوريك كيفاش تضيف سكريبت الودجيت، تضبط invite_id، تختار مكان الزر، الأيقونة، أو البانر، وتتحقق وتعلن عليه."
+---
+
+Mellowtel تخلي الزوار ديالك يختارو يشاركو النطاق الترددي الغير مستخدم باش يدعموك. تضيف ودجيت صغير للموقع ديالك، الزوار يختارو يثبتو الإضافة المرافقة، وانت تربح على حسب الطلبات اللي يتكفل بيها المتصفح ديالهم.
+
+<Info>
+  **الوقت المقدر:** 5 إلى 10 دقايق. **وش تحتاج:** حساب [Mellowtel](https://www.mellowtel.com/mellowtel-auth/) والوصول لـ HTML الموقع ديالك (ولا إطار عمل مكافئ).
+</Info>
+
+## كيفاش تخدم
+
+<Steps>
+  <Step title="تدمج الودجيت">
+    وسم سكريبت يعرض زر، أيقونة، أو بانر في الموقع ديالك.
+  </Step>
+  <Step title="الزائر يضغط عليه">
+    يروح يثبت الإضافة المرافقة لـ Mellowtel.
+  </Step>
+  <Step title="تدي الكريدي">
+    `invite_id` ديالك يربط هداك الزائر بالحساب ديالك، باش الطلبات اللي يتكفل بيها المتصفح ديالهم تنسب ليك.
+  </Step>
+</Steps>
+
+## قبل ما تبدا
+
+- حساب Mellowtel. [سجل هنا](https://www.mellowtel.com/mellowtel-auth/) إذا ما عندكش واحد.
+- `invite_id` ديالك، تلقاه في [لوحة التحكم](https://www.mellowtel.com/mellowtel-auth/) بعد ما تنشئ رابط الدعم.
+- الوصول لـ HTML الموقع ديالك، ولا القدرة على إضافة وسم `<script>` عبر الإطار أو نظام إدارة المحتوى ديالك.
+
+## تثبيت الودجيت
+
+لسق هدا في الموقع ديالك، وبدل `INVITE_ID` بالقيمة من لوحة التحكم ديالك. من المستحسن تحطو قبل `</body>` باش ما يعيقش عرض الصفحة.
+
+<CodeGroup>
+
+```html HTML
+<script
+  src="https://cdn.mellow.tel/widget.js?type=button&position=bottom-right&invite_id=INVITE_ID"
+  async>
+</script>
+```
+
+```jsx Next.js (App Router)
+import Script from 'next/script'
+
+export default function Layout({ children }) {
+  return (
+    <html>
+      <body>
+        {children}
+        <Script
+          src="https://cdn.mellow.tel/widget.js?type=button&position=bottom-right&invite_id=INVITE_ID"
+          strategy="afterInteractive"
+        />
+      </body>
+    </html>
+  )
+}
+```
+
+```jsx React (Vite / CRA)
+import { useEffect } from 'react'
+
+export function MellowtelWidget() {
+  useEffect(() => {
+    const s = document.createElement('script')
+    s.src = 'https://cdn.mellow.tel/widget.js?type=button&position=bottom-right&invite_id=INVITE_ID'
+    s.async = true
+    document.body.appendChild(s)
+    return () => { s.remove() }
+  }, [])
+  return null
+}
+```
+
+```html WordPress
+<!-- ضيفو في footer.php ديال الثيم ديالك قبل </body>, -->
+<!-- ولا استعمل إضافة "Header & Footer Scripts" ولصقو في حقل الفوتر. -->
+<script
+  src="https://cdn.mellow.tel/widget.js?type=button&position=bottom-right&invite_id=INVITE_ID"
+  async>
+</script>
+```
+
+```html Webflow / Shopify
+<!-- Webflow: إعدادات المشروع > كود مخصص > كود الفوتر -->
+<!-- Shopify: المتجر الإلكتروني > الثيمات > تعديل الكود > theme.liquid (قبل </body>) -->
+<script
+  src="https://cdn.mellow.tel/widget.js?type=button&position=bottom-right&invite_id=INVITE_ID"
+  async>
+</script>
+```
+
+</CodeGroup>
+
+## خيارات التكوين
+
+تحكم في مظهر الودجيت عبر معلمات الاستعلام في عنوان URL السكريبت.
+
+| المعلمة      | مطلوب   | القيم                                                              | الوصف                                                |
+| ------------ | -------- | ------------------------------------------------------------------- | ---------------------------------------------------- |
+| `invite_id`  | نعم      | المعرف ديالك من لوحة التحكم                                          | ينسب الأرباح للحساب ديالك.                           |
+| `type`       | نعم      | `button`, `icon`, `banner`                                          | نمط الودجيت المعروض في الموقع ديالك.                 |
+| `position`   | نعم      | `bottom-right`, `bottom-left`, `top-right`, `top-left`              | فين يجلس الودجيت في الصفحة.                          |
+
+<Tip>
+  جرب كل تركيبة مباشرة قبل ما تطلق: [افتح معاينة الودجيت](https://cdn.mellow.tel/preview?position=bottom-right&type=button&invite_id=ijxf49s9h2f). بدل المعلمات `type` و`position` في عنوان URL باش تشوف كل نسخة.
+</Tip>
+
+## تحقق من أنه يخدم
+
+<Steps>
+  <Step title="حمل الموقع ديالك">
+    افتح الصفحة في تبويب متصفح جديد (ولا نافذة التصفح المتخفي لتجاوز الكاش).
+  </Step>
+  <Step title="تأكد من عرض الودجيت">
+    لازم تشوف الزر، الأيقونة، أو البانر في المكان اللي اخترتو. إذا كان مفقود، شوف كونسول المتصفح للطلبات المحجوبة.
+  </Step>
+  <Step title="اضغط على التدفق">
+    الضغط على الودجيت لازم يديك لصفحة تثبيت الإضافة مع `invite_id` ديالك مرفق.
+  </Step>
+  <Step title="شوف لوحة التحكم ديالك">
+    من بعد ما الزائر يثبت ويختار الاشتراك، النشاط ديالو يظهر في لوحة التحكم ديالك في Mellowtel.
+  </Step>
+</Steps>
+
+## استكشاف الأخطاء وإصلاحها
+
+<AccordionGroup>
+  <Accordion title="الودجيت ما يظهرش">
+    - تأكد أن وسم السكريبت داخل `<body>` و`invite_id` ديالك معمر.
+    - افتح DevTools وشوف علامة التبويب Network لطلب `cdn.mellow.tel/widget.js`. إذا كان محجوب، ممكن يكون السبب بلوك الإعلانات أو فلتر المحتوى.
+    - شوف سياسة أمان المحتوى ديالك. ممكن تحتاج تسمح بـ `https://cdn.mellow.tel` تحت `script-src`.
+  </Accordion>
+  <Accordion title="نشوف تحذير 'invite_id مفقود'">
+    معلمة `invite_id` فارغة ولا مازال فيها `INVITE_ID` الحرفي. انسخ القيمة الحقيقية من لوحة التحكم ديالك ولصقها في URL.
+  </Accordion>
+  <Accordion title="يخدم محليًا لكن مش في الإنتاج">
+    غالبًا سياسة CSP أو قاعدة CDN هي اللي تشيل السكريبت. شوف رؤوس الاستجابة في المضيف الإنتاجي ديالك واسمح بـ `cdn.mellow.tel`.
+  </Accordion>
+  <Accordion title="كيفاش نحذف الودجيت؟">
+    احذف وسم `<script>` (ولا المكون الإطار اللي يلفو). ما كاينش حاجة أخرى لتنظيفها.
+  </Accordion>
+</AccordionGroup>
+
+## أعلن للزوار ديالك
+
+نوصي بإضافة ملاحظة قصيرة لسياسة الخصوصية ديالك باش الزوار يفهمو وش يعني الاشتراك. حاجة بحال:
+
+> هاد الموقع شريك مع Mellowtel. إذا اخترت تثبيت الإضافة ديالهم، المتصفح ديالك ممكن يشارك النطاق الترددي الغير مستخدم لدعم هاد الموقع. التثبيت اختياري وتقدر تلغي الاشتراك في أي وقت.
+
+شوف [الخصوصية](/concepts/privacy) و[الاشتراك / إلغاء الاشتراك](/concepts/opt-in-out) للتفاصيل الكاملة اللي تقدر تربط ليها.
+
+## تحتاج مساعدة؟
+
+تواصل معنا على [info@mellowtel.com](mailto:info@mellowtel.com) ولا انضم لنا على [Discord](https://discord.gg/mellowtel).

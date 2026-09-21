@@ -1,0 +1,30 @@
+---
+title: "概要"
+description: "Mellowtelを統合する前に理解しておくべき4つのアイデア"
+icon: "compass"
+robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+canonical: "https://mellowtel.com/docs/ja/concepts/overview"
+og:title: "Mellowtelのコンセプト: 同意、プライバシー、レート制限"
+og:description: "Mellowtelのコンセプトは、すべての統合の背後にある原則を説明します: 明示的な同意、プライバシーに配慮したリクエスト、レート制限、オープンソースコード。"
+og:url: "https://mellowtel.com/docs/ja/concepts/overview"
+twitter:card: "summary"
+twitter:title: "Mellowtelのコンセプト: 同意、プライバシー、レート制限"
+twitter:description: "Mellowtelのコンセプトは、すべての統合の背後にある原則を説明します: 明示的な同意、プライバシーに配慮したリクエスト、レート制限、オープンソースコード。"
+---
+
+Mellowtelは4つの原則に基づいて構築されています。これを一度読めば、ドキュメントの他の部分におけるすべての動作、デフォルト、およびAPIの選択を理解することができます。
+
+<CardGroup cols={2}>
+  <Card title="オプトイン / オプトアウト" icon="signature" href="/concepts/opt-in-out">
+    ユーザーは、帯域幅が共有される前に明示的な同意を与える必要があり、いつでもそれを取り消すことができます。
+  </Card>
+  <Card title="プライバシー" icon="lock" href="/concepts/privacy">
+    リクエストはサンドボックス化された、資格情報のない環境で実行されます。クッキー、ストレージ、または個人データはデバイスを離れることはありません。
+  </Card>
+  <Card title="レート制限" icon="stopwatch" href="/concepts/rate-limiting">
+    SDKは自動的にスロットルをかけるため、ユーザーのブラウジング体験に影響を与えることはありません。
+  </Card>
+  <Card title="オープンソース" icon="github" href="https://github.com/mellowtel-inc/">
+    すべてのコードはGitHubにあります。ドキュメントが不明瞭な場合、ソースが真実の基盤です。
+  </Card>
+</CardGroup>

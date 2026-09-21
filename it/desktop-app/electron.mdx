@@ -1,0 +1,247 @@
+---
+sidebarTitle: "Electron"
+title: "Integra Mellowtel nella tua App Electron"
+icon: "bolt"
+platforms:
+  - desktop app
+robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+canonical: "https://mellowtel.com/docs/it/desktop-app/electron"
+og:title: "Guida all’Integrazione e al Consenso dell’SDK Electron di Mellowtel"
+og:description: "La configurazione dell’SDK Electron di Mellowtel copre l’installazione, i dialoghi di consenso, le impostazioni, i contatori delle richieste, il comportamento del ciclo di vita e la risoluzione dei problemi."
+og:url: "https://mellowtel.com/docs/it/desktop-app/electron"
+twitter:card: "summary"
+twitter:title: "Guida all’Integrazione e al Consenso dell’SDK Electron di Mellowtel"
+twitter:description: "La configurazione dell’SDK Electron di Mellowtel copre l’installazione, i dialoghi di consenso, le impostazioni, i contatori delle richieste, il comportamento del ciclo di vita e la risoluzione dei problemi."
+---
+
+Integra Mellowtel nella tua applicazione Electron cross-platform per permettere agli utenti di condividere la loro banda internet non utilizzata in cambio di ricompense o funzionalità premium. L'SDK Electron funziona ovunque funzioni Electron (macOS, Windows e Linux).
+
+<Warning>
+  **Il consenso dell'utente è obbligatorio.** L'SDK funziona solo quando l'utente ha esplicitamente acconsentito. `init()` restituisce senza avviare quando non c'è consenso registrato, quindi se vedi che l'SDK si avvia senza errori ma non elabora mai le richieste, la ragione più probabile è che l'utente non ha ancora acconsentito.
+</Warning>
+
+## Prerequisiti
+
+- Un account Mellowtel e una chiave di configurazione (ottieni la tua dalla [dashboard](https://www.mellowtel.com/mellowtel-auth/)).
+- Un'applicazione Electron con accesso al processo principale.
+
+---
+
+## Installazione
+
+### 1. Installa il Pacchetto
+
+Dal root del tuo progetto, installa l'SDK Electron:
+
+```bash
+npm install mellowtel-electron
+```
+
+### 2. Aggiungi al Tuo Codice
+
+Nel file del processo principale di Electron (tipicamente `main.ts` o `main.js`), importa l'SDK, opzionalmente chiama `setupMellowtelApp()` prima che l'app sia pronta, istanzia Mellowtel con la tua chiave di configurazione, richiedi il consenso all'utente, e poi chiama `init()` per avviare il servizio.
+
+```typescript
+import { app, BrowserWindow } from 'electron';
+import Mellowtel, { setupMellowtelApp } from 'mellowtel-electron';
+
+// Opzionale: chiama PRIMA di app.ready per ridurre i prompt inaspettati del sistema operativo
+setupMellowtelApp();
+
+// Quando l'app è pronta, crea la finestra
+app.whenReady().then(async () => {
+  let win = createWindow();
+
+  const mellowtel: Mellowtel = new Mellowtel('YOUR_CONFIGURATION_KEY');
+
+  await mellowtel.requestConsent(win, "Ottieni 3 mesi gratis")
+  await mellowtel.init()
+});
+```
+
+<Note>
+  Sostituisci `YOUR_CONFIGURATION_KEY` con la chiave dal tuo dashboard Mellowtel.
+</Note>
+
+**Cosa fa ciascuna chiamata:**
+
+- `new Mellowtel(configurationKey, options?)` istanzia l'SDK. L'unica opzione disponibile oggi è `disableLogs`, che di default è `true`. Impostalo su `false` durante l'integrazione per vedere lo stato della connessione e l'attività delle richieste nel tuo terminale.
+- `requestConsent(window, incentive)` rende una **finestra di messaggio nativa di Electron** ancorata al `BrowserWindow` che passi. Il secondo argomento è il titolo principale del dialogo (ad esempio, `"Ottieni 3 mesi gratis"`), mostrato sopra una spiegazione fissa di cosa fa Mellowtel. Risolve a `true` se l'utente accetta, `false` se l'utente rifiuta o chiude il dialogo, e `undefined` se il consenso è già registrato. L'SDK persiste automaticamente la decisione di opt-in, quindi non è necessario chiamare `optIn()` successivamente.
+- `init()` lancia solo quando `configurationKey` è vuoto. Se l'utente non ha acconsentito, registra e restituisce senza avviare. Altrimenti si connette a Mellowtel per iniziare a elaborare le richieste. La chiamata non blocca l'interfaccia utente del renderer, quindi le finestre rimangono reattive mentre la connessione viene stabilita.
+
+### Opzionale: ridurre i prompt inaspettati del sistema operativo
+
+L'SDK viene fornito con un helper opzionale, `setupMellowtelApp()`, che riduce i prompt inaspettati del sistema operativo (popup di riempimento automatico, barre di traduzione, sovrapposizioni multimediali, dialoghi di prima esecuzione) durante il lavoro di richiesta in background.
+
+Queste flag si applicano all'intero processo Electron, non solo a Mellowtel. Salta l'helper se il tuo prodotto si basa su prompt di autenticazione nativi o interfacce utente di gestori di password.
+
+Chiamalo all'inizio del tuo file di processo principale, **prima** di `app.whenReady()`, e importalo insieme all'export di default da `mellowtel-electron`. Vedi il [README a monte](https://github.com/mellowtel-inc/mellowtel-electron#setupmellowtelapp-optional) per l'uso canonico.
+
+---
+
+## Consenso dell'Utente
+
+<Warning>
+  Visualizzare un dialogo di consenso è **obbligatorio**. Devi permettere agli utenti di optare esplicitamente prima di chiamare `init()`, e devi fornire un modo per gestire il loro stato di opt-in in qualsiasi momento.
+</Warning>
+
+Hai due percorsi per gestire il consenso:
+
+1. **Usa il dialogo nativo integrato** tramite `requestConsent(window, incentive)`. Questo è il percorso più veloce ed è quello mostrato nello snippet sopra. Rende un `dialog.showMessageBox` nativo di Electron con il tuo testo di incentivo come titolo e persiste automaticamente la decisione dell'utente.
+2. **Costruisci la tua interfaccia utente per il consenso** e guida l'SDK tramite `optIn()`, `optOut()`, e `getOptInStatus()`. Usa questo se vuoi un branding personalizzato, spiegazioni più ricche o localizzazione oltre a ciò che offre il dialogo nativo.
+
+### Cosa deve includere il tuo dialogo di consenso
+
+<Steps>
+  <Step title="Spiega cosa fa Mellowtel">
+    Usa un linguaggio semplice. Esempio: *"Questa app utilizza Mellowtel per condividere la tua banda internet non utilizzata. In cambio, ottieni [benefit/funzionalità]. Puoi disattivare in qualsiasi momento nelle impostazioni."*
+  </Step>
+  <Step title="Dai agli utenti una scelta chiara">
+    Includi opzioni distinte di Accetta e Rifiuta.
+  </Step>
+  <Step title="Collega alle politiche">
+    Includi link ai [Termini di Servizio](https://www.mellowtel.com/terms-and-conditions) e alla [Privacy Policy](https://www.mellowtel.com/privacy-policy).
+  </Step>
+</Steps>
+
+### Permetti agli utenti di cambiare il loro consenso in seguito
+
+Mellowtel fornisce un dialogo di impostazioni integrato tramite `showConsentSettings(window)`. Rende un dialogo nativo con pulsanti di Opt In / Opt Out che corrispondono allo stato attuale dell'utente, e internamente chiama `optIn()` o `optOut()` (oltre a riconnettersi a Mellowtel in caso di opt-in) quando l'utente cambia la propria scelta. Collegalo a un elemento di menu o a un pulsante di impostazioni nella tua app in modo che gli utenti possano rivedere la loro scelta.
+
+Se preferisci costruire la tua schermata di impostazioni, chiama `getOptInStatus()` per leggere lo stato attuale e `optIn()` / `optOut()` per cambiarlo.
+
+---
+
+## Riferimento ai Metodi
+
+La classe `Mellowtel` espone i seguenti metodi pubblici. Tutti sono disponibili sull'istanza che hai creato con `new Mellowtel(configurationKey, options?)`.
+
+**Ciclo di vita**
+
+- `init(): Promise<void>` avvia il servizio se l'utente ha acconsentito, o restituisce senza avviare se non lo ha fatto. Lancia solo quando la chiave di configurazione è vuota.
+- `shutdown(): Promise<void>` pulisce le risorse dell'SDK quando l'applicazione si sta chiudendo. Chiude la connessione a Mellowtel, rilascia le finestre di richiesta isolate e cancella i timer in background. **Preserva** la preferenza di opt-in dell'utente.
+- `requestConsent(window: BrowserWindow, incentive: string): Promise<boolean | undefined>` mostra il dialogo di consenso nativo integrato e persiste il risultato. Restituisce `true` in caso di accettazione, `false` in caso di rifiuto o chiusura, `undefined` se il consenso era già stato dato.
+- `showConsentSettings(window: BrowserWindow): Promise<void>` mostra il dialogo integrato per la gestione del consenso. L'SDK gestisce internamente le transizioni di opt-in / opt-out quando l'utente cambia la propria scelta.
+
+**Controllo manuale dell'opt-in**
+
+- `optIn(): Promise<void>` segnala l'utente come optato senza mostrare un dialogo. Usa questo solo dopo aver raccolto il consenso tramite la tua interfaccia utente.
+- `optOut(): Promise<void>` segnala l'utente come non optato e esegue una pulizia completa (stesse risorse di `shutdown()`, più la cancellazione della preferenza di consenso salvata). Non c'è bisogno di chiamare `shutdown()` successivamente.
+- `getOptInStatus(): boolean | undefined` restituisce lo stato attuale di opt-in, o `undefined` se l'utente non ha mai fatto una scelta.
+- `getNodeId(): string` restituisce l'identificatore del nodo Mellowtel per questa installazione. Utile quando si aprono ticket di supporto.
+
+**Contatori delle richieste**
+
+I conteggi delle richieste sono persistiti localmente tramite `electron-store` e sopravvivono ai riavvii dell'app. Mostrali nella tua interfaccia utente se vuoi mostrare agli utenti l'impatto del loro opt-in.
+
+- `getTotalRequestCount(): number` restituisce il totale delle richieste elaborate dall'installazione.
+- `getDailyRequestCount(): number` restituisce il numero di richieste elaborate oggi.
+- `getRequestCountForDate(date: string): number` restituisce il conteggio per una specifica data `YYYY-MM-DD`.
+- `getDailyRequestsHistory(): { [date: string]: number }` restituisce ogni conteggio giornaliero come una mappa.
+- `getRequestCountsInRange(startDate: string, endDate: string): { [date: string]: number }` restituisce i conteggi per un intervallo di date.
+- `getRequestCounts(): { total: number; daily: number; dailyHistory: { [date: string]: number } }` restituisce tutti e tre i contatori in una sola chiamata.
+
+---
+
+## Ciclo di vita e chiusura dell'app
+
+Dopo la prima richiesta, l'SDK può mantenere BrowserWindow isolate e fuori schermo per il lavoro in background. Queste finestre non hanno accesso alla sessione dell'utente o ai dati della tua app. Le applicazioni host **devono** chiamare `shutdown()` quando l'applicazione si sta effettivamente chiudendo in modo che quei lavoratori vengano rilasciati.
+
+`shutdown()`:
+
+- Chiude la connessione a Mellowtel.
+- Rilascia le finestre di richiesta isolate.
+- Cancella i timer in background.
+- Preserva la preferenza di opt-in dell'utente.
+
+<Warning>
+  **`shutdown()` vs `optOut()`:** `shutdown()` viene eseguito quando l'app si sta chiudendo — l'opt-in dell'utente viene mantenuto. `optOut()` è quando l'utente cambia idea — il consenso viene ritirato e l'SDK si ferma.
+</Warning>
+
+### Applicazioni a finestra singola
+
+Chiama `shutdown()` quando la finestra principale dell'applicazione si chiude:
+
+```js
+mainWindow.on('closed', async () => {
+  mainWindow = null;
+
+  if (process.platform !== 'darwin') {
+    await mellowtel.shutdown();
+    app.quit();
+  }
+});
+```
+
+Non fare affidamento solo sull'evento `window-all-closed` di Electron. I lavoratori in background possono impedirne l'attivazione, quindi considera un'uscita esplicita (o il gestore `closed` della finestra principale sopra) come il segnale per chiamare `shutdown()`.
+
+### Applicazioni con tray
+
+Non chiamare `shutdown()` quando la finestra è solo minimizzata nel tray di sistema. Chiamalo dall'azione di Quit esplicita:
+
+```js
+trayQuitItem.click = async () => {
+  await mellowtel.shutdown();
+  app.quit();
+};
+```
+
+### Applicazioni macOS
+
+Se l'applicazione rimane attiva dopo la chiusura delle sue finestre, chiama `shutdown()` solo quando l'utente effettivamente chiude l'applicazione.
+
+### Opting out
+
+`optOut()` esegue già una pulizia completa:
+
+```js
+await mellowtel.optOut();
+```
+
+Non c'è bisogno di chiamare `shutdown()` successivamente. A differenza di `shutdown()`, `optOut()` cambia anche la preferenza di consenso salvata.
+
+### Riavvio
+
+Dopo `shutdown()` o `optOut()`, Mellowtel può essere riavviato:
+
+```js
+await mellowtel.optIn(); // Necessario solo dopo optOut()
+await mellowtel.init();
+```
+
+## Persistenza del Consenso
+
+L'opt-in è memorizzato nella normale configurazione Electron della tua app (la stessa posizione di `electron-store` delle altre impostazioni dell'app):
+
+- macOS: `~/Library/Application Support/<YourAppName>/config.json`
+- Windows: `%APPDATA%\<YourAppName>\config.json`
+- Linux: `~/.config/<YourAppName>/config.json`
+
+La scelta sopravvive agli aggiornamenti dell'app. Se un utente disinstalla e poi reinstalla senza eliminare quella cartella, la scelta precedente può ancora essere lì — comportamento standard dei desktop, non qualcosa che Mellowtel conserva da solo.
+
+---
+
+## Risoluzione dei Problemi
+
+<AccordionGroup>
+  <Accordion title='Errore "Pacchetto non trovato" durante l'installazione'>
+    1. Conferma che stai installando `mellowtel-electron` (non un nome di pacchetto GitHub Packages con ambito).
+    2. Pulisci la cache npm e riprova eseguendo `npm cache clean --force` seguito da `npm install mellowtel-electron`.
+  </Accordion>
+  <Accordion title="Il dialogo di consenso non appare mai">
+    1. Assicurati di chiamare `requestConsent` **dopo** che `app.whenReady()` è stato risolto e con un `BrowserWindow` valido che è ancora aperto.
+    2. Se usi `setupMellowtelApp()`, verifica che sia chiamato **prima** di `app.whenReady()`, non dopo.
+  </Accordion>
+  <Accordion title='"init() si esegue senza errori ma non succede nulla"'>
+    Questo è progettato così. `init()` restituisce senza avviare quando l'utente non ha acconsentito. Controlla `getOptInStatus()` per confermare. Se restituisce `undefined` o `false`, esegui prima `requestConsent`. Il messaggio "L'utente non ha optato" non viene stampato quando `disableLogs` è lasciato al suo default (vedi "Nessun log nel terminale" sotto), quindi il terminale non ti dà alcun segnale fino a quando non cambi quel flag.
+  </Accordion>
+  <Accordion title="Nessun log nel terminale">
+    L'opzione del costruttore `disableLogs` di default è `true`. Passa `{ disableLogs: false }` come secondo argomento al costruttore durante l'integrazione per visualizzare lo stato della connessione e l'attività delle richieste nel tuo terminale. Questo è anche il modo più veloce per distinguere un "non optato" no-op (vedi sopra) da un reale fallimento della connessione.
+  </Accordion>
+</AccordionGroup>
+
+---
+
+Tempo stimato per il completamento: 10-15 minuti.
+
+Se hai bisogno di aiuto o hai feedback, contattaci a [info@mellowtel.com](mailto:info@mellowtel.com) o unisciti alla nostra [comunità Discord](https://discord.com/invite/txAZp4MSDe).

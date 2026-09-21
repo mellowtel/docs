@@ -1,0 +1,110 @@
+---
+title: "Consentimiento del Usuario"
+description: "Los usuarios pueden decidir en cualquier momento si quieren ser parte de la Red Mellowtel o no."
+icon: "toggle-on"
+robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+canonical: "https://mellowtel.com/docs/es/flutter/user-consent"
+og:title: "Guía de Configuración de Consentimiento y Ajustes de Usuario en Mellowtel Flutter"
+og:description: "La configuración de consentimiento de usuario en Mellowtel Flutter cubre la configuración del diálogo, el comportamiento de inicio, las páginas de ajustes de consentimiento, métodos de suscripción manual y verificación de estado."
+og:url: "https://mellowtel.com/docs/es/flutter/user-consent"
+twitter:card: "summary"
+twitter:title: "Guía de Configuración de Consentimiento y Ajustes de Usuario en Mellowtel Flutter"
+twitter:description: "La configuración de consentimiento de usuario en Mellowtel Flutter cubre la configuración del diálogo, el comportamiento de inicio, las páginas de ajustes de consentimiento, métodos de suscripción manual y verificación de estado."
+---
+
+## Introducción
+
+Para activar Mellowtel, los usuarios deben dar su consentimiento explícito. El paquete proporciona una manera de optar por participar o no. La idea principal es que, dado que es su ancho de banda de Internet, deben decidir si quieren compartirlo o no.
+
+Los usuarios pueden proporcionar su consentimiento a través de un diálogo de configuración de consentimiento.
+
+### Configuración del Diálogo de Consentimiento
+
+El diálogo de consentimiento es una parte crucial de la integración de Mellowtel. Asegura que los usuarios estén completamente informados y proporcionen su consentimiento explícito antes de compartir su ancho de banda de internet.
+
+Puedes definir la configuración del diálogo de consentimiento al crear una instancia de `Mellowtel`
+
+```dart
+import 'package:mellowtel/mellowtel.dart';
+
+final Mellowtel mellowtel = Mellowtel(
+    "your_configuration_key",
+    dialogConfiguration: const ConsentDialogConfiguration(
+        appName: 'Nombre de Tu App',
+        incentive: 'Gana recompensas compartiendo tu internet'
+        appIcon: 'assets/logo.png', // Icono opcional de la app mostrado en el diálogo de consentimiento. Ayuda a generar confianza.
+        acceptButtonText: "¡Sí, vamos!", // Texto opcional para el botón de aceptar ("Sí" por defecto).
+        declineButtonText: 'Ahora no', // Texto opcional para el botón de rechazar ("No" por defecto).
+        dialogTextOverride: 'Mensaje de consentimiento personalizado', // Mensaje opcional de diálogo de consentimiento personalizado o localizado.
+    ),
+);
+```
+
+#### Abrir el Diálogo de Consentimiento
+
+El diálogo de consentimiento se abre por defecto cuando se llama al método `start()` si el usuario aún no ha proporcionado su preferencia.
+
+```dart
+await mellowtel.start(
+    ... // otra configuración
+    onOptIn: () async {
+        // Habilita los incentivos si el usuario ha dado su consentimiento.
+    }, 
+    onOptOut: () async {
+        // Deshabilita los incentivos si el usuario ha negado/revocado el consentimiento.
+    },
+    showConsentDialog: true
+);
+```
+
+Puedes establecer `showConsentDialog` en false si prefieres gestionar dónde aparece el diálogo. Te recomendamos llamar al método `start` en dos ubicaciones diferentes:
+
+1. **Al Iniciar la App** con `showConsentDialog: false` para comenzar a operar si ya se ha proporcionado permiso.
+2. **Después del Primer "Momento Aha":** con `showConsentDialog: true` para solicitar consentimiento después de que los usuarios experimenten el valor de la app.
+
+Este enfoque asegura que Mellowtel comience a operar inmediatamente mientras obtiene el consentimiento del usuario en el momento óptimo.
+
+### Diálogo de Configuración de Consentimiento
+
+Mellowtel asegura control total y privacidad para tus usuarios. Tus usuarios pueden cambiar su consentimiento en cualquier momento desde la Página de Configuración de Consentimiento. Puedes ofrecerla como una opción dentro de la página de ajustes de tu app.
+
+#### Mostrar Página de Configuración de Consentimiento
+
+Usa el método `showConsentSettingsPage()` para abrir el diálogo de configuración de consentimiento.
+
+```dart
+await mellowtel.showConsentSettingsPage(
+    context,
+    onOptIn: () async {
+        // Habilita los incentivos si el usuario ha dado su consentimiento.
+    }, 
+    onOptOut: () async {
+        // Deshabilita los incentivos si el usuario ha negado/revocado el consentimiento.
+    },
+);
+```
+
+<img src="https://raw.githubusercontent.com/mellowtel-inc/mellowtel-flutter/main/assets/settings-popup.png" width="300px" alt="Diálogo de Configuración de Consentimiento" />
+
+### Métodos Manuales (No Recomendados)
+
+Además del diálogo de consentimiento y la página de ajustes, puedes gestionar manualmente el consentimiento del usuario usando los métodos `optIn()` y `optOut()`.
+
+#### Optar por Participar
+
+Marcar manualmente al usuario como participante.
+```dart
+await mellowtel.optIn();
+```
+#### Optar por No Participar
+
+Marcar manualmente al usuario como no participante.
+```dart
+await mellowtel.optOut();
+```
+#### Verificar Estado de Consentimiento
+
+Puedes verificar el estado actual de consentimiento del usuario usando el método `checkConsent()`.
+```dart
+bool? hasOptedIn = await mellowtel.checkConsent();
+```

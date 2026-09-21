@@ -1,0 +1,65 @@
+---
+sidebarTitle: "Інтеграція Розширення"
+title: "Реалізація Mellowtel Elements у Розширеннях для Браузера"
+icon: "puzzle-piece"
+robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+canonical: "https://mellowtel.com/docs/uk/mellowtel-elements/extension-integration"
+og:title: "Посібник з Інтеграції Розширення для Браузера Mellowtel Elements"
+og:description: "Інтеграція розширення для браузера Mellowtel Elements показує, як встановити пакет, додати контейнери для згоди, ініціалізувати з ID та створити елементи згоди."
+og:url: "https://mellowtel.com/docs/uk/mellowtel-elements/extension-integration"
+twitter:card: "summary"
+twitter:title: "Посібник з Інтеграції Розширення для Браузера Mellowtel Elements"
+twitter:description: "Інтеграція розширення для браузера Mellowtel Elements показує, як встановити пакет, додати контейнери для згоди, ініціалізувати з ID та створити елементи згоди."
+---
+
+Тут ти дізнаєшся, як інтегрувати Mellowtel Elements у своє розширення для браузера для безперебійного управління згодою користувачів.
+
+## Встановлення
+
+Встанови пакет у свій проект розширення:
+
+```bash
+npm install mellowtel-elements
+```
+
+## Реалізація
+
+### 1. Створення HTML Div Контейнерів
+
+Додай контейнерні div у HTML твого розширення:
+
+```html
+<!-- У popup.html або на сторінці налаштувань -->
+<div id="opt-in-container"></div>
+<div id="opt-out-container"></div>
+<div id="settings-container"></div>
+```
+
+### 2. Ініціалізація Mellowtel Elements
+
+```javascript
+import { MellowtelElements } from 'mellowtel-elements';
+
+// Створення екземпляра з ID розширення та ключем конфігурації
+const mellowtel = new MellowtelElements(
+  'your-extension-id-here',    // ID розширення
+  'your-config-key-here'       // Ключ конфігурації
+);
+```
+
+### 3. Створення Елементів
+
+Додай елементи на сторінку спливаючого вікна або налаштувань твого розширення:
+
+```javascript
+// Створення елемента для згоди
+await mellowtel.createElement('opt-in-container', { type: 'opt-in' });
+
+// Створення елемента для відмови
+await mellowtel.createElement('opt-out-container', { type: 'opt-out' });
+
+// Створення елемента налаштувань
+await mellowtel.createElement('settings-container', { type: 'settings' });
+```
+
+Чудово! Тепер твоє розширення готове до використання Mellowtel Elements для безперебійної згоди, відмови та управління налаштуваннями.

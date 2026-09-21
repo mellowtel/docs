@@ -1,0 +1,31 @@
+---
+title: "إعداد ويندوز"
+description: "تعليمات إعداد ويندوز"
+icon: "windows"
+robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+canonical: "https://mellowtel.com/docs/ar/flutter/windows"
+og:title: "إعداد Mellowtel Flutter Windows NuGet CLI للتطبيقات"
+og:description: "إعداد Mellowtel Flutter Windows يشرح كيفية تثبيت nuget.exe، إضافته إلى PATH، التحقق من CLI، والعثور على موارد حل المشاكل قبل الدمج."
+og:url: "https://mellowtel.com/docs/ar/flutter/windows"
+twitter:card: "summary"
+twitter:title: "إعداد Mellowtel Flutter Windows NuGet CLI للتطبيقات"
+twitter:description: "إعداد Mellowtel Flutter Windows يشرح كيفية تثبيت nuget.exe، إضافته إلى PATH، التحقق من CLI، والعثور على موارد حل المشاكل قبل الدمج."
+---
+
+## إعداد NuGet CLI
+
+باش تدمج Mellowtel في تطبيقات Flutter تاعك على ويندوز، تحتاج لأداة NuGet CLI. تبع هاد الخطوات:
+
+1. حمل `nuget.exe` من [صفحة تحميل NuGet CLI](https://www.nuget.org/downloads)
+2. دير ملف (مثال، `C:\Tools\NuGet`) وحط `nuget.exe` تما
+3. زيد الملف لـ PATH تاع ويندوز:
+   - افتح خصائص النظام > متقدم > متغيرات البيئة
+   - تحت متغيرات النظام، عدل Path
+   - زيد مسار الملف (مثال، `C:\Tools\NuGet`)
+4. تحقق من التثبيت بتشغيل `nuget` في نافذة طرفية جديدة
+
+لمزيد من التعليمات بالتفصيل، زور [الوثائق الرسمية لـ NuGet CLI](https://learn.microsoft.com/en-us/nuget/install-nuget-client-tools?tabs=windows#nugetexe-cli).
+
+## مشاكل؟
+
+إذا واجهت أي مشاكل، يرجى الرجوع إلى [وثائق NuGet CLI](https://learn.microsoft.com/en-us/nuget/install-nuget-client-tools?tabs=windows#nugetexe-cli) للحصول على نصائح لحل المشاكل أو تواصل مع فريق الدعم تاعنا على [Discord](https://discord.com/invite/txAZp4MSDe).

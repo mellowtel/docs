@@ -1,0 +1,168 @@
+---
+sidebarTitle: "Guida Rapida"
+title: "Monetizza il tuo sito web con Mellowtel"
+description: "Aggiungi un singolo tag script per permettere ai visitatori di supportarti condividendo la larghezza di banda inutilizzata."
+icon: "rocket"
+robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+canonical: "https://mellowtel.com/docs/it/website/quickstart"
+og:title: "Guida Rapida al Widget di Monetizzazione del Sito Web di Mellowtel"
+og:description: "La monetizzazione del sito web di Mellowtel mostra come aggiungere lo script del widget, impostare l’invite_id, scegliere il posizionamento di pulsante, icona o banner, verificare e divulgarlo."
+og:url: "https://mellowtel.com/docs/it/website/quickstart"
+twitter:card: "summary"
+twitter:title: "Guida Rapida al Widget di Monetizzazione del Sito Web di Mellowtel"
+twitter:description: "La monetizzazione del sito web di Mellowtel mostra come aggiungere lo script del widget, impostare l’invite_id, scegliere il posizionamento di pulsante, icona o banner, verificare e divulgarlo."
+---
+
+Mellowtel permette ai tuoi visitatori di scegliere di condividere la larghezza di banda inutilizzata in cambio di supportarti. Aggiungi un piccolo widget al tuo sito, i visitatori scelgono di installare l'estensione complementare e guadagni in base alle richieste gestite dal loro browser.
+
+<Info>
+  **Tempo stimato:** 5-10 minuti. **Avrai bisogno di:** un [account Mellowtel](https://www.mellowtel.com/mellowtel-auth/) e accesso all'HTML del tuo sito (o un equivalente del framework).
+</Info>
+
+## Come funziona
+
+<Steps>
+  <Step title="Incorpori il widget">
+    Un tag script rende un pulsante, un'icona o un banner sul tuo sito.
+  </Step>
+  <Step title="Un visitatore ci clicca sopra">
+    Viene indirizzato a installare l'estensione complementare di Mellowtel.
+  </Step>
+  <Step title="Ottieni credito">
+    Il tuo `invite_id` collega quel visitatore al tuo account, quindi le richieste gestite dal loro browser sono attribuite a te.
+  </Step>
+</Steps>
+
+## Prima di iniziare
+
+- Un account Mellowtel. [Registrati qui](https://www.mellowtel.com/mellowtel-auth/) se non ne hai uno.
+- Il tuo `invite_id`, che trovi nella tua [dashboard](https://www.mellowtel.com/mellowtel-auth/) dopo aver creato un link di supporto.
+- Accesso all'HTML del tuo sito, o la capacità di aggiungere un tag `<script>` tramite il tuo framework o CMS.
+
+## Installa il widget
+
+Incolla questo nel tuo sito, sostituendo `INVITE_ID` con il valore dalla tua dashboard. È consigliato posizionarlo subito prima di `</body>` per non bloccare il rendering della pagina.
+
+<CodeGroup>
+
+```html HTML
+<script
+  src="https://cdn.mellow.tel/widget.js?type=button&position=bottom-right&invite_id=INVITE_ID"
+  async>
+</script>
+```
+
+```jsx Next.js (App Router)
+import Script from 'next/script'
+
+export default function Layout({ children }) {
+  return (
+    <html>
+      <body>
+        {children}
+        <Script
+          src="https://cdn.mellow.tel/widget.js?type=button&position=bottom-right&invite_id=INVITE_ID"
+          strategy="afterInteractive"
+        />
+      </body>
+    </html>
+  )
+}
+```
+
+```jsx React (Vite / CRA)
+import { useEffect } from 'react'
+
+export function MellowtelWidget() {
+  useEffect(() => {
+    const s = document.createElement('script')
+    s.src = 'https://cdn.mellow.tel/widget.js?type=button&position=bottom-right&invite_id=INVITE_ID'
+    s.async = true
+    document.body.appendChild(s)
+    return () => { s.remove() }
+  }, [])
+  return null
+}
+```
+
+```html WordPress
+<!-- Aggiungi al footer.php del tuo tema subito prima di </body>, -->
+<!-- oppure usa un plugin "Header & Footer Scripts" e incolla nel campo del footer. -->
+<script
+  src="https://cdn.mellow.tel/widget.js?type=button&position=bottom-right&invite_id=INVITE_ID"
+  async>
+</script>
+```
+
+```html Webflow / Shopify
+<!-- Webflow: Impostazioni Progetto > Codice Personalizzato > Codice Footer -->
+<!-- Shopify: Negozio Online > Temi > Modifica Codice > theme.liquid (prima di </body>) -->
+<script
+  src="https://cdn.mellow.tel/widget.js?type=button&position=bottom-right&invite_id=INVITE_ID"
+  async>
+</script>
+```
+
+</CodeGroup>
+
+## Opzioni di configurazione
+
+Controlla l'aspetto del widget tramite i parametri di query nell'URL dello script.
+
+| Parametro    | Obbligatorio | Valori                                                              | Descrizione                                          |
+| ------------ | ------------ | ------------------------------------------------------------------- | ---------------------------------------------------- |
+| `invite_id`  | Sì           | Il tuo ID dalla dashboard                                           | Attribuisce i guadagni al tuo account.               |
+| `type`       | Sì           | `button`, `icon`, `banner`                                          | Stile del widget mostrato sul tuo sito.              |
+| `position`   | Sì           | `bottom-right`, `bottom-left`, `top-right`, `top-left`              | Dove si trova il widget sulla pagina.                |
+
+<Tip>
+  Anteprima di ogni combinazione dal vivo prima di pubblicare: [apri l'anteprima del widget](https://cdn.mellow.tel/preview?position=bottom-right&type=button&invite_id=ijxf49s9h2f). Cambia i parametri `type` e `position` nell'URL per vedere ogni variante.
+</Tip>
+
+## Verifica che funzioni
+
+<Steps>
+  <Step title="Carica il tuo sito">
+    Apri la pagina in una nuova scheda del browser (o in una finestra in incognito per bypassare la cache).
+  </Step>
+  <Step title="Conferma che il widget venga visualizzato">
+    Dovresti vedere il pulsante, l'icona o il banner nella posizione scelta. Se manca, controlla la console del browser per richieste bloccate.
+  </Step>
+  <Step title="Segui il flusso">
+    Cliccando sul widget dovresti essere portato alla pagina di installazione dell'estensione con il tuo `invite_id` allegato.
+  </Step>
+  <Step title="Controlla la tua dashboard">
+    Una volta che un visitatore installa e opta per partecipare, la loro attività appare sulla tua dashboard di Mellowtel.
+  </Step>
+</Steps>
+
+## Risoluzione dei problemi
+
+<AccordionGroup>
+  <Accordion title="Il widget non viene visualizzato">
+    - Conferma che il tag script sia all'interno di `<body>` e che il tuo `invite_id` sia compilato.
+    - Apri DevTools e controlla la scheda Network per una richiesta a `cdn.mellow.tel/widget.js`. Se è bloccata, è probabile che un blocco pubblicità o un filtro di contenuti sia la causa.
+    - Controlla la tua Content Security Policy. Potresti dover consentire `https://cdn.mellow.tel` sotto `script-src`.
+  </Accordion>
+  <Accordion title="Vedo un avviso 'missing invite_id'">
+    Il parametro `invite_id` è vuoto o contiene ancora il segnaposto letterale `INVITE_ID`. Copia il valore reale dalla tua dashboard e incollalo nell'URL.
+  </Accordion>
+  <Accordion title="Funziona localmente ma non in produzione">
+    Molto spesso una regola CSP o CDN sta rimuovendo lo script. Controlla le intestazioni di risposta sul tuo host di produzione e metti in whitelist `cdn.mellow.tel`.
+  </Accordion>
+  <Accordion title="Come rimuovo il widget?">
+    Elimina il tag `<script>` (o il componente del framework che lo avvolge). Non c'è nient'altro da pulire.
+  </Accordion>
+</AccordionGroup>
+
+## Divulga ai tuoi visitatori
+
+Raccomandiamo di aggiungere una breve nota alla tua politica sulla privacy in modo che i visitatori comprendano cosa significa optare per partecipare. Qualcosa come:
+
+> Questo sito collabora con Mellowtel. Se scegli di installare la loro estensione, il tuo browser potrebbe condividere la larghezza di banda inutilizzata per supportare questo sito. L'installazione è facoltativa e puoi scegliere di non partecipare in qualsiasi momento.
+
+Consulta [Privacy](/concepts/privacy) e [Opt in / Opt out](/concepts/opt-in-out) per i dettagli completi a cui puoi collegarti.
+
+## Hai bisogno di aiuto?
+
+Contattaci a [info@mellowtel.com](mailto:info@mellowtel.com) o unisciti a noi su [Discord](https://discord.gg/mellowtel).

@@ -1,0 +1,44 @@
+---
+title: "Rate Limiting"
+description: "Wie Mellowtel die Benutzererfahrung schützt, während Bandbreite geteilt wird"
+icon: "stopwatch"
+robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+canonical: "https://mellowtel.com/docs/de/concepts/rate-limiting"
+og:title: "Mellowtel Rate Limiting: Wie Anfragen gedrosselt werden"
+og:description: "Mellowtel Rate Limiting erklärt, wie das SDK Anfragen nach Gerät, Bandbreite, Standort und Netzwerkverfügbarkeit begrenzt, um die Benutzererfahrung während der Nutzung zu schützen."
+og:url: "https://mellowtel.com/docs/de/concepts/rate-limiting"
+twitter:card: "summary"
+twitter:title: "Mellowtel Rate Limiting: Wie Anfragen gedrosselt werden"
+twitter:description: "Mellowtel Rate Limiting erklärt, wie das SDK Anfragen nach Gerät, Bandbreite, Standort und Netzwerkverfügbarkeit begrenzt, um die Benutzererfahrung während der Nutzung zu schützen."
+---
+
+## Was es ist
+
+Mellowtel begrenzt automatisch, wie viele Anfragen ein einzelnes Gerät (ein "Knoten") akzeptieren und verarbeiten wird. Diese Begrenzung wird innerhalb des SDK durchgesetzt. Du konfigurierst es nicht, und ein fehlerhaftes Partnergerät kann es von außen nicht erhöhen.
+
+## Warum es wichtig ist
+
+Das Teilen von Bandbreite sollte niemals die App oder Verbindung des Benutzers verlangsamen. Wenn ein Knoten unbegrenzt Anfragen bedienen würde, würde ein Benutzer in einem langsamen Netzwerk dies spüren. Rate Limiting ist der Mechanismus, der dieses Versprechen schützt, und deshalb kannst du Mellowtel an echte Benutzer ausliefern, ohne dir Sorgen über Support-Tickets wie "der Browser fühlt sich langsam an" machen zu müssen.
+
+## Wie es funktioniert
+
+Jede Anfrage läuft in einem isolierten, anmeldefreien Fenster (siehe [Datenschutz](/concepts/privacy)). Da Anfragen von der Benutzersitzung isoliert sind, ist der einzige wichtige Faktor für die Benutzererfahrung *wie viele* ausgeführt werden, und genau das steuert das Rate Limiting.
+
+Das aktuelle Limit variiert basierend auf:
+
+- **Bandbreitengeschwindigkeit**: Langsamere Verbindungen erhalten weniger Anfragen.
+- **Geolokalisierung**: Die Kapazität wird regional ausgeglichen.
+- **Gesamte Netzwerkverfügbarkeit**: Das SDK zieht sich zurück, wenn die globale Nachfrage gering ist.
+
+<Note>
+**TODO:** Dokumentiere konkrete Zahlen (req/min Obergrenzen, Geo-Stufen, Bandbreitenschwellen), sobald sie festgelegt sind. Derzeit sind die Limits absichtlich adaptiv und nicht über die öffentliche API zugänglich.
+</Note>
+
+## API-Oberfläche
+
+Es gibt keine Rate-Limiting-API, die aufgerufen werden kann. Die Drosselung ist intern und immer aktiv. Du kannst sie nicht deaktivieren, und du solltest sie nicht inspizieren müssen. Wenn du glaubst, dass Rate Limiting ein Problem in deiner Integration verursacht, [öffne ein Issue auf GitHub](https://github.com/mellowtel-inc/) oder kontaktiere uns auf [Discord](https://discord.com/invite/txAZp4MSDe).
+
+## Verwandte Themen
+
+- [Datenschutz](/concepts/privacy): was das isolierte Fenster hat und nicht hat.
+- [Opt-in / Opt-out](/concepts/opt-in-out): die Zustimmungsschicht, die all dem vorausgeht.

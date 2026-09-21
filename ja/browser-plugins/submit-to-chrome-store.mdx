@@ -1,0 +1,43 @@
+---
+sidebarTitle: "CWSに提出"
+title: "Chrome Web Storeに拡張機能を提出する"
+icon: "chrome"
+robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+canonical: "https://mellowtel.com/docs/ja/browser-plugins/submit-to-chrome-store"
+og:title: "Mellowtel拡張機能のChrome Web Store提出ガイド"
+og:description: "Chrome Web Storeへの提出ガイドには、declarativeNetRequest、ホスト権限、ストレージ、およびレビューのためのMellowtelの権限正当化コピーが含まれています。"
+og:url: "https://mellowtel.com/docs/ja/browser-plugins/submit-to-chrome-store"
+twitter:card: "summary"
+twitter:title: "Mellowtel拡張機能のChrome Web Store提出ガイド"
+twitter:description: "Chrome Web Storeへの提出ガイドには、declarativeNetRequest、ホスト権限、ストレージ、およびレビューのためのMellowtelの権限正当化コピーが含まれています。"
+---
+
+[クイックスタート](/browser-plugins/quickstart)で説明された手順に従って、拡張機能にMellowtelをインポートしたら、Webストアに拡張機能を提出する準備が整います。
+このガイドは、Chrome Web Storeに拡張機能を提出するのを手助けします。
+
+完了までの推定時間: 3-5分。
+
+
+### Webストアの正当化
+Webストアでは、要求している権限を正当化する必要があります。以下は使用できるテンプレートです（Mellowtelがどのように権限を使用するかを説明しています）:
+
+**DeclarativeNetRequest**:
+```txt
+declarativeNetRequest権限は、特定のヘッダー（例: X-Frameヘッダー）をサブフレームレベルでの一部のレスポンスから削除するために必要です。これにより、クロスオリジンリソース共有（CORS）に関連する問題を回避しながら、ウェブサイトをiframeで表示できます。これらのヘッダーは、レスポンスが処理された後、直ちに復元されます。
+```
+
+**ホスト権限**:
+```txt
+all_urlsのホスト権限は、declarativeNetRequestがすべてのURLのレスポンスヘッダーを変更できるようにするために必要です。これにより、特定のヘッダー（例: X-Frameヘッダー）をサブフレームレベルでの一部のレスポンスから削除することができます。これにより、クロスオリジンリソース共有（CORS）に関連する問題を回避しながら、ウェブサイトをiframeで表示できます。これらのヘッダーは、レスポンスが処理された後、直ちに復元されます。
+```
+
+**ストレージ**:
+```txt
+ストレージ権限は、拡張機能に特有の状態を保持し、拡張機能のさまざまな部分間の通信を促進するためのローカルロジックを持つために必要です。
+```
+
+
+### 拡張機能を提出する
+新しい拡張機能を提出する場合や既存の拡張機能を更新する場合に応じて、以下の手順に従ってください:
+- [新しい拡張機能を提出する](https://developer.chrome.com/docs/webstore/publish/)
+- [既存の拡張機能を更新する](https://developer.chrome.com/docs/webstore/update)

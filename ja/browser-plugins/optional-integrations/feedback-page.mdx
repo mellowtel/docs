@@ -1,0 +1,62 @@
+---
+sidebarTitle: "ユーザーフィードバック"
+title: "ユーザーからフィードバックを集める"
+icon: "comment"
+robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+canonical: "https://mellowtel.com/docs/ja/browser-plugins/optional-integrations/feedback-page"
+og:title: "Mellowtel ブラウザ拡張機能のためのフィードバックページガイド"
+og:description: "Mellowtelのフィードバックページ設定は、ブラウザプラグインがアンインストールフィードバックリンクを生成し、ホストされたページを開き、ダッシュボードで回答を確認する方法を示します。"
+og:url: "https://mellowtel.com/docs/ja/browser-plugins/optional-integrations/feedback-page"
+twitter:card: "summary"
+twitter:title: "Mellowtel ブラウザ拡張機能のためのフィードバックページガイド"
+twitter:description: "Mellowtelのフィードバックページ設定は、ブラウザプラグインがアンインストールフィードバックリンクを生成し、ホストされたページを開き、ダッシュボードで回答を確認する方法を示します。"
+---
+
+Mellowtelは、ユーザーからのフィードバックを集めて、より速く改善し、製品を向上させるために使用できる事前構築されたフィードバックページを提供しています。現在、このページはブラウザプラグイン専用です。フィードバックページは、プラグインのアイコンと名前を動的に渡すことで、この[ページ](https://www.mellowtel.com/uninstall-feedback/?extension_id=testId&configuration_key=testConfiguration)に似ています。
+
+その後、Mellowtelダッシュボードからフィードバックを読み取り、ブラウザプラグインを改善するために使用できます。
+
+重要: Mellowtelダッシュボードからフィードバックを読み取ることができるのは、ウェブストアに公開されているプラグインを持っている場合のみです。開発モードではありません。開発中でフィードバックページをテストしたい場合は、チャットを通じてお問い合わせください。
+
+以下は、ブラウザプラグインにフィードバックページを追加する方法です：
+
+## プラグインにフィードバックページを追加する
+
+フィードバックページはMellowtelによってホストされており、Mellowtel JSパッケージの`generateFeedbackLink()`メソッドを使用して生成できるURLを介してアクセスできます。
+
+新しいタブでフィードバックページを直接開きたい場合は、`generateAndOpenFeedbackLink()`メソッドを使用すると、この[ページ](https://www.mellowtel.com/uninstall-feedback/?extension_id=testId&configuration_key=testConfiguration)に似たページが開きます。プラグインのアイコンと名前を動的に渡します。
+
+ユーザーがブラウザプラグインをアンインストールしたときに、拡張機能のバックグラウンドスクリプトまたはコンテントスクリプトから`generateFeedbackLink()`メソッドを呼び出してフィードバックページを開くことができます。
+
+以下はその方法です。
+
+`service worker`ファイル（バックグラウンドスクリプトとも呼ばれます）を開き、次のコードを追加します：
+
+`<YOUR_CONFIGURATION_KEY>`を実際のMellowtelの設定キーに置き換えることを忘れないでください。まだ設定キーを持っていない場合は、[Mellowtel](https://www.mellowtel.com/mellowtel-auth/)にサインアップして取得できます。
+
+```javascript
+import Mellowtel from "mellowtel";
+
+let mellowtel;
+
+(async () => {
+    mellowtel = new Mellowtel("<YOUR_CONFIGURATION_KEY>");
+    await mellowtel.initBackground();
+})();
+
+// ユーザーが拡張機能をアンインストールしたときにフィードバックページを開く
+chrome.runtime.onInstalled.addListener(async function(details) {
+    console.log("Extension Installed or Updated");
+    // インストールと更新を別々に処理したい場合
+    /**
+    if(details.reason === "install"){
+        // 初回インストールを処理するための関数を呼び出す
+    } else if(details.reason === "update") {
+        // 更新を処理するための関数を呼び出す
+    }
+    **/
+    // ユーザー設定を処理するためにawait mellowtel.generateAndOpenOptInLink(); 詳細については: opt-in-out docs
+    const uninstallURl = await mellowtel.generateFeedbackLink();
+    chrome.runtime.setUninstallURL(uninstallURl);
+});
+```

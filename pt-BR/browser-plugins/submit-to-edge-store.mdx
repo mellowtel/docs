@@ -1,0 +1,97 @@
+---
+sidebarTitle: "Enviar para Edge Add-ons"
+title: "Enviar extensão para Microsoft Edge Add-ons"
+icon: "edge"
+robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+canonical: "https://mellowtel.com/docs/pt-BR/browser-plugins/submit-to-edge-store"
+og:title: "Guia de Envio de Extensões para Microsoft Edge Add-ons"
+og:description: "Os passos para envio ao Microsoft Edge Add-ons cobrem empacotamento, revisão do manifesto, disponibilidade, propriedades, detalhes da listagem na loja, notas de certificação e políticas."
+og:url: "https://mellowtel.com/docs/pt-BR/browser-plugins/submit-to-edge-store"
+twitter:card: "summary"
+twitter:title: "Guia de Envio de Extensões para Microsoft Edge Add-ons"
+twitter:description: "Os passos para envio ao Microsoft Edge Add-ons cobrem empacotamento, revisão do manifesto, disponibilidade, propriedades, detalhes da listagem na loja, notas de certificação e políticas."
+---
+
+Após importar o Mellowtel na sua extensão conforme descrito no guia de [Início Rápido](/browser-plugins/quickstart), siga estes passos para enviar sua extensão para a loja Microsoft Edge Add-ons.
+
+## Prepare Sua Extensão
+
+1. **Desenvolva e Teste**: Certifique-se de ter um protótipo funcional da sua extensão testado no Microsoft Edge.
+
+2. **Crie um Arquivo ZIP**: Empacote os arquivos da sua extensão em um arquivo ZIP, incluindo:
+   - O manifesto da extensão
+   - Todas as imagens e arquivos necessários
+
+3. **Revise o Manifesto**: Verifique se os seguintes campos no seu manifesto estão corretos:
+   - `Name`
+   - `Description`
+
+## Enviar para Microsoft Edge Add-ons
+
+1. **Crie uma Conta de Desenvolvedor**:
+   - Se você não tiver uma, crie uma conta de desenvolvedor no [Partner Center](https://partner.microsoft.com/dashboard/microsoftedge/public/login?ref=addons).
+   - Para instruções detalhadas sobre como criar uma conta de desenvolvedor, veja o [guia de registro de desenvolvedor](https://docs.microsoft.com/microsoft-edge/extensions-chromium/publish/create-dev-account).
+
+2. **Inicie um Novo Envio**:
+   - Vá para o painel do desenvolvedor e selecione "Criar nova extensão".
+
+3. **Envie Seu Pacote**:
+   - Na página de Pacotes, envie seu arquivo ZIP da extensão.
+   - Aguarde a validação e resolva quaisquer problemas, se necessário.
+
+   ![Tela de envio de pacote](/images/edge/packages.png)
+   
+   A tela de envio permite que você arraste e solte seu arquivo ZIP ou navegue para selecioná-lo. Certifique-se de que seu pacote contenha:
+   1. O arquivo de manifesto com detalhes como nome, versão, descrição curta, permissões e idioma padrão.
+   2. Imagens e outros arquivos que sua extensão requer.
+
+4. **Forneça Detalhes de Disponibilidade**:
+   - Defina a visibilidade (Público ou Oculto).
+   - Escolha os mercados para distribuição.
+
+   ![Configurações de disponibilidade](/images/edge/availability.png)
+   
+   Na seção de Disponibilidade:
+   - Escolha entre Público (qualquer pessoa pode encontrar e usar a extensão) ou Oculto (apenas aqueles com o URL da listagem na loja podem usá-la).
+   - Selecione os mercados onde sua extensão estará disponível. Por padrão, está definido para todos os mercados atuais e futuros.
+
+5. **Defina Propriedades da Extensão**:
+   - Selecione uma categoria.
+   - Especifique requisitos de política de privacidade.
+   - Adicione o URL do site e detalhes de contato de suporte.
+   - Indique se há conteúdo adulto.
+
+   ![Seção de propriedades](/images/edge/properties.png)
+   
+   Na seção de Propriedades:
+   - Escolha a categoria que melhor descreve sua extensão.
+   - Indique se sua extensão acessa, coleta ou transmite informações pessoais.
+   - Forneça um URL de política de privacidade, se necessário.
+   - Adicione o URL do seu site e detalhes de contato de suporte.
+
+6. **Adicione Detalhes da Listagem na Loja**:
+   - Forneça uma descrição (até 10.000 caracteres).
+   - Envie um logotipo para a Loja de Extensões (300x300 pixels recomendado).
+   - Adicione blocos promocionais opcionais e capturas de tela.
+   - Inclua termos de busca para melhorar a descoberta.
+
+7. **Conclua o Envio**:
+   - Adicione quaisquer notas para certificação.
+   - Clique em "Publicar" para enviar sua extensão.
+
+## Após o Envio
+
+- A Microsoft revisará sua extensão, o que pode levar até sete dias úteis.
+- Você será notificado quando a revisão estiver completa.
+- Se forem encontrados problemas, resolva-os e envie novamente.
+
+## Dicas para um Envio Bem-Sucedido
+
+- Siga as [políticas de desenvolvedor para Microsoft Edge Add-ons](https://docs.microsoft.com/microsoft-edge/extensions-chromium/store-policies/developer-policies).
+- Forneça descrições claras e concisas e imagens de alta qualidade.
+- Certifique-se de que sua política de privacidade seja abrangente se você coletar quaisquer dados do usuário.
+- Responda prontamente a quaisquer comentários ou perguntas dos revisores.
+
+Lembre-se, integrar o Mellowtel não deve afetar seu processo de envio, mas certifique-se de que ele esteja em conformidade com as políticas da Microsoft em relação à coleta de dados e privacidade do usuário.
+
+Para mais informações detalhadas, visite a [Documentação do Desenvolvedor de Microsoft Edge Add-ons](https://docs.microsoft.com/microsoft-edge/extensions-chromium/publish/publish-extension).

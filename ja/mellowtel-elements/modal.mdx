@@ -1,0 +1,122 @@
+---
+sidebarTitle: "サポートモーダル"
+title: "Mellowtelサポートモーダル"
+icon: "window-maximize"
+robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+canonical: "https://mellowtel.com/docs/ja/mellowtel-elements/modal"
+og:title: "拡張機能とウェブサイトのためのMellowtelサポートモーダル"
+og:description: "Mellowtelサポートモーダルの設定では、カスタムコピー、スヌーズ動作、ストレージフォールバック、APIの使用を備えた非侵入型のサポートプロンプトの作成方法を説明します。"
+og:url: "https://mellowtel.com/docs/ja/mellowtel-elements/modal"
+twitter:card: "summary"
+twitter:title: "拡張機能とウェブサイトのためのMellowtelサポートモーダル"
+twitter:description: "Mellowtelサポートモーダルの設定では、カスタムコピー、スヌーズ動作、ストレージフォールバック、APIの使用を備えた非侵入型のサポートプロンプトの作成方法を説明します。"
+---
+
+Mellowtelサポートモーダルは、Mellowtel拡張機能を通じてユーザーがあなたの拡張機能やウェブサイトをサポートすることを促す非侵入型のモーダルです。
+
+## 前提条件
+
+モーダルを使用する前に、プロジェクトにMellowtel Elementsが設定されていることを確認してください：
+
+<CardGroup cols={2}>
+    <Card title="拡張機能の統合" icon="puzzle-piece" href="/mellowtel-elements/extension-integration">
+        ブラウザ拡張機能のセットアップ
+    </Card>
+    <Card title="ウェブサイトの統合" icon="atom" href="/mellowtel-elements/website-integration">
+        NPMまたはCDNを使用したウェブサイトのセットアップ
+    </Card>
+</CardGroup>
+
+## 主な機能
+
+- **クロスプラットフォーム** - ウェブサイトと拡張機能のコンテンツスクリプトで動作
+- **スマートスヌーズ** - ユーザーは1週間、2週間、または永久に無効化を選択可能
+- **Chromeストレージ** - 利用可能な場合はChromeストレージAPIを使用し、ローカルストレージにフォールバック
+- **シャドウDOM** - スタイルの隔離によりホストページのスタイルとの競合を防止
+- **モバイル対応** - すべての画面サイズに最適化
+- **拡張機能の詳細** - 拡張機能の名前とアイコンを自動取得して表示
+
+## モーダルの作成
+
+Mellowtel Elementsが初期化されたら（上記の統合ガイドを参照）、サポートモーダルを作成して表示できます：
+
+### 基本的な使用法
+
+```javascript
+// デフォルトのタイトルと本文での基本的な使用法
+await mellowtel.createModal('your-invite-id-here');
+
+// カスタムタイトルと本文
+await mellowtel.createModal(
+  'your-invite-id-here',
+  '私たちの拡張機能をサポートしてください！',
+  'この無料サービスを維持するために、私たちの拡張機能を追加してください。'
+);
+```
+
+### 使用例
+
+#### コンテンツスクリプトで
+
+```javascript
+// ユーザーがページに30秒間滞在した後にモーダルを表示
+setTimeout(async () => {
+    await mellowtel.createModal(
+        'content-script-invite-456',
+        '私たちの拡張機能を使用してくれてありがとう！',
+        'この拡張機能の開発をサポートして、改善にご協力ください。'
+    );
+}, 30000);
+```
+
+#### ウェブサイトで
+
+```javascript
+// ページが読み込まれた後にモーダルを表示
+window.addEventListener('load', async () => {
+    await mellowtel.createModal(
+        'website-invite-123',
+        '私たちのサービスをサポートしてください',
+        'このウェブサイトを無料かつ広告なしで維持するために、私たちの拡張機能をインストールしてください。'
+    );
+});
+```
+
+#### 条件付き表示
+
+```javascript
+// 特定のドメインでのみ表示
+const allowedDomains = ['github.com', 'stackoverflow.com', 'reddit.com'];
+const currentDomain = window.location.hostname;
+
+if (allowedDomains.some(domain => currentDomain.includes(domain))) {
+    await mellowtel.createModal(
+        'conditional-invite-789',
+        '私たちの拡張機能を楽しんでいますか？',
+        'サポートを示し、この無料ツールの改善を続ける手助けをしてください。'
+    );
+}
+```
+
+## APIリファレンス
+
+### `createModal(inviteId, title?, body?)`
+
+サポートモーダルを作成して表示します。
+
+**パラメータ:**
+- `inviteId` (string, 必須): モーダルのインタラクションを追跡するための一意の識別子
+- `title` (string, オプション): カスタムモーダルタイトル（デフォルトは "Support with Mellowtel"）
+- `body` (string, オプション): カスタムモーダル本文テキスト
+
+**戻り値:** `Promise<void>`
+
+## モーダルの動作
+
+### スヌーズオプション
+
+ユーザーは3つのスヌーズオプションから選択できます：
+
+- **1週間**: モーダルは7日間表示されません
+- **2週間**: モーダルは14日間表示されません
+- **無効化**: モーダルは二度と表示されません

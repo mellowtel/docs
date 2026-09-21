@@ -1,0 +1,163 @@
+---
+sidebarTitle: "Firefox統合"
+title: "Firefox拡張機能でのMellowtelのセットアップ"
+icon: "firefox"
+robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+canonical: "https://mellowtel.com/docs/ja/browser-plugins/quickstart_firefox"
+og:title: "Mellowtel Firefox拡張機能のLite SDKとの統合"
+og:description: "Mellowtel Firefox拡張機能のセットアップでは、mellowtel-liteパッケージ、Manifest V2およびV3の権限、バックグラウンドスクリプト、コンテントスクリプト、設定について説明します。"
+og:url: "https://mellowtel.com/docs/ja/browser-plugins/quickstart_firefox"
+twitter:card: "summary"
+twitter:title: "Mellowtel Firefox拡張機能のLite SDKとの統合"
+twitter:description: "Mellowtel Firefox拡張機能のセットアップでは、mellowtel-liteパッケージ、Manifest V2およびV3の権限、バックグラウンドスクリプト、コンテントスクリプト、設定について説明します。"
+---
+
+このガイドでは、MellowtelをFirefox拡張機能に統合する方法を説明します。Manifest V2とV3の両方をサポートしています。
+
+## インストール
+
+まず、Mellowtel Lite（`mellowtel-lite`）npmパッケージをインストールします。Firefoxでは、ブラウザのポリシーに準拠するために、`mellowtel-lite`パッケージのみをインポートできることに注意してください：
+
+```bash
+npm install mellowtel-lite
+```
+
+## マニフェスト設定
+
+`manifest.json`ファイルには、Mellowtelが正しく動作するための特定の設定が必要です。Manifest V2とV3の両方に必要な部分は以下の通りです：
+
+### Manifest V2
+
+```json
+{
+  "manifest_version": 2,
+  "permissions": [
+    "storage",
+    "<all_urls>",
+    "declarativeNetRequestWithHostAccess",
+  ],
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": true
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content_start_mellowtel.js"],
+      "run_at": "document_start",
+      "all_frames": true
+    }
+  ],
+  "browser_action": {
+    "default_popup": "popup.html"
+  }
+}
+```
+
+### Manifest V3
+
+```json
+{
+  "manifest_version": 3,
+  "permissions": [
+    "storage",
+    "declarativeNetRequestWithHostAccess"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "scripts": ["background.js"],
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content_start_mellowtel.js"],
+      "run_at": "document_start",
+      "all_frames": true
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html"
+  }
+}
+```
+
+## バックグラウンドスクリプトのセットアップ
+
+`background.js`という名前のファイルを作成し、次の内容を記述します：
+
+```javascript
+import Mellowtel from "mellowtel-lite";
+
+let mellowtel;
+
+(async () => {
+    mellowtel = new Mellowtel("<your_configuration_key>");
+    await mellowtel.initBackground();
+})();
+
+browser.runtime.onInstalled.addListener(async function(details) {
+    console.log("Extension Installed or Updated");
+    await mellowtel.generateAndOpenOptInLink();
+});
+```
+
+`<your_configuration_key>`を実際のMellowtel設定キーに置き換えてください。
+
+## コンテントスクリプトのセットアップ
+
+`content_start_mellowtel.js`という名前のファイルを作成し、次の内容を記述します：
+
+```javascript
+import Mellowtel from "mellowtel-lite";
+
+(async () => {
+    const mellowtel = new Mellowtel("<your_configuration_key>");
+    await mellowtel.initContentScript();
+})();
+```
+
+再度、`<your_configuration_key>`を実際のMellowtel設定キーに置き換えてください。
+
+## Mellowtel設定用ポップアップ
+
+ユーザーがMellowtelの設定に簡単にアクセスできるように、ポップアップを作成する必要があります。設定方法は以下の通りです：
+
+1. `popup.html`ファイルを作成します：
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Mellowtel Settings</title>
+</head>
+<body>
+  <h1>Mellowtel Settings</h1>
+  <button id="openSettings">Open Mellowtel Settings</button>
+  <script src="popup.js"></script>
+</body>
+</html>
+```
+
+2. `popup.js`ファイルを作成します：
+
+```javascript
+import Mellowtel from "mellowtel-lite";
+
+const mellowtel = new Mellowtel("<your_configuration_key>");
+
+async function openSettings() {
+    try {
+        const settingsLink = await mellowtel.generateSettingsLink();
+        browser.tabs.create({ url: settingsLink });
+    } catch (error) {
+        console.error("Error generating settings link:", error);
+    }
+}
+
+document.getElementById('openSettings').addEventListener('click', openSettings);
+```
+
+`<your_configuration_key>`を実際のMellowtel設定キーに置き換えることを忘れないでください。まだ設定キーを持っていない場合は、[Mellowtel](https://www.mellowtel.com/mellowtel-auth/)にサインアップして取得できます。

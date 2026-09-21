@@ -1,0 +1,122 @@
+---
+sidebarTitle: "Modal de Suporte"
+title: "Modal de Suporte Mellowtel"
+icon: "window-maximize"
+robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+canonical: "https://mellowtel.com/docs/pt-BR/mellowtel-elements/modal"
+og:title: "Modal de Suporte Mellowtel para Extensões e Sites"
+og:description: "A configuração do Modal de Suporte Mellowtel explica como criar um aviso de suporte não intrusivo com texto personalizado, comportamento de adiamento, fallback de armazenamento e uso de API."
+og:url: "https://mellowtel.com/docs/pt-BR/mellowtel-elements/modal"
+twitter:card: "summary"
+twitter:title: "Modal de Suporte Mellowtel para Extensões e Sites"
+twitter:description: "A configuração do Modal de Suporte Mellowtel explica como criar um aviso de suporte não intrusivo com texto personalizado, comportamento de adiamento, fallback de armazenamento e uso de API."
+---
+
+O Modal de Suporte Mellowtel é um modal não intrusivo que incentiva os usuários a apoiar sua extensão ou site através da extensão Support with Mellowtel.
+
+## Pré-requisitos
+
+Antes de usar o modal, certifique-se de ter o Mellowtel Elements configurado no seu projeto:
+
+<CardGroup cols={2}>
+    <Card title="Integração de Extensão" icon="puzzle-piece" href="/mellowtel-elements/extension-integration">
+        Configuração para extensões de navegador
+    </Card>
+    <Card title="Integração de Site" icon="atom" href="/mellowtel-elements/website-integration">
+        Configuração para sites usando NPM ou CDN
+    </Card>
+</CardGroup>
+
+## Principais Funcionalidades
+
+- **Multiplataforma** - Funciona em sites e scripts de conteúdo de extensões
+- **Adiamento Inteligente** - Usuários podem adiar por 1 semana, 2 semanas ou desativar permanentemente
+- **Armazenamento Chrome** - Usa a API de armazenamento do Chrome quando disponível, com fallback para localStorage
+- **Shadow DOM** - Isolamento de estilo evita conflitos com estilos da página hospedeira
+- **Responsivo para Móveis** - Otimizado para todos os tamanhos de tela
+- **Detalhes da Extensão** - Busca e exibe automaticamente o nome e ícone da extensão
+
+## Criando o Modal
+
+Depois de ter o Mellowtel Elements inicializado (veja os guias de integração acima), você pode criar e exibir o modal de suporte:
+
+### Uso Básico
+
+```javascript
+// Uso básico com título e corpo padrão
+await mellowtel.createModal('your-invite-id-here');
+
+// Título e corpo personalizados
+await mellowtel.createModal(
+  'your-invite-id-here',
+  'Apoie Nossa Extensão!',
+  'Ajude-nos a manter este serviço gratuito adicionando nossa extensão.'
+);
+```
+
+### Exemplos de Uso
+
+#### Em Scripts de Conteúdo
+
+```javascript
+// Mostrar modal após o usuário estar na página por 30 segundos
+setTimeout(async () => {
+    await mellowtel.createModal(
+        'content-script-invite-456',
+        'Obrigado por usar nossa extensão!',
+        'Ajude-nos a melhorar apoiando o desenvolvimento desta extensão.'
+    );
+}, 30000);
+```
+
+#### Em Sites
+
+```javascript
+// Mostrar modal após o carregamento da página
+window.addEventListener('load', async () => {
+    await mellowtel.createModal(
+        'website-invite-123',
+        'Apoie Nosso Serviço',
+        'Instale nossa extensão para ajudar a manter este site gratuito e sem anúncios.'
+    );
+});
+```
+
+#### Exibição Condicional
+
+```javascript
+// Mostrar apenas em certos domínios
+const allowedDomains = ['github.com', 'stackoverflow.com', 'reddit.com'];
+const currentDomain = window.location.hostname;
+
+if (allowedDomains.some(domain => currentDomain.includes(domain))) {
+    await mellowtel.createModal(
+        'conditional-invite-789',
+        'Está gostando da nossa extensão?',
+        'Mostre seu apoio e ajude-nos a continuar melhorando esta ferramenta gratuita.'
+    );
+}
+```
+
+## Referência da API
+
+### `createModal(inviteId, title?, body?)`
+
+Cria e exibe o modal de suporte.
+
+**Parâmetros:**
+- `inviteId` (string, obrigatório): Identificador único para rastrear interações com o modal
+- `title` (string, opcional): Título personalizado do modal (padrão é "Support with Mellowtel")
+- `body` (string, opcional): Texto personalizado do corpo do modal
+
+**Retorna:** `Promise<void>`
+
+## Comportamento do Modal
+
+### Opções de Adiamento
+
+Os usuários podem escolher entre três opções de adiamento:
+
+- **1 semana**: O modal não aparecerá por 7 dias
+- **2 semanas**: O modal não aparecerá por 14 dias  
+- **Desativar**: O modal nunca aparecerá novamente

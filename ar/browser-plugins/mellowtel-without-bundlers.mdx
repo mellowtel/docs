@@ -1,0 +1,162 @@
+---
+sidebarTitle: "Mellowtel بلا Bundlers"
+title: "دمج Mellowtel بلا Bundlers"
+icon: "box"
+robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+canonical: "https://mellowtel.com/docs/ar/browser-plugins/mellowtel-without-bundlers"
+og:title: "دليل Mellowtel بلا Bundlers للإضافات في المتصفح"
+og:description: "Mellowtel بلا bundlers يوضح كيفية استخدام ملف مجمع مسبقًا أو إنشاء واحد باستخدام esbuild، تكوين الملف التعريفي، واختبار إعداد الإضافة الخاصة بك."
+og:url: "https://mellowtel.com/docs/ar/browser-plugins/mellowtel-without-bundlers"
+twitter:card: "summary"
+twitter:title: "دليل Mellowtel بلا Bundlers للإضافات في المتصفح"
+twitter:description: "Mellowtel بلا bundlers يوضح كيفية استخدام ملف مجمع مسبقًا أو إنشاء واحد باستخدام esbuild، تكوين الملف التعريفي، واختبار إعداد الإضافة الخاصة بك."
+---
+
+هاد الدليل يشرح كيفاش تدمج Mellowtel في الإضافة ديالك للمتصفح بلا ما تستعمل bundlers بحال Webpack ولا Vite. بلاصة، غادي تستعمل ملف واحد مجمع مسبقًا اللي كيخدم في كل من content scripts وservice workers.
+
+## إعداد المشروع
+
+بدا بهيكل أساسي للإضافة ديالك للمتصفح:
+
+```
+your-extension/
+├── icons/
+├── popup/
+│   ├── popup.html
+│   └── popup.js
+├── background.js           # الخدمة ديالك
+├── content_script.js
+├── manifest.json
+└── mellowtel.js           # غادي نضيفوه فالخطوة الجاية
+```
+
+## الحصول على حزمة Mellowtel
+
+عندك جوج اختيارات باش تحصل على ملف `mellowtel.js` للإضافة ديالك:
+
+### الخيار 1: استعمال ملف مجمع مسبقًا
+
+أسهل طريقة باش تبدا هي تستعمل الملف المجمع مسبقًا `mellowtel.js` من [المستودع mellowtel-bundled](https://github.com/mellowtel-inc/mellowtel-bundled).
+
+1. سير للمستودع [mellowtel-bundled](https://github.com/mellowtel-inc/mellowtel-bundled)
+2. حمل ملف `mellowtel.js`
+3. نسخو فالدليل ديال الإضافة ديالك
+
+### الخيار 2: إنشاء الحزمة الخاصة بك
+
+إلا كنتي تفضل تنشئ الحزمة بنفسك، تابع هاد الخطوات:
+
+#### إنشاء دليل مؤقت للتجميع
+
+أنشئ دليل مؤقت باش تثبت Mellowtel وتجمع الحزمة:
+
+```bash
+mkdir mellowtel-bundling
+cd mellowtel-bundling
+npm init -y
+npm install mellowtel
+```
+
+هاد الشي كينشئ مجلد منفصل مع حزمة Mellowtel اللي غادي تستعملها غير للتجميع.
+
+#### تجميع Mellowtel مع esbuild
+
+من داخل دليل `mellowtel-bundling`، أنشئ حزمة وحدة اللي كتخدم في كل من service workers وcontent scripts:
+
+```bash
+npx esbuild node_modules/mellowtel/dist/index.js --bundle --format=iife --global-name=Mellowtel --footer:js="globalThis.Mellowtel = Mellowtel.default" --platform=browser --outfile=mellowtel.js --minify --legal-comments=none
+```
+
+هاد الأمر:
+- كيأخذ المصدر ديال Mellowtel من `node_modules/mellowtel/dist/index.js`
+- كيجمع جميع التبعيات في ملف واحد
+- كيستعمل صيغة IIFE مع اسم عالمي للتوافق العالمي
+- كيضيف تذييل باش يكون التصدير الافتراضي متاح عالميًا
+- كيحسن البيئة ديال المتصفح وكيصغر المخرج
+- كيخلق `mellowtel.js` فالدليل ديال التجميع
+
+#### نسخ الحزمة للإضافة ديالك
+
+من بعد ما تشغل الأمر ديال esbuild، نسخ الملف اللي تم إنشاؤه للدليل ديال الإضافة ديالك:
+
+```bash
+cp mellowtel.js ../your-extension/
+```
+
+دابا تقدر تحذف الدليل المؤقت ديال التجميع حيث غير كنت محتاج الملف المخرج:
+
+```bash
+cd ..
+rm -rf mellowtel-bundling
+```
+
+الدليل ديال الإضافة ديالك دابا كيحتوي على ملف Mellowtel المجمع وجاهز للاستعمال.
+
+## تكوين الملف التعريفي ديالك (جوج الخيارات)
+
+بغض النظر على الخيار اللي اخترتيه فوق، كينظم الملف التعريفي `manifest.json` باش يتضمن حزمة Mellowtel في content scripts:
+
+```json
+{
+  "manifest_version": 3,
+  "name": "اسم الإضافة ديالك",
+  "version": "1.0",
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["mellowtel.js", "content_script.js"]
+    }
+  ],
+  "permissions": [
+    "storage",
+    "declarativeNetRequestWithHostAccess"
+  ],
+  "host_permissions": [
+    "\u003Call_urls\u003E"
+  ]
+}
+```
+
+**مهم**: 
+- الحقل `"type": "module"` كيخلي استيراد وحدات ES في الخدمة ديالك.
+- فالمصفوفة ديال content scripts، خاص `mellowtel.js` يتشحن **قبل** `content_script.js` باش يكون المتغير العالمي ديال Mellowtel متاح ملي كيتشغل السكريبت ديالك.
+
+## استعمال Mellowtel في الإضافة ديالك
+
+بالنسبة للخدمة ديالك (background.js)، استورد الملف المجمع:
+
+```javascript
+// background.js
+import './mellowtel.js';
+
+(async () => {
+    const mellowtel = new Mellowtel("<configuration_key>"); // عوض بمفتاح التكوين ديالك
+    await mellowtel.initBackground();
+})();
+```
+
+بالنسبة للسكريبتات ديال المحتوى، Mellowtel متاح كمتغير عالمي (ما كاينش حاجة للاستيراد، حيث كيتشحن عبر الملف التعريفي):
+
+```javascript
+// content_script.js
+// Mellowtel متاح كمتغير عالمي من mellowtel.js
+
+(async () => {
+  const mellowtel = new Mellowtel("<configuration_key>"); // عوض بمفتاح التكوين ديالك
+  await mellowtel.initContentScript();
+})();
+```
+
+## اختبار الإضافة ديالك
+
+باش تختبر الإضافة ديالك:
+
+1. سير لـ `chrome://extensions/` فـ Chrome (ولا ما يعادلها فمتصفحات أخرى)
+2. فعل "وضع المطور"
+3. كليك على "تحميل غير معبأ" واختار الدليل ديال الإضافة ديالك
+
+هاد النهج كيمنحك الفوائد ديال استعمال Mellowtel بلا تعقيد إعداد نظام بناء كامل بحال Webpack ولا Vite.

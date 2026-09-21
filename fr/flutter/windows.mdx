@@ -1,0 +1,31 @@
+---
+title: "Configuration Windows"
+description: "Instructions de configuration Windows"
+icon: "windows"
+robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+canonical: "https://mellowtel.com/docs/fr/flutter/windows"
+og:title: "Configuration Mellowtel Flutter Windows NuGet CLI pour les applications"
+og:description: "La configuration Mellowtel Flutter Windows explique comment installer nuget.exe, l’ajouter au PATH, vérifier le CLI, et trouver des ressources de dépannage avant l’intégration."
+og:url: "https://mellowtel.com/docs/fr/flutter/windows"
+twitter:card: "summary"
+twitter:title: "Configuration Mellowtel Flutter Windows NuGet CLI pour les applications"
+twitter:description: "La configuration Mellowtel Flutter Windows explique comment installer nuget.exe, l’ajouter au PATH, vérifier le CLI, et trouver des ressources de dépannage avant l’intégration."
+---
+
+## Configuration du CLI NuGet
+
+Pour intégrer Mellowtel dans vos applications Flutter sur Windows, vous avez besoin de l'outil CLI NuGet. Suivez ces étapes :
+
+1. Télécharge `nuget.exe` depuis la [page de téléchargement de NuGet CLI](https://www.nuget.org/downloads)
+2. Crée un dossier (par exemple, `C:\Tools\NuGet`) et place `nuget.exe` dedans
+3. Ajoute le dossier à ton PATH Windows :
+   - Ouvre Propriétés Système > Avancé > Variables d'environnement
+   - Sous Variables système, édite Path
+   - Ajoute le chemin du dossier (par exemple, `C:\Tools\NuGet`)
+4. Vérifie l'installation en exécutant `nuget` dans un nouveau terminal
+
+Pour des instructions détaillées, visite la [documentation officielle de NuGet CLI](https://learn.microsoft.com/en-us/nuget/install-nuget-client-tools?tabs=windows#nugetexe-cli).
+
+## Des problèmes ?
+
+Si tu rencontres des problèmes, consulte la [documentation de NuGet CLI](https://learn.microsoft.com/en-us/nuget/install-nuget-client-tools?tabs=windows#nugetexe-cli) pour des conseils de dépannage ou contacte notre équipe de support sur [Discord](https://discord.com/invite/txAZp4MSDe).

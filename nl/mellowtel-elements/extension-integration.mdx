@@ -1,0 +1,65 @@
+---
+sidebarTitle: "Extensie-integratie"
+title: "Implementeer Mellowtel Elements in Browserextensies"
+icon: "puzzle-piece"
+robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+canonical: "https://mellowtel.com/docs/nl/mellowtel-elements/extension-integration"
+og:title: "Mellowtel Elements Browserextensie-integratiegids"
+og:description: "Mellowtel Elements browserextensie-integratie laat zien hoe je het pakket installeert, opt-in containers toevoegt, initialiseert met ID’s, en toestemmings-elementen creëert."
+og:url: "https://mellowtel.com/docs/nl/mellowtel-elements/extension-integration"
+twitter:card: "summary"
+twitter:title: "Mellowtel Elements Browserextensie-integratiegids"
+twitter:description: "Mellowtel Elements browserextensie-integratie laat zien hoe je het pakket installeert, opt-in containers toevoegt, initialiseert met ID’s, en toestemmings-elementen creëert."
+---
+
+Hier zie je hoe je Mellowtel Elements integreert in je browserextensie voor naadloos beheer van gebruikersconsent.
+
+## Installatie
+
+Installeer het pakket in je extensieproject:
+
+```bash
+npm install mellowtel-elements
+```
+
+## Implementatie
+
+### 1. Maak HTML Div Containers
+
+Voeg container divs toe in de HTML van je extensie:
+
+```html
+<!-- In popup.html of optiepagina -->
+<div id="opt-in-container"></div>
+<div id="opt-out-container"></div>
+<div id="settings-container"></div>
+```
+
+### 2. Initialiseer Mellowtel Elements
+
+```javascript
+import { MellowtelElements } from 'mellowtel-elements';
+
+// Maak een instantie met extensie-ID en configuratiesleutel
+const mellowtel = new MellowtelElements(
+  'your-extension-id-here',    // Extensie-ID
+  'your-config-key-here'       // Configuratiesleutel
+);
+```
+
+### 3. Creëer Elementen
+
+Voeg elementen toe aan de popup of optiepaginavan je extensie:
+
+```javascript
+// Creëer opt-in element
+await mellowtel.createElement('opt-in-container', { type: 'opt-in' });
+
+// Creëer opt-out element
+await mellowtel.createElement('opt-out-container', { type: 'opt-out' });
+
+// Creëer instellingen element
+await mellowtel.createElement('settings-container', { type: 'settings' });
+```
+
+Perfect! Nu is je extensie klaar om Mellowtel Elements te gebruiken voor naadloos opt-in, opt-out en het beheren van instellingen.

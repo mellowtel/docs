@@ -1,0 +1,43 @@
+---
+sidebarTitle: "In den CWS einreichen"
+title: "Erweiterung im Chrome Web Store einreichen"
+icon: "chrome"
+robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+canonical: "https://mellowtel.com/docs/de/browser-plugins/submit-to-chrome-store"
+og:title: "Einreichungsleitfaden für Mellowtel-Erweiterungen im Chrome Web Store"
+og:description: "Die Anleitung zur Einreichung im Chrome Web Store enthält Mellowtel-Berechtigungsbegründungen für declarativeNetRequest, Host-Berechtigungen, Speicher und Überprüfung."
+og:url: "https://mellowtel.com/docs/de/browser-plugins/submit-to-chrome-store"
+twitter:card: "summary"
+twitter:title: "Einreichungsleitfaden für Mellowtel-Erweiterungen im Chrome Web Store"
+twitter:description: "Die Anleitung zur Einreichung im Chrome Web Store enthält Mellowtel-Berechtigungsbegründungen für declarativeNetRequest, Host-Berechtigungen, Speicher und Überprüfung."
+---
+
+Nachdem du die Anweisungen zum Importieren von Mellowtel in deine Erweiterung befolgt hast, die im [Schnellstart](/browser-plugins/quickstart) beschrieben sind, bist du bereit, deine Erweiterung im Web Store einzureichen.
+Dieser Leitfaden hilft dir, deine Erweiterung im Chrome Web Store einzureichen.
+
+Geschätzte Zeit zur Fertigstellung: 3-5 Minuten.
+
+
+### Begründung für den Web Store
+Der Web Store verlangt, dass du die angeforderten Berechtigungen begründest. Hier ist eine Vorlage, die du verwenden kannst (sie erklärt, wie Mellowtel die Berechtigungen nutzt):
+
+**DeclarativeNetRequest**:
+```txt
+Die Berechtigung declarativeNetRequest ist erforderlich, um bestimmte Header (z.B. X-Frame-Header) von einigen Antworten auf der sub_frame-Ebene zu entfernen. Dies ermöglicht die Anzeige von Websites in einem iframe, ohne auf Probleme im Zusammenhang mit Cross-Origin Resource Sharing (CORS) zu stoßen. Diese Header werden sofort nach der Verarbeitung der Antwort wiederhergestellt.
+```
+
+**Host-Berechtigungen**:
+```txt
+Die Host-Berechtigungen für all_urls sind erforderlich, damit declarativeNetRequest Antwort-Header auf allen URLs ändern kann. Dies ist notwendig, um bestimmte Header (z.B. X-Frame-Header) von einigen Antworten auf der sub_frame-Ebene zu entfernen. Dies ermöglicht die Anzeige von Websites in einem iframe, ohne auf Probleme im Zusammenhang mit Cross-Origin Resource Sharing (CORS) zu stoßen. Diese Header werden sofort nach der Verarbeitung der Antwort wiederhergestellt.
+```
+
+**Speicher**:
+```txt
+Die Speicherberechtigung ist erforderlich, um zustandsspezifische Daten der Erweiterung zu speichern und eine lokale Logik zu haben, um die Kommunikation zwischen den verschiedenen Teilen der Erweiterung zu erleichtern.
+```
+
+
+### Reiche deine Erweiterung ein
+Du kannst den Anweisungen hier folgen, je nachdem, ob du eine neue Erweiterung einreichst oder eine bestehende aktualisierst:
+- [Eine neue Erweiterung einreichen](https://developer.chrome.com/docs/webstore/publish/)
+- [Eine bestehende Erweiterung aktualisieren](https://developer.chrome.com/docs/webstore/update)

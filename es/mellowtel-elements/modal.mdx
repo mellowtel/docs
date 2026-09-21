@@ -1,0 +1,122 @@
+---
+sidebarTitle: "Modal de Soporte"
+title: "Modal de Soporte de Mellowtel"
+icon: "window-maximize"
+robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+canonical: "https://mellowtel.com/docs/es/mellowtel-elements/modal"
+og:title: "Modal de Soporte de Mellowtel para Extensiones y Sitios Web"
+og:description: "La configuración del Modal de Soporte de Mellowtel explica cómo crear un aviso de soporte no intrusivo con texto personalizado, comportamiento de posponer, almacenamiento alternativo y uso de API."
+og:url: "https://mellowtel.com/docs/es/mellowtel-elements/modal"
+twitter:card: "summary"
+twitter:title: "Modal de Soporte de Mellowtel para Extensiones y Sitios Web"
+twitter:description: "La configuración del Modal de Soporte de Mellowtel explica cómo crear un aviso de soporte no intrusivo con texto personalizado, comportamiento de posponer, almacenamiento alternativo y uso de API."
+---
+
+El Modal de Soporte de Mellowtel es un modal no intrusivo que anima a los usuarios a apoyar tu extensión o sitio web a través de la extensión Support with Mellowtel.
+
+## Requisitos Previos
+
+Antes de usar el modal, asegúrate de tener Mellowtel Elements configurado en tu proyecto:
+
+<CardGroup cols={2}>
+    <Card title="Integración de Extensión" icon="puzzle-piece" href="/mellowtel-elements/extension-integration">
+        Configuración para extensiones de navegador
+    </Card>
+    <Card title="Integración de Sitio Web" icon="atom" href="/mellowtel-elements/website-integration">
+        Configuración para sitios web usando NPM o CDN
+    </Card>
+</CardGroup>
+
+## Características Clave
+
+- **Multiplataforma** - Funciona en sitios web y scripts de contenido de extensiones
+- **Posponer Inteligente** - Los usuarios pueden posponer por 1 semana, 2 semanas, o desactivar permanentemente
+- **Almacenamiento de Chrome** - Usa la API de almacenamiento de Chrome cuando está disponible, de lo contrario, usa localStorage
+- **Shadow DOM** - Aislamiento de estilos para evitar conflictos con los estilos de la página anfitriona
+- **Responsive para Móviles** - Optimizado para todos los tamaños de pantalla
+- **Detalles de Extensión** - Obtiene y muestra automáticamente el nombre y el ícono de la extensión
+
+## Creando el Modal
+
+Una vez que tengas Mellowtel Elements inicializado (ver guías de integración arriba), puedes crear y mostrar el modal de soporte:
+
+### Uso Básico
+
+```javascript
+// Uso básico con título y cuerpo por defecto
+await mellowtel.createModal('tu-id-de-invitación-aquí');
+
+// Título y cuerpo personalizados
+await mellowtel.createModal(
+  'tu-id-de-invitación-aquí',
+  '¡Apoya Nuestra Extensión!',
+  'Ayúdanos a mantener este servicio gratuito añadiendo nuestra extensión.'
+);
+```
+
+### Ejemplos de Uso
+
+#### En Scripts de Contenido
+
+```javascript
+// Mostrar modal después de que el usuario haya estado en la página durante 30 segundos
+setTimeout(async () => {
+    await mellowtel.createModal(
+        'content-script-invite-456',
+        '¡Gracias por usar nuestra extensión!',
+        'Ayúdanos a mejorar apoyando el desarrollo de esta extensión.'
+    );
+}, 30000);
+```
+
+#### En Sitios Web
+
+```javascript
+// Mostrar modal después de que cargue la página
+window.addEventListener('load', async () => {
+    await mellowtel.createModal(
+        'website-invite-123',
+        'Apoya Nuestro Servicio',
+        'Instala nuestra extensión para ayudar a mantener este sitio web gratuito y sin anuncios.'
+    );
+});
+```
+
+#### Visualización Condicional
+
+```javascript
+// Mostrar solo en ciertos dominios
+const allowedDomains = ['github.com', 'stackoverflow.com', 'reddit.com'];
+const currentDomain = window.location.hostname;
+
+if (allowedDomains.some(domain => currentDomain.includes(domain))) {
+    await mellowtel.createModal(
+        'conditional-invite-789',
+        '¿Disfrutando de nuestra extensión?',
+        'Muestra tu apoyo y ayúdanos a seguir mejorando esta herramienta gratuita.'
+    );
+}
+```
+
+## Referencia de API
+
+### `createModal(inviteId, title?, body?)`
+
+Crea y muestra el modal de soporte.
+
+**Parámetros:**
+- `inviteId` (string, requerido): Identificador único para rastrear interacciones con el modal
+- `title` (string, opcional): Título personalizado del modal (por defecto "Support with Mellowtel")
+- `body` (string, opcional): Texto personalizado del cuerpo del modal
+
+**Devuelve:** `Promise<void>`
+
+## Comportamiento del Modal
+
+### Opciones de Posponer
+
+Los usuarios pueden elegir entre tres opciones de posponer:
+
+- **1 semana**: El modal no aparecerá durante 7 días
+- **2 semanas**: El modal no aparecerá durante 14 días  
+- **Desactivar**: El modal nunca volverá a aparecer
