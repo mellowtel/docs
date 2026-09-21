@@ -1,6 +1,6 @@
 ---
 title: "Rate Limiting"
-description: "How Mellowtel keeps itself invisible to the end user"
+description: "How Mellowtel protects the user's experience while sharing bandwidth"
 icon: "stopwatch"
 robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
 canonical: "https://mellowtel.com/docs/concepts/rate-limiting"
@@ -18,11 +18,11 @@ Mellowtel automatically caps how many requests a single device (a "node") will a
 
 ## Why it matters
 
-The whole product depends on users not noticing Mellowtel is running. If a node served unlimited requests, a user on a slow connection would feel it in their browser. Rate limiting is the mechanism that protects that promise, and it's why you can ship Mellowtel to real users without worrying about support tickets about "the browser feels slow."
+Sharing bandwidth should never slow the user's app or connection. If a node served unlimited requests, a user on a slow network would feel it. Rate limiting is the mechanism that protects that promise, and it's why you can ship Mellowtel to real users without worrying about support tickets about "the browser feels slow."
 
 ## How it works
 
-Each request is performed inside a sandboxed window that is created for the request and torn down immediately after. This is the same isolation model used by ad networks like Google AdSense, with the additional guarantee that the window is *credentialless* (see [Privacy](/concepts/privacy)). Because each request is short-lived and isolated, the only knob that matters for user experience is *how many* run, and that is what rate limiting controls.
+Each request runs inside a sandboxed, credentialless window (see [Privacy](/concepts/privacy)). Because requests are isolated from the user's session, the only knob that matters for user experience is *how many* run, and that is what rate limiting controls.
 
 The current limit varies based on:
 

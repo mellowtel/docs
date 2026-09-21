@@ -17,7 +17,7 @@ twitter:description: "Mellowtel Electron SDK setup covers installation, consent 
 Integrate Mellowtel into your cross-platform Electron application to let users share their unused internet bandwidth in exchange for rewards or premium features. The Electron SDK runs anywhere Electron runs (macOS, Windows, and Linux).
 
 <Warning>
-  **User consent is mandatory.** The SDK only operates when the user has explicitly opted in. `init()` silently returns early when there is no consent on file, so if you see the SDK start without errors but never send traffic, the most likely reason is that the user has not opted in yet.
+  **User consent is mandatory.** The SDK only operates when the user has explicitly opted in. `init()` returns without starting when there is no consent on file, so if you see the SDK start without errors but never process requests, the most likely reason is that the user has not opted in yet.
 </Warning>
 
 ## Prerequisites
@@ -45,7 +45,7 @@ In your Electron main process file (typically `main.ts` or `main.js`), import th
 import { app, BrowserWindow } from 'electron';
 import Mellowtel, { setupMellowtelApp } from 'mellowtel-electron';
 
-// Optional: Call BEFORE app.ready to prevent system dialogs
+// Optional: call BEFORE app.ready to reduce unexpected OS prompts
 setupMellowtelApp();
 
 // When the app is ready, create the window
@@ -67,11 +67,13 @@ app.whenReady().then(async () => {
 
 - `new Mellowtel(configurationKey, options?)` instantiates the SDK. The only option available today is `disableLogs`, which defaults to `true`. Set it to `false` while integrating so you can see connection state and request activity in your terminal.
 - `requestConsent(window, incentive)` renders a **native Electron message box** anchored to the `BrowserWindow` you pass in. The second argument is the dialog's prominent headline (for example, `"Get 3 months free"`), shown above a fixed explanation of what Mellowtel does. It resolves to `true` if the user accepts, `false` if the user declines or closes the dialog, and `undefined` if consent is already on file. The SDK persists the opt-in decision automatically, so you do not need to call `optIn()` afterwards.
-- `init()` throws only when `configurationKey` is empty. If the user has not opted in, it logs and returns silently. Otherwise it opens a WebSocket to Mellowtel's backend. The call is non-blocking for renderer UI, so windows stay responsive while the connection is established.
+- `init()` throws only when `configurationKey` is empty. If the user has not opted in, it logs and returns without starting. Otherwise it connects to Mellowtel so it can start processing requests. The call is non-blocking for renderer UI, so windows stay responsive while the connection is established.
 
-### Preventing system dialog interruptions (recommended)
+### Optional: reduce unexpected OS prompts
 
-The SDK ships with an optional helper, `setupMellowtelApp()`, that configures Electron command-line flags to suppress system dialogs (autofill popups, translation bars, NTLM / Kerberos auth prompts, password manager integration, media overlays, first-run dialogs) that would otherwise interrupt your users when Mellowtel's hidden windows process requests in the background.
+The SDK ships with an optional helper, `setupMellowtelApp()`, that reduces unexpected OS prompts (autofill popups, translation bars, media overlays, first-run dialogs) during background request work.
+
+These flags apply to the whole Electron process, not only to Mellowtel. Skip the helper if your product relies on native auth prompts or password-manager UI.
 
 Call it at the top of your main process file, **before** `app.whenReady()`, and import it alongside the default export from `mellowtel-electron`. See the [upstream README](https://github.com/mellowtel-inc/mellowtel-electron#setupmellowtelapp-optional) for the canonical usage.
 
@@ -104,7 +106,7 @@ You have two paths for handling consent:
 
 ### Let users change their consent later
 
-Mellowtel provides a built-in settings dialog via `showConsentSettings(window)`. It renders a native dialog with Opt In / Opt Out buttons that match the user's current state, and internally calls `optIn()` or `optOut()` (plus reconnecting the WebSocket on opt-in) when the user toggles. Wire it up to a menu item or settings button in your app so users can revisit their choice.
+Mellowtel provides a built-in settings dialog via `showConsentSettings(window)`. It renders a native dialog with Opt In / Opt Out buttons that match the user's current state, and internally calls `optIn()` or `optOut()` (plus reconnecting to Mellowtel on opt-in) when the user toggles. Wire it up to a menu item or settings button in your app so users can revisit their choice.
 
 If you prefer to build your own settings screen, call `getOptInStatus()` to read the current state and `optIn()` / `optOut()` to change it.
 
@@ -116,8 +118,8 @@ The `Mellowtel` class exposes the following public methods. All are available on
 
 **Lifecycle**
 
-- `init(): Promise<void>` starts the service if the user has opted in, or silently returns early if not. Throws only when the configuration key is empty.
-- `shutdown(): Promise<void>` cleans up SDK resources when the application is closing. Closes the WebSocket, destroys hidden worker windows, and clears background timers. **Preserves** the user's opt-in preference.
+- `init(): Promise<void>` starts the service if the user has opted in, or returns without starting if not. Throws only when the configuration key is empty.
+- `shutdown(): Promise<void>` cleans up SDK resources when the application is closing. Closes the connection to Mellowtel, releases isolated request windows, and clears background timers. **Preserves** the user's opt-in preference.
 - `requestConsent(window: BrowserWindow, incentive: string): Promise<boolean | undefined>` shows the built-in native consent dialog and persists the result. Returns `true` on accept, `false` on decline or close, `undefined` if consent was already given.
 - `showConsentSettings(window: BrowserWindow): Promise<void>` shows the built-in manage-consent dialog. The SDK handles the opt-in / opt-out transitions internally when the user toggles their choice.
 
@@ -143,17 +145,17 @@ Request counts are persisted locally through `electron-store` and survive app re
 
 ## Lifecycle and app shutdown
 
-After processing its first request, Mellowtel may create hidden Electron worker windows. Host applications **must** call `shutdown()` when the application is actually closing.
+After the first request, the SDK may keep isolated, offscreen BrowserWindows around for background work. These windows have no access to the user's session or your app's data. Host applications **must** call `shutdown()` when the application is actually closing so those workers are released.
 
 `shutdown()`:
 
-- Closes the WebSocket connection.
-- Destroys hidden worker windows.
-- Clears background timers and network resources.
+- Closes the connection to Mellowtel.
+- Releases isolated request windows.
+- Clears background timers.
 - Preserves the user's opt-in preference.
 
 <Warning>
-  **`shutdown()` vs `optOut()`:** `shutdown()` is application lifecycle cleanup — consent is preserved. `optOut()` withdraws user consent and cleans up all resources. Do not confuse the two.
+  **`shutdown()` vs `optOut()`:** `shutdown()` runs when the app is closing — the user's opt-in is kept. `optOut()` is when the user changes their mind — consent is withdrawn and the SDK stops.
 </Warning>
 
 ### Single-window applications
@@ -171,11 +173,11 @@ mainWindow.on('closed', async () => {
 });
 ```
 
-Do not rely solely on Electron's `window-all-closed` event because Mellowtel's hidden worker windows may prevent it from firing.
+Do not rely solely on Electron's `window-all-closed` event. Background workers can keep it from firing, so treat an explicit quit (or the main window `closed` handler above) as the signal to call `shutdown()`.
 
 ### Tray applications
 
-Do not call `shutdown()` when merely hiding the window to the system tray. Call it from the explicit Quit action:
+Do not call `shutdown()` when the window is only minimized to the system tray. Call it from the explicit Quit action:
 
 ```js
 trayQuitItem.click = async () => {
@@ -209,13 +211,13 @@ await mellowtel.init();
 
 ## Consent Persistence
 
-Opt-in state is stored in the platform-default `electron-store` config path:
+Opt-in is stored in your app's normal Electron config (the same `electron-store` location as other app settings):
 
 - macOS: `~/Library/Application Support/<YourAppName>/config.json`
 - Windows: `%APPDATA%\<YourAppName>\config.json`
 - Linux: `~/.config/<YourAppName>/config.json`
 
-State survives app updates. Uninstalling your app will not clear it automatically unless your uninstaller explicitly removes the app's config directory.
+The choice survives app updates. If a user uninstalls and later reinstalls without deleting that folder, the previous choice can still be there — standard desktop behavior, not something Mellowtel keeps on its own.
 
 ---
 
@@ -227,14 +229,14 @@ State survives app updates. Uninstalling your app will not clear it automaticall
     2. Clear the npm cache and retry by running `npm cache clean --force` followed by `npm install mellowtel-electron`.
   </Accordion>
   <Accordion title="The consent dialog never appears">
-    1. Make sure you call `requestConsent` **after** `app.whenReady()` has resolved and with a valid, non-destroyed `BrowserWindow` reference.
+    1. Make sure you call `requestConsent` **after** `app.whenReady()` has resolved and with a valid `BrowserWindow` that is still open.
     2. If you use `setupMellowtelApp()`, verify it is called **before** `app.whenReady()`, not after.
   </Accordion>
   <Accordion title='"init() runs without errors but nothing happens"'>
-    This is by design. `init()` silently returns early when the user has not opted in. Check `getOptInStatus()` to confirm. If it returns `undefined` or `false`, run `requestConsent` first. Note that the internal "User is not opted in" log is swallowed when `disableLogs` is left at its default (see "Logs are silent" below), so the terminal gives you no signal either way until you flip that flag.
+    This is by design. `init()` returns without starting when the user has not opted in. Check `getOptInStatus()` to confirm. If it returns `undefined` or `false`, run `requestConsent` first. The "User is not opted in" message is not printed when `disableLogs` is left at its default (see "No logs in the terminal" below), so the terminal gives you no signal either way until you flip that flag.
   </Accordion>
-  <Accordion title="Logs are silent">
-    The `disableLogs` constructor option defaults to `true`. Pass `{ disableLogs: false }` as the second argument to the constructor while integrating to surface connection state and request activity in your terminal. This is also the fastest way to distinguish a "not opted in" silent no-op (see above) from a real connection failure.
+  <Accordion title="No logs in the terminal">
+    The `disableLogs` constructor option defaults to `true`. Pass `{ disableLogs: false }` as the second argument to the constructor while integrating to surface connection state and request activity in your terminal. This is also the fastest way to distinguish a "not opted in" no-op (see above) from a real connection failure.
   </Accordion>
 </AccordionGroup>
 
